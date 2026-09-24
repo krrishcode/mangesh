@@ -1,0 +1,109 @@
+@import "tailwindcss";
+
+@theme {
+  --color-oxblood: #4A0E17;
+  --color-oxblood-dark: #32070E;
+  --color-oxblood-light: #66141F;
+  --color-oxblood-subtle: #FAF2F3;
+  --color-gold: #C5A880;
+  --color-gold-light: #E0D7CD;
+  --color-gold-dark: #997950;
+  --color-beige: #FAF8F5;
+  --color-beige-dark: #F3EFEA;
+}
+
+@layer base {
+  /* Typography System */
+  
+  .font-heading {
+    font-family: 'Franklin Gothic', sans-serif;
+    font-weight: 300;
+    letter-spacing: 0.14em;
+  }
+
+  .font-serif-luxury {
+    font-family: 'Franklin Gothic', sans-serif;
+    font-weight: 300;
+    letter-spacing: 0.10em;
+  }
+
+  .font-serif-story {
+    font-family: 'Franklin Gothic', sans-serif;
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    line-height: 1.75;
+  }
+
+  .font-sans-clean {
+    font-family: 'Franklin Gothic', sans-serif;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+  }
+
+  body {
+    font-family: 'Franklin Gothic', sans-serif;
+    color: #333333;
+  }
+
+  /* Oxblood Luxury Utilities */
+  .bg-oxblood {
+    background-color: #4A0E17;
+  }
+  .bg-oxblood-dark {
+    background-color: #32070E;
+  }
+  .bg-oxblood-light {
+    background-color: #66141F;
+  }
+  .bg-oxblood-subtle {
+    background-color: #FAF2F3;
+  }
+  .text-oxblood {
+    color: #4A0E17;
+  }
+  .text-oxblood-light {
+    color: #801C27;
+  }
+  .border-oxblood {
+    border-color: #4A0E17;
+  }
+  .border-oxblood-light {
+    border-color: #801C27;
+  }
+}
+
+/* Custom Luxury Scrollbars in Oxblood & Gold */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #FAF8F5;
+}
+::-webkit-scrollbar-thumb {
+  background: #4A0E17;
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #66141F;
+}
+
+@keyframes ticker {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
+}
+
+.animate-ticker {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: ticker 35s linear infinite;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease-out both;
+}
