@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 const RUNWAY_IMAGE =
   'https://www.anitadongre.com/dw/image/v2/BGCX_PRD/on/demandware.static/-/Sites-AD-INDIA-Library/default/dw72baae88/images/Home%20page/Apr2024/NewHomepage/19/desktop/RUNWAY_MORE%20TO%20EXPLORE_IND%20&%20USA.jpg';
 
@@ -35,13 +37,13 @@ export default function RunwayBanner() {
               </p>
 
               <div>
-                <a
+                <Link
                   href="/shop"
                   className="inline-flex items-center gap-2 text-[11px] font-medium tracking-[0.20em] text-[#E6C69C] hover:text-white transition border-b border-[#E6C69C] hover:border-white pb-1 uppercase mt-2"
                 >
                   <span>View the Collection</span>
                   <span aria-hidden="true">&rarr;</span>
-                </a>
+                </Link>
               </div>
             </div>
 

@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function Footer() {
   return (
     <>
@@ -42,7 +44,7 @@ export default function Footer() {
             <div className="space-y-3">
               <h4 className="font-sans-clean text-[10px] text-[#333333] tracking-[0.18em] uppercase font-semibold">CUSTOMER CARE</h4>
               <ul className="space-y-2 font-light text-[#333333]">
-                <li><a href="/account" className="hover:text-[#4A0E17] transition">Orders & Shipment</a></li>
+                <li><Link href="/account" className="hover:text-[#4A0E17] transition">Orders & Shipment</Link></li>
                 <li><a href="#" className="hover:text-[#4A0E17] transition">Returns & Exchange</a></li>
                 <li><a href="#bespoke-appointment" className="hover:text-[#4A0E17] transition">Contact Us</a></li>
                 <li><a href="#" className="hover:text-[#4A0E17] transition">FAQs</a></li>
@@ -56,7 +58,7 @@ export default function Footer() {
               <ul className="space-y-2 font-light text-[#333333]">
                 <li><a href="#about-house" className="hover:text-[#4A0E17] transition">Mangesh Mahadev Foundation</a></li>
                 <li><a href="#about-house" className="hover:text-[#4A0E17] transition">Sustainability</a></li>
-                <li><a href="/careers" className="hover:text-[#4A0E17] transition">Careers</a></li>
+                <li><Link href="/careers" className="hover:text-[#4A0E17] transition">Careers</Link></li>
                 <li><a href="#celebs" className="hover:text-[#4A0E17] transition">Celebrity Archives</a></li>
                 <li><a href="#lookbook" className="hover:text-[#4A0E17] transition">Runway FW'26</a></li>
               </ul>

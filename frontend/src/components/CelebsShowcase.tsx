@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import React, { useState, useEffect } from 'react';
 import { CELEB_LOOKS } from '../data/celebs';
 
@@ -154,12 +156,12 @@ export const CelebsShowcase: React.FC = () => {
 
         {/* Centered Minimalist CTA Button Matching Anita Dongre */}
         <div className="text-center mt-12">
-          <a
+          <Link
             href="/celebrities"
             className="inline-block px-10 py-3.5 border border-[#1A1A1A] text-[#333333] hover:bg-[#4A0E17] hover:border-[#4A0E17] hover:text-white transition-all text-[11px] font-medium tracking-[0.20em] uppercase"
           >
             EXPLORE NOW
-          </a>
+          </Link>
         </div>
 
       </div>

@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import React, { useState } from 'react';
 import { fetchApi } from '../../../lib/api';
 
@@ -41,7 +43,7 @@ export const ForgotPasswordPage: React.FC = () => {
         {status === 'success' && (
           <div className="mb-6 p-4 bg-emerald-50 text-emerald-800 text-sm font-sans-clean break-all">
             {message.includes('/reset-password') ? (
-              <a href={message.split('click here to reset: ')[1]} className="underline text-emerald-900 font-medium">{message.split('click here to reset: ')[1]}</a>
+              <Link href={message.split('click here to reset: ')[1]} className="underline text-emerald-900 font-medium">{message.split('click here to reset: ')[1]}</Link>
             ) : message}
           </div>
         )}
@@ -56,7 +58,7 @@ export const ForgotPasswordPage: React.FC = () => {
           </button>
         </form>
         <div className="mt-8 text-center text-sm font-sans-clean font-light text-gray-500">
-          Remember your password? <a href="/login" className="text-[#333333] font-medium hover:text-[#4A0E17]">Sign In</a>
+          Remember your password? <Link href="/login" className="text-[#333333] font-medium hover:text-[#4A0E17]">Sign In</Link>
         </div>
       </div>
     </div>

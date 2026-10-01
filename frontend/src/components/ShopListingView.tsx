@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import React, { useState, useMemo } from 'react';
 import { MENS_PRODUCTS, type MensProduct } from '../data/mensCollection';
 import { useCartStore } from '../stores';
@@ -172,9 +174,9 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({ initialCategor
           
           {/* Breadcrumb */}
           <nav className="font-sans-clean text-[11px] text-[#333333] flex items-center gap-1.5 tracking-[0.14em] uppercase">
-            <a href="/" className="hover:text-[#4A0E17] transition">Home</a>
+            <Link href="/" className="hover:text-[#4A0E17] transition">Home</Link>
             <span>/</span>
-            <a href="/shop" className="hover:text-[#4A0E17] transition">MEN</a>
+            <Link href="/shop" className="hover:text-[#4A0E17] transition">MEN</Link>
             <span>/</span>
             <span className="text-[#333333] font-semibold">
               {selectedCategory === 'All' ? 'View All Clothing' : selectedCategory}
@@ -398,7 +400,7 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({ initialCategor
                   {/* Image Container with Dual Hover Crossfade */}
                   <div className="relative aspect-[3/4.6] overflow-hidden bg-[#ECE8E1] mb-3.5">
                     
-                    <a href={`/products/${product.id}`} className="block w-full h-full">
+                    <Link href={`/products/${product.id}`} className="block w-full h-full">
                       {/* Front Image */}
                       <img
                         src={product.imageFront}
@@ -413,7 +415,7 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({ initialCategor
                         loading="lazy"
                         className="w-full h-full object-cover object-top absolute inset-0 transition-all duration-700 ease-in-out opacity-0 group-hover:opacity-100 group-hover:scale-105"
                       />
-                    </a>
+                    </Link>
 
                     {/* Badge */}
                     {product.badge && (
@@ -466,13 +468,13 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({ initialCategor
                   </span>
 
                   {/* Product Title */}
-                  <a
+                  <Link
                     href={`/products/${product.id}`}
                     className="font-serif-luxury text-[13px] font-normal tracking-[0.08em] text-[#333333] hover:text-[#4A0E17] transition-colors uppercase block w-full h-[18px] overflow-hidden text-ellipsis whitespace-nowrap"
                     title={product.title}
                   >
                     {product.title}
-                  </a>
+                  </Link>
 
                   {/* Price */}
                   <div className="mt-1 flex items-baseline justify-center gap-2">

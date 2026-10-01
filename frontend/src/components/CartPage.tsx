@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import React from 'react';
 import { useCartStore } from '../stores';
 
@@ -18,7 +20,7 @@ export const CartPage: React.FC = () => {
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
         {/* Breadcrumb */}
         <nav className="font-sans-clean text-[10.5px] text-[#333333] mb-4 flex flex-wrap items-center gap-2 tracking-[0.14em] uppercase">
-          <a href="/" className="hover:text-[#4A0E17] transition font-medium">Home</a>
+          <Link href="/" className="hover:text-[#4A0E17] transition font-medium">Home</Link>
           <span>/</span>
           <span className="text-[#333333] font-semibold">Shopping Bag</span>
         </nav>
@@ -35,12 +37,12 @@ export const CartPage: React.FC = () => {
             <p className="font-sans-clean text-[11px] text-[#333333] tracking-[0.06em] font-light normal-case mb-6">
               Discover our handcrafted couture and begin your bespoke journey.
             </p>
-            <a
+            <Link
               href="/shop"
               className="inline-block px-10 py-3.5 bg-[#4A0E17] text-white text-[11px] font-medium tracking-[0.20em] uppercase hover:bg-[#66141F] transition"
             >
               EXPLORE COLLECTION
-            </a>
+            </Link>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
@@ -51,7 +53,7 @@ export const CartPage: React.FC = () => {
                   key={item.product_id}
                   className="flex gap-4 sm:gap-6 bg-[#FCFAF7] border border-[#EAE3DB] rounded-xs p-4 sm:p-6"
                 >
-                  <a
+                  <Link
                     href={`/products/${item.product_id}`}
                     className="w-24 sm:w-32 shrink-0 aspect-[3/4] overflow-hidden bg-[#ECE8E1] rounded-xs block hover:opacity-80 transition"
                   >
@@ -60,16 +62,16 @@ export const CartPage: React.FC = () => {
                       alt={item.title}
                       className="w-full h-full object-cover object-top"
                     />
-                  </a>
+                  </Link>
 
                   <div className="flex-1 flex flex-col justify-between">
                     <div className="flex justify-between items-start gap-4">
-                      <a
+                      <Link
                         href={`/products/${item.product_id}`}
                         className="font-serif-luxury text-sm sm:text-base tracking-[0.10em] text-[#333333] uppercase font-normal leading-snug hover:text-[#4A0E17] transition-colors"
                       >
                         {item.title}
-                      </a>
+                      </Link>
                       <button
                         onClick={() => removeItem(item.product_id)}
                         className="text-[11px] font-medium text-gray-500 hover:text-[#4A0E17] transition tracking-wider uppercase shrink-0"

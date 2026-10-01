@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import React from 'react';
 import { useAuthStore } from '../../../../stores/authStore';
 
@@ -19,9 +21,9 @@ export const OverviewView: React.FC = () => {
             <h3 className="font-sans-clean text-xs font-medium tracking-widest text-gray-400 uppercase mb-4">Recent Order</h3>
             <p className="text-sm font-sans-clean font-light text-[#333333]">View your latest purchases</p>
           </div>
-          <a href="/account/orders" className="mt-6 text-left text-[11px] font-sans-clean tracking-widest font-medium uppercase text-[#4A0E17] hover:underline">
+          <Link href="/account/orders" className="mt-6 text-left text-[11px] font-sans-clean tracking-widest font-medium uppercase text-[#4A0E17] hover:underline">
             View All Orders
-          </a>
+          </Link>
         </div>
 
         <div className="border border-[#EAE3DB] p-6 bg-white flex flex-col justify-between">
@@ -29,9 +31,9 @@ export const OverviewView: React.FC = () => {
             <h3 className="font-sans-clean text-xs font-medium tracking-widest text-gray-400 uppercase mb-4">Upcoming Appointment</h3>
             <p className="text-sm font-sans-clean font-light text-[#333333]">Manage your bespoke sessions</p>
           </div>
-          <a href="/account/appointments" className="mt-6 text-left text-[11px] font-sans-clean tracking-widest font-medium uppercase text-[#4A0E17] hover:underline">
+          <Link href="/account/appointments" className="mt-6 text-left text-[11px] font-sans-clean tracking-widest font-medium uppercase text-[#4A0E17] hover:underline">
             Manage Appointments
-          </a>
+          </Link>
         </div>
       </div>
     </div>

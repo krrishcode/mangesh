@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import React, { useState } from 'react';
 import { MENS_PRODUCTS, type MensProduct } from '../data/mensCollection';
 import { useCartStore } from '../stores';
@@ -133,11 +135,11 @@ export const ProductDetailView: React.FC<ProductDetailProps> = ({ product: initi
         
         {/* Minimalist Breadcrumbs */}
         <nav className="font-sans-clean text-[10.5px] text-[#333333] mb-4 flex flex-wrap items-center gap-2 tracking-[0.14em] uppercase">
-          <a href="/" className="hover:text-[#4A0E17] transition font-medium">Home</a>
+          <Link href="/" className="hover:text-[#4A0E17] transition font-medium">Home</Link>
           <span>/</span>
-          <a href="/#fw26" className="hover:text-[#4A0E17] transition font-medium">MEN</a>
+          <Link href="/#fw26" className="hover:text-[#4A0E17] transition font-medium">MEN</Link>
           <span>/</span>
-          <a href="/#sherwanis" className="hover:text-[#4A0E17] transition font-medium">{product.category}</a>
+          <Link href="/#sherwanis" className="hover:text-[#4A0E17] transition font-medium">{product.category}</Link>
           <span>/</span>
           <span className="text-[#333333] font-semibold truncate max-w-xs">{product.title}</span>
         </nav>
@@ -656,7 +658,7 @@ Mangesh Mahadev
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             {relatedProducts.map((rel) => (
-              <a
+              <Link
                 key={rel.id}
                 href={`/products/${rel.id}`}
                 className="group block text-center cursor-pointer"
@@ -675,7 +677,7 @@ Mangesh Mahadev
                 <p className="font-sans-clean text-xs text-[#333333] font-medium mt-1">
                   ₹{rel.price.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                 </p>
-              </a>
+              </Link>
             ))}
           </div>
         </div>

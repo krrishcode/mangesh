@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import React, { useState, useEffect } from 'react';
 import { useCartStore } from '../stores';
 
@@ -97,16 +99,16 @@ export const HeaderInteractive: React.FC = () => {
 
             {/* Center Monogram / Brand Logo (Guaranteed Single Line) */}
             <div className="flex-1 text-center px-2">
-              <a href="/" className="inline-block group">
+              <Link href="/" className="inline-block group">
                 <span className="font-heading text-base sm:text-2xl lg:text-[28px] xl:text-[32px] font-light tracking-[0.14em] sm:tracking-[0.20em] text-[#333333] group-hover:text-[#4A0E17] transition block uppercase whitespace-nowrap">
                   MANGESH MAHADEV
                 </span>
-              </a>
+              </Link>
             </div>
 
             {/* Right: Actions */}
             <div className="flex items-center justify-end gap-5 lg:w-1/3 text-gray-700">
-              <a
+              <Link
                 href="/account"
                 className="hidden md:flex items-center gap-1.5 text-[11px] uppercase tracking-[0.16em] font-medium hover:text-[#4A0E17] transition"
               >
@@ -114,9 +116,9 @@ export const HeaderInteractive: React.FC = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
                 <span className="hidden xl:inline">Account</span>
-              </a>
+              </Link>
 
-              <a
+              <Link
                 href="/cart"
                 className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] font-medium text-[#333333] hover:text-[#4A0E17] transition relative p-1"
                 aria-label="Shopping Bag"
@@ -130,20 +132,20 @@ export const HeaderInteractive: React.FC = () => {
                     {totalItems()}
                   </span>
                 )}
-              </a>
+              </Link>
             </div>
           </div>
 
           {/* Desktop Navigation Links */}
           <nav className="hidden lg:flex items-center justify-center gap-8 pt-3 border-t border-gray-100 text-[11px] tracking-[0.20em] font-medium text-[#2E2E2E]">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.name}
                 href={link.href}
                 className="hover:text-[#4A0E17] transition relative after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[1.5px] after:bg-[#4A0E17] hover:after:w-full after:transition-all font-medium"
               >
                 {link.name}
-              </a>
+              </Link>
             ))}
           </nav>
         </div>
@@ -327,14 +329,14 @@ export const HeaderInteractive: React.FC = () => {
 
               <div className="mt-6 flex flex-col gap-4 text-xs font-medium tracking-widest uppercase">
                 {navLinks.map((link) => (
-                  <a
+                  <Link
                     key={link.name}
                     href={link.href}
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="py-2 border-b border-gray-50 hover:text-[#4A0E17] font-medium"
                   >
                     {link.name}
-                  </a>
+                  </Link>
                 ))}
               </div>
             </div>

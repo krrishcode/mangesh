@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export interface CategoryItem {
   id: string;
   name: string;
@@ -74,7 +76,7 @@ export default function CategoryGrid() {
           {/* 4-Column Clean Minimalist Category Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             {CATEGORIES.map((cat) => (
-              <a
+              <Link
                 key={cat.id}
                 href={cat.href}
                 className="group block text-center cursor-pointer"
@@ -93,7 +95,7 @@ export default function CategoryGrid() {
                 <h3 className="font-sans-clean text-[10px] sm:text-[11px] tracking-[0.20em] font-medium text-[#333333] uppercase group-hover:text-[#4A0E17] transition-colors">
                   {cat.name}
                 </h3>
-              </a>
+              </Link>
             ))}
           </div>
       

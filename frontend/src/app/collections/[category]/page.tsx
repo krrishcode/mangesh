@@ -48,7 +48,7 @@ export default async function CollectionRoute({ params }: CollectionRouteProps) 
     <>
       <HeaderInteractive />
       <main className="min-h-screen">
-        <ShopListingView initialCategory={categoryName} />
+        <ShopListingView key={category} initialCategory={categoryName} />
       </main>
       <Footer />
     </>

@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import React, { useState, useEffect } from 'react';
 import { fetchApi } from '../../../lib/api';
 
@@ -39,9 +41,9 @@ export const ResetPasswordPage: React.FC = () => {
         <div className="max-w-md w-full bg-white border border-[#EAE3DB] p-8 md:p-12 shadow-sm rounded-lg text-center">
           <h1 className="font-serif-luxury text-2xl tracking-widest text-[#333333] uppercase mb-4">Password Updated</h1>
           <p className="font-sans-clean font-light text-sm text-gray-500 mb-8">{message}</p>
-          <a href="/login" className="inline-block w-full bg-[#333333] text-white py-4 text-xs font-sans-clean uppercase tracking-widest hover:bg-[#4A0E17] transition-colors">
+          <Link href="/login" className="inline-block w-full bg-[#333333] text-white py-4 text-xs font-sans-clean uppercase tracking-widest hover:bg-[#4A0E17] transition-colors">
             Sign In Now
-          </a>
+          </Link>
         </div>
       </div>
     );

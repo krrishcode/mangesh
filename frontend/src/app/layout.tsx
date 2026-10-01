@@ -14,7 +14,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth bg-[#FAF8F5]">
+    <html lang="en" data-scroll-behavior="smooth" className="scroll-smooth bg-[#FAF8F5]">
       <body
         className="bg-[#FAF8F5] text-[#333333] antialiased selection:bg-[#4A0E17] selection:text-white"
         style={{ fontFamily: "'Franklin Gothic', sans-serif" }}

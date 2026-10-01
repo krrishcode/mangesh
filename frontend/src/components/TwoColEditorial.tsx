@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function TwoColEditorial() {
   return (
     <>
@@ -11,7 +13,7 @@ export default function TwoColEditorial() {
           />
           <div className="absolute inset-0 bg-black/25" />
           
-          <a
+          <Link
             href="/shop"
             className="absolute inset-0 flex items-center justify-center text-center p-6 group cursor-pointer"
             aria-label="Love All Wedding Collection"
@@ -27,7 +29,7 @@ export default function TwoColEditorial() {
                 EXPLORE WEDDING &rarr;
               </span>
             </div>
-          </a>
+          </Link>
         </div>
       </section>
       

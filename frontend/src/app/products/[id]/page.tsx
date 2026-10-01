@@ -38,7 +38,7 @@ export default async function ProductDetailRoute({ params }: ProductRouteProps) 
     <>
       <HeaderInteractive />
       <main id="main">
-        <ProductDetailView product={product} />
+        <ProductDetailView key={product.id} product={product} />
       </main>
       <Footer />
     </>

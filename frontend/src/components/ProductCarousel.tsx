@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import React, { useState, useRef } from 'react';
 import { MENS_PRODUCTS, type MensProduct } from '../data/mensCollection';
 import { useCartStore } from '../stores';
@@ -71,7 +73,7 @@ export const ProductCarousel: React.FC = () => {
               className="flex-none w-[260px] sm:w-[280px] lg:w-[calc(25%-1.5rem)] group cursor-pointer"
             >
               {/* Product Image Container with Link */}
-              <a href={`/products/${prod.id}`} className="block relative aspect-[3/4.6] overflow-hidden bg-[#ECE8E1] mb-3.5">
+              <Link href={`/products/${prod.id}`} className="block relative aspect-[3/4.6] overflow-hidden bg-[#ECE8E1] mb-3.5">
                 <img
                   src={prod.imageFront}
                   alt={prod.title}
@@ -84,15 +86,15 @@ export const ProductCarousel: React.FC = () => {
                   loading="lazy"
                   className="absolute inset-0 w-full h-full object-cover object-top opacity-0 transition-opacity duration-500 group-hover:opacity-100"
                 />
-              </a>
+              </Link>
 
               {/* Text Typography Below Image Exactly Like Screenshot */}
               <div className="text-left">
-                <a href={`/products/${prod.id}`}>
+                <Link href={`/products/${prod.id}`}>
                   <h3 className="font-serif-luxury text-[13px] tracking-[0.08em] text-[#333333] uppercase font-normal hover:text-[#4A0E17] transition-colors w-full h-[18px] overflow-hidden text-ellipsis whitespace-nowrap" title={prod.title}>
                     {prod.title}
                   </h3>
-                </a>
+                </Link>
                 <p className="font-sans-clean text-[11px] sm:text-xs text-[#444444] mt-1 font-light tracking-wider">
                   ₹{prod.price.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                 </p>

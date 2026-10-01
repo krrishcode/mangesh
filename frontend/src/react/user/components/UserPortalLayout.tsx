@@ -1,5 +1,8 @@
 'use client';
 
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+
 import React, { useEffect, useState } from 'react';
 import { useAuthStore } from '../../../stores/authStore';
 
@@ -11,6 +14,7 @@ interface LayoutProps {
 }
 
 export const UserPortalLayout: React.FC<LayoutProps> = ({ activeTab, children }) => {
+  const router = useRouter();
   const { logout, token } = useAuthStore();
   const [hydrated, setHydrated] = useState(false);
 
@@ -20,15 +24,15 @@ export const UserPortalLayout: React.FC<LayoutProps> = ({ activeTab, children })
 
   useEffect(() => {
     if (hydrated && !token && typeof window !== 'undefined') {
-      window.location.href = '/login';
+      router.replace('/login');
     }
-  }, [token, hydrated]);
+  }, [token, hydrated, router]);
 
   if (!hydrated || !token) return null;
 
   const handleLogout = () => {
     logout();
-    window.location.href = '/login';
+    router.replace('/login');
   };
 
   const tabs: { id: Tab; label: string; href: string }[] = [
@@ -50,7 +54,7 @@ export const UserPortalLayout: React.FC<LayoutProps> = ({ activeTab, children })
             {tabs.map((tab) => {
               const isActive = activeTab === tab.id;
               return (
-                <a
+                <Link
                   key={tab.id}
                   href={tab.href}
                   className={`block px-4 py-3 md:py-4 border-b-2 md:border-b-0 md:border-l-2 transition-colors duration-200 ${
@@ -60,7 +64,7 @@ export const UserPortalLayout: React.FC<LayoutProps> = ({ activeTab, children })
                   }`}
                 >
                   {tab.label}
-                </a>
+                </Link>
               );
             })}
             <button onClick={handleLogout} className="text-left px-4 py-3 md:py-4 mt-4 md:mt-8 text-gray-400 hover:text-[#333333] transition-colors border-b-2 md:border-b-0 md:border-l-2 border-transparent">

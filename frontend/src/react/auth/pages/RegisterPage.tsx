@@ -1,10 +1,14 @@
 'use client';
 
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+
 import React, { useState, useEffect } from 'react';
 import { useAuthStore } from '../../../stores/authStore';
 import { fetchApi } from '../../../lib/api';
 
 export const RegisterPage: React.FC = () => {
+  const router = useRouter();
   const { setAuth, token } = useAuthStore();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -19,9 +23,9 @@ export const RegisterPage: React.FC = () => {
 
   useEffect(() => {
     if (hydrated && token && typeof window !== 'undefined') {
-      window.location.href = '/account';
+      router.replace('/account');
     }
-  }, [token, hydrated]);
+  }, [token, hydrated, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +39,7 @@ export const RegisterPage: React.FC = () => {
       });
       
       setAuth(res.data.user, res.data.token);
-      window.location.href = '/account';
+      router.replace('/account');
     } catch (err: any) {
       setError(err.message || 'Registration failed');
     } finally {
@@ -66,7 +70,7 @@ export const RegisterPage: React.FC = () => {
           </button>
         </form>
         <div className="mt-8 text-center text-sm font-sans-clean font-light text-gray-500">
-          Already have an account? <a href="/login" className="text-[#333333] font-medium hover:text-[#4A0E17]">Sign In</a>
+          Already have an account? <Link href="/login" className="text-[#333333] font-medium hover:text-[#4A0E17]">Sign In</Link>
         </div>
       </div>
     </div>

@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 import { CELEB_LOOKS } from '@/data/celebs';
 import { HeaderInteractive } from '@/components/HeaderInteractive';
 import Footer from '@/components/Footer';
@@ -100,12 +102,12 @@ export default function CelebritiesPage() {
             <p className="font-sans-clean text-[11px] sm:text-xs tracking-[0.08em] text-white/75 leading-loose mt-5 font-light normal-case">
               Personal fittings, custom embroidery, and made-to-measure styling by appointment.
             </p>
-            <a
+            <Link
               href="/#bespoke-appointment"
               className="inline-block mt-9 px-10 py-3.5 border border-white text-white hover:bg-white hover:text-[#4A0E17] transition-all text-[11px] font-medium tracking-[0.18em] uppercase"
             >
               BOOK AN ATELIER CONSULTATION
-            </a>
+            </Link>
           </div>
         </section>
       </main>
