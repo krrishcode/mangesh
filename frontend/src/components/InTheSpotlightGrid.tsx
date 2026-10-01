@@ -37,7 +37,7 @@ const STYLIST_IMAGE =
 export default function InTheSpotlightGrid() {
   return (
     <>
-      <section id="spotlight" className="w-full bg-[#4A0E17] py-16 sm:py-20">
+      <section id="spotlight" className="w-full bg-[#425B9A] py-16 sm:py-20">
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-14 items-stretch">
 

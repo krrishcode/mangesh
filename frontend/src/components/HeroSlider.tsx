@@ -1,90 +1,103 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
+import { useEffect, useRef, useState } from 'react';
 import { HERO_SLIDES } from '../data/mensCollection';
 
-export const HeroSlider: React.FC = () => {
+export function HeroSlider() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const sectionRef = useRef<HTMLElement>(null);
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+
+  function changeSlide(direction: number) {
+    setCurrentSlide((previous) => (
+      previous + direction + HERO_SLIDES.length
+    ) % HERO_SLIDES.length);
+  }
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const timer = window.setInterval(() => {
+      if (document.hidden || reducedMotion.matches || sectionRef.current?.matches(':hover, :focus-within')) return;
+      setCurrentSlide((previous) => (previous + 1) % HERO_SLIDES.length);
     }, 6500);
-    return () => clearInterval(timer);
+
+    return () => window.clearInterval(timer);
   }, []);
 
-  const slide = HERO_SLIDES[currentSlide];
-
   return (
-    <section className="relative w-full h-[85vh] min-h-[580px] max-h-[900px] bg-[#121212] overflow-hidden">
-      {/* Background Slides */}
-      {HERO_SLIDES.map((item, idx) => (
-        <div
-          key={item.id}
-          className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-            idx === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
-          }`}
-        >
-          <img
-            src={item.imageDesktop}
-            alt={item.title}
-            className="w-full h-full object-cover object-top scale-105 transition-transform duration-[8000ms] ease-out transform"
-            style={{
-              transform: idx === currentSlide ? 'scale(1)' : 'scale(1.08)',
-            }}
-          />
-          {/* Subtle Luxury Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/20" />
-        </div>
-      ))}
-
-      {/* Hero Content Overlay */}
-      <div className="relative z-20 h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-end pb-16 lg:pb-24">
-        <div className="max-w-2xl text-white">
-          <span className="inline-block text-[11px] sm:text-xs font-medium tracking-[0.28em] uppercase text-[#E0D7CD] mb-3">
-            {slide.collection}
-          </span>
-          <h2 className="font-heading text-3xl sm:text-5xl lg:text-6xl font-light tracking-[0.08em] text-white leading-[1.1] mb-4">
-            {slide.title}
-          </h2>
-          <p className="font-serif-luxury text-base sm:text-xl text-gray-200 mb-8 font-light max-w-xl leading-relaxed">
-            "{slide.subtitle}"
-          </p>
-
-          <div className="flex flex-wrap items-center gap-4">
-            <a
-              href={slide.ctaLink}
-              className="px-8 py-3.5 bg-white text-black text-[11px] font-medium tracking-[0.22em] uppercase hover:bg-[#B89F7E] hover:text-white transition shadow-lg inline-block"
-            >
-              {slide.ctaText}
-            </a>
-            {slide.secondaryCtaText && (
-              <a
-                href={slide.secondaryCtaLink}
-                className="px-8 py-3.5 border border-white/80 text-white text-[11px] font-medium tracking-[0.22em] uppercase hover:bg-white/10 transition backdrop-blur-xs inline-block"
-              >
-                {slide.secondaryCtaText}
-              </a>
-            )}
-          </div>
-        </div>
-
-        {/* Slide Indicators */}
-        <div className="absolute bottom-8 right-8 flex items-center gap-3 z-30">
-          {HERO_SLIDES.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setCurrentSlide(i)}
-              className={`transition-all duration-300 ${
-                i === currentSlide
-                  ? 'w-10 h-1 bg-white'
-                  : 'w-4 h-1 bg-white/40 hover:bg-white/70'
-              }`}
-              aria-label={`Slide ${i + 1}`}
+    <section
+      ref={sectionRef}
+      aria-label="Mangesh Mahadev campaign"
+      aria-roledescription="carousel"
+      tabIndex={0}
+      className="w-full bg-[#FAF8F5] touch-pan-y focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[#C5A880]"
+      onKeyDown={(event) => {
+        if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+        event.preventDefault();
+        changeSlide(event.key === 'ArrowRight' ? 1 : -1);
+      }}
+      onTouchStart={(event) => {
+        const touch = event.touches[0];
+        touchStart.current = { x: touch.clientX, y: touch.clientY };
+      }}
+      onTouchEnd={(event) => {
+        if (!touchStart.current) return;
+        const touch = event.changedTouches[0];
+        const deltaX = touch.clientX - touchStart.current.x;
+        const deltaY = touch.clientY - touchStart.current.y;
+        touchStart.current = null;
+        if (Math.abs(deltaX) > 50 && Math.abs(deltaX) > Math.abs(deltaY)) {
+          changeSlide(deltaX < 0 ? 1 : -1);
+        }
+      }}
+      onTouchCancel={() => { touchStart.current = null; }}
+    >
+      <div className="relative isolate aspect-[1672/941] w-full overflow-hidden bg-[#21180F]">
+        {HERO_SLIDES.map((slide, index) => (
+          <div
+            key={slide.id}
+            aria-hidden={index !== currentSlide}
+            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out motion-reduce:transition-none ${
+              index === currentSlide ? 'z-10 opacity-100' : 'z-0 opacity-0'
+            }`}
+          >
+            <Image
+              src={slide.image}
+              alt={slide.alt}
+              fill
+              sizes="100vw"
+              preload={index === 0}
+              loading={index === 0 ? undefined : 'eager'}
+              draggable={false}
+              className="object-cover"
             />
-          ))}
-        </div>
+          </div>
+        ))}
+      </div>
+      <div
+        role="group"
+        aria-label="Choose campaign image"
+        className="flex h-14 items-center justify-center gap-1 sm:h-16"
+      >
+        {HERO_SLIDES.map((slide, index) => (
+          <button
+            key={slide.id}
+            type="button"
+            aria-label={`Show slide ${index + 1}`}
+            aria-current={index === currentSlide ? 'true' : undefined}
+            onClick={() => setCurrentSlide(index)}
+            className="flex h-11 min-w-6 cursor-pointer items-center justify-center rounded-full px-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4A0E17]"
+          >
+            <span
+              aria-hidden="true"
+              className={`h-1.5 rounded-full transition-all duration-300 motion-reduce:transition-none ${
+                index === currentSlide ? 'w-7 bg-[#4A0E17]' : 'w-1.5 bg-[#CFD5DC]'
+              }`}
+            />
+          </button>
+        ))}
       </div>
     </section>
   );
-};
+}

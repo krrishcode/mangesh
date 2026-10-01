@@ -37,45 +37,19 @@ export interface MensProduct {
 export interface HeroSlide {
   id: string;
   image: string;
-  mobileImage: string;
-  eyebrow: string;
-  title: string;
-  subtitle: string;
-  primaryCtaText: string;
-  primaryCtaLink: string;
-  secondaryCtaText: string;
-  secondaryCtaLink: string;
-  /** Legacy field aliases retained while the existing island is migrated. */
-  imageDesktop?: string;
-  collection?: string;
-  ctaLink?: string;
-  ctaText?: string;
+  alt: string;
 }
 
 export const HERO_SLIDES: HeroSlide[] = [
   {
     id: 'slide-1',
-    image: 'https://www.anitadongre.com/dw/image/v2/BGCX_PRD/on/demandware.static/-/Sites-AD-INDIA-Library/default/dw1b3dcfd0/AD_Refresh_Aug_2026/desktop/1920X800_AD_MEN_DESK_BANNER.jpg',
-    mobileImage: 'https://www.anitadongre.com/dw/image/v2/BGCX_PRD/on/demandware.static/-/Sites-AD-INDIA-Library/default/dwe7ca4d0a/AD_Refresh_Aug_2026/mobile/800X1000_AD_MEN_MOB_BANNER.jpg',
-    eyebrow: 'Autumn / Winter 2026',
-    title: 'LOVE ALL | MENSWEAR',
-    subtitle: 'Heirloom Sherwanis & Imperial Bandhgalas Tailored For Sovereign Lifetime Celebrations',
-    primaryCtaText: 'DISCOVER COLLECTION',
-    primaryCtaLink: '/shop',
-    secondaryCtaText: 'BOOK ATELIER FITTING',
-    secondaryCtaLink: '#bespoke-appointment',
+    image: '/images/hero/luxury-sofa.webp',
+    alt: 'Man wearing an embroidered kurta seated on a tufted leather sofa',
   },
   {
     id: 'slide-2',
-    image: 'https://www.anitadongre.com/dw/image/v2/BGCX_PRD/on/demandware.static/-/Sites-AD-INDIA-Library/default/dw95655a6d/AD_Refresh_Aug_2026/desktop/1920X800_AD_MEN_SUIT_DESK_BANNER.jpg',
-    mobileImage: 'https://www.anitadongre.com/dw/image/v2/BGCX_PRD/on/demandware.static/-/Sites-AD-INDIA-Library/default/dw69a23992/AD_Refresh_Aug_2026/mobile/800X1000_AD_MEN_SUIT_MOB_BANNER.jpg',
-    eyebrow: 'The Groom Edit',
-    title: 'ROYAL HEIRLOOM CRAFT',
-    subtitle: 'Zardozi, Pichhwai & Hand-Embroidered Velvet Masterpieces',
-    primaryCtaText: 'EXPLORE SHERWANIS',
-    primaryCtaLink: '/collections/sherwanis',
-    secondaryCtaText: 'PRIVATE CONSULTATION',
-    secondaryCtaLink: '#bespoke-appointment',
+    image: '/images/hero/sunlit-courtyard.webp',
+    alt: 'Three men wearing relaxed menswear in a sunlit courtyard',
   },
 ];
 

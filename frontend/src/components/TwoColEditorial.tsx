@@ -1,42 +1,33 @@
 export default function TwoColEditorial() {
   return (
     <>
-      <section className="py-20 bg-[#FAF8F5]">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-14 items-center">
-            
-            {/* Left Clean Portrait Visual */}
-            <div className="relative aspect-[3/3.8] overflow-hidden bg-[#ECE8E1]">
-              <img
-                src="https://www.anitadongre.com/dw/image/v2/BGCX_PRD/on/demandware.static/-/Sites-AD-INDIA-Library/default/dw0d85648d/AD_Refresh_Aug_2026/desktop/578%C3%97663_1_SPOTLIGHT_SHOP_NOW_SECTION.jpg"
-                alt="Love All, FW'26 Spotlight"
-                loading="lazy"
-                className="w-full h-full object-cover object-top"
-              />
-            </div>
-      
-            {/* Right Clean Minimal Narrative */}
-            <div className="flex flex-col justify-center text-center md:text-left space-y-5 px-4 lg:px-8">
-              <h2 className="font-serif-luxury text-3xl sm:text-4xl lg:text-[42px] tracking-[0.12em] text-[#333333] font-light uppercase leading-tight">
-                Love All, FW'26
+      <section id="wedding" className="w-full relative overflow-hidden bg-[#1A1A1A]">
+        <div className="relative w-full h-[60vh] min-h-[420px] max-h-[640px]">
+          <img
+            src="https://www.anitadongre.com/dw/image/v2/BGCX_PRD/on/demandware.static/-/Sites-AD-INDIA-Library/default/dwdcc76bfe/AD_Refresh_Aug_2026/desktop/2035X947_1_BANNER.jpg"
+            alt="Love All Wedding Collection Campaign"
+            loading="lazy"
+            className="w-full h-full object-cover object-top filter brightness-95"
+          />
+          <div className="absolute inset-0 bg-black/25" />
+          
+          <a
+            href="/shop"
+            className="absolute inset-0 flex items-center justify-center text-center p-6 group cursor-pointer"
+            aria-label="Love All Wedding Collection"
+          >
+            <div className="max-w-xl text-white">
+              <span className="font-sans-clean text-[10px] sm:text-[11px] tracking-[0.28em] uppercase text-[#E6C69C] block mb-3 font-medium">
+                AUTUMN / WINTER 2026
+              </span>
+              <h2 className="font-serif-luxury text-3xl sm:text-5xl lg:text-6xl tracking-[0.10em] uppercase font-light text-white mb-5">
+                LOVE ALL | WEDDING
               </h2>
-              
-              <p className="font-sans-clean text-[11px] sm:text-xs text-[#333333] leading-relaxed font-light max-w-md">
-                What does it mean to love someone who is fully themselves? To be loved the same way in return? Discover sovereign menswear crafted for lifetime celebrations.
-              </p>
-      
-              <div>
-                <a
-                  href="#fw26"
-                  className="inline-flex items-center gap-2 text-[11px] font-medium tracking-[0.20em] text-[#333333] hover:text-[#4A0E17] transition border-b border-[#1A1A1A] hover:border-[#4A0E17] pb-1 uppercase mt-2"
-                >
-                  <span>DISCOVER</span>
-                  <span>&rarr;</span>
-                </a>
-              </div>
+              <span className="inline-block px-8 py-3.5 bg-white text-[#333333] group-hover:bg-[#4A0E17] group-hover:text-white transition text-[11px] font-medium tracking-[0.22em] uppercase shadow-lg">
+                EXPLORE WEDDING &rarr;
+              </span>
             </div>
-      
-          </div>
+          </a>
         </div>
       </section>
       
