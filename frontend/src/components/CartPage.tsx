@@ -20,7 +20,7 @@ export const CartPage: React.FC = () => {
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
         {/* Breadcrumb */}
         <nav className="font-sans-clean text-[10.5px] text-[#333333] mb-4 flex flex-wrap items-center gap-2 tracking-[0.14em] uppercase">
-          <Link href="/" className="hover:text-[#4A0E17] transition font-medium">Home</Link>
+          <Link href="/" className="hover:text-primary-foreground transition font-medium">Home</Link>
           <span>/</span>
           <span className="text-[#333333] font-semibold">Shopping Bag</span>
         </nav>
@@ -39,7 +39,7 @@ export const CartPage: React.FC = () => {
             </p>
             <Link
               href="/shop"
-              className="inline-block px-10 py-3.5 bg-[#4A0E17] text-white text-[11px] font-medium tracking-[0.20em] uppercase hover:bg-[#66141F] transition"
+              className="inline-block px-10 py-3.5 bg-primary text-white text-[11px] font-medium tracking-[0.20em] uppercase hover:bg-primary-dark hover:text-white transition"
             >
               EXPLORE COLLECTION
             </Link>
@@ -68,13 +68,13 @@ export const CartPage: React.FC = () => {
                     <div className="flex justify-between items-start gap-4">
                       <Link
                         href={`/products/${item.product_id}`}
-                        className="font-serif-luxury text-sm sm:text-base tracking-[0.10em] text-[#333333] uppercase font-normal leading-snug hover:text-[#4A0E17] transition-colors"
+                        className="font-serif-luxury text-sm sm:text-base tracking-[0.10em] text-[#333333] uppercase font-normal leading-snug hover:text-primary-foreground transition-colors"
                       >
                         {item.title}
                       </Link>
                       <button
                         onClick={() => removeItem(item.product_id)}
-                        className="text-[11px] font-medium text-gray-500 hover:text-[#4A0E17] transition tracking-wider uppercase shrink-0"
+                        className="text-[11px] font-medium text-gray-500 hover:text-primary-foreground transition tracking-wider uppercase shrink-0"
                       >
                         Remove
                       </button>
@@ -84,7 +84,7 @@ export const CartPage: React.FC = () => {
                       <div className="flex items-center border border-[#D5CEC5] rounded-xs">
                         <button
                           onClick={() => updateQuantity(item.product_id, item.quantity - 1)}
-                          className="w-9 h-9 flex items-center justify-center text-gray-700 hover:text-[#4A0E17] transition"
+                          className="w-9 h-9 flex items-center justify-center text-gray-700 hover:text-primary-foreground transition"
                           aria-label="Decrease quantity"
                         >
                           −
@@ -94,7 +94,7 @@ export const CartPage: React.FC = () => {
                         </span>
                         <button
                           onClick={() => updateQuantity(item.product_id, item.quantity + 1)}
-                          className="w-9 h-9 flex items-center justify-center text-gray-700 hover:text-[#4A0E17] transition"
+                          className="w-9 h-9 flex items-center justify-center text-gray-700 hover:text-primary-foreground transition"
                           aria-label="Increase quantity"
                         >
                           +
@@ -113,7 +113,7 @@ export const CartPage: React.FC = () => {
 
               <button
                 onClick={clearCart}
-                className="font-sans-clean text-[11px] text-[#4A0E17] font-medium underline tracking-[0.14em] uppercase hover:text-black transition"
+                className="font-sans-clean text-[11px] text-primary-foreground font-medium underline tracking-[0.14em] uppercase hover:text-black transition"
               >
                 Clear All
               </button>
@@ -133,7 +133,7 @@ export const CartPage: React.FC = () => {
                   </div>
                   <div className="flex justify-between text-[#333333]">
                     <span className="font-sans-clean text-[11px] tracking-[0.14em] uppercase font-medium">Shipping</span>
-                    <span className="font-serif-luxury tracking-wider text-[#4A0E17] font-medium">COMPLIMENTARY</span>
+                    <span className="font-serif-luxury tracking-wider text-primary-foreground font-medium">COMPLIMENTARY</span>
                   </div>
                   <div className="flex justify-between border-t border-[#EAE3DB] pt-3 text-[#333333]">
                     <span className="font-sans-clean text-[11px] tracking-[0.14em] uppercase font-medium">Total</span>
@@ -143,7 +143,7 @@ export const CartPage: React.FC = () => {
 
                 <button
                   onClick={() => alert('Proceeding to Bespoke Concierge & Secure Checkout')}
-                  className="w-full mt-6 py-4 bg-[#4A0E17] text-white text-[11px] font-medium tracking-[0.20em] uppercase hover:bg-[#66141F] transition shadow-md"
+                  className="w-full mt-6 py-4 bg-primary text-white text-[11px] font-medium tracking-[0.20em] uppercase hover:bg-primary-dark hover:text-white transition shadow-md"
                 >
                   PROCEED TO CHECKOUT →
                 </button>

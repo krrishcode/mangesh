@@ -1,21 +1,24 @@
 import { HeaderInteractive } from '@/components/HeaderInteractive';
 import { ShopListingView } from '@/components/ShopListingView';
 import Footer from '@/components/Footer';
+import { getCatalogProducts } from '@/lib/catalog';
 
 export const metadata = {
-  title: "MEN'S CLOTHING | View All Haute Couture & Heritage | MANGESH MAHADEV",
+  title: "Men's Clothing | Mangesh Mahadev",
   description:
-    'Explore the complete collection of royal Sherwanis, Imperial Bandhgalas, Heritage Kurtas, Nehru Jackets, and bespoke Groomswear from Mangesh Mahadev.',
+    'Shop sherwanis, bandhgalas, kurtas, Nehru jackets and trousers from Mangesh Mahadev.',
 };
 
-export default function ShopPage() {
+export default async function ShopPage() {
+  const products = await getCatalogProducts();
+
   return (
     <>
       <HeaderInteractive />
       <main className="min-h-screen">
-        <ShopListingView />
+        <ShopListingView products={products} />
       </main>
-      <Footer />
+      <Footer compact />
     </>
   );
 }

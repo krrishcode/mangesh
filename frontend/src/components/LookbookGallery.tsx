@@ -74,7 +74,7 @@ export const LookbookGallery: React.FC = () => {
               </div>
 
               {/* Minimal Text Below Image */}
-              <h3 className="font-serif-luxury text-[13px] tracking-[0.08em] text-[#333333] uppercase group-hover:text-[#4A0E17] transition-colors font-normal w-full h-[18px] overflow-hidden text-ellipsis whitespace-nowrap" title={item.title}>
+              <h3 className="font-serif-luxury text-[13px] tracking-[0.08em] text-[#333333] uppercase group-hover:text-primary-foreground transition-colors font-normal w-full h-[18px] overflow-hidden text-ellipsis whitespace-nowrap" title={item.title}>
                 {item.title}
               </h3>
               <p className="font-sans-clean text-[10px] sm:text-[11px] text-[#333333] tracking-[0.14em] mt-1 uppercase font-medium">
@@ -103,13 +103,13 @@ export const LookbookGallery: React.FC = () => {
               />
             </div>
             <div className="md:w-1/2 space-y-4 text-left p-4">
-              <span className="font-sans-clean text-[10px] tracking-[0.20em] uppercase text-[#66141F] font-medium">
+              <span className="font-sans-clean text-[10px] tracking-[0.20em] uppercase text-primary-foreground font-medium">
                 {activeZoom.tag} • {activeZoom.season}
               </span>
               <h2 className="font-serif-luxury text-xl sm:text-2xl tracking-[0.10em] text-gray-900 font-light uppercase">
                 {activeZoom.title}
               </h2>
-              <div className="w-12 h-0.5 bg-[#4A0E17]" />
+              <div className="w-12 h-0.5 bg-primary" />
               <p className="font-sans-clean text-sm text-gray-600 leading-relaxed font-light">
                 "An archival masterpiece rendered in pure raw silk, tailored with sovereign grace."
               </p>
@@ -117,7 +117,7 @@ export const LookbookGallery: React.FC = () => {
                 <a
                   href="#bespoke-appointment"
                   onClick={() => setActiveZoom(null)}
-                  className="px-6 py-3 bg-[#4A0E17] text-white text-[11px] font-medium tracking-[0.20em] uppercase hover:bg-[#66141F] transition inline-block"
+                  className="px-6 py-3 bg-primary text-white text-[11px] font-medium tracking-[0.20em] uppercase hover:bg-primary-dark hover:text-white transition inline-block"
                 >
                   INQUIRE ABOUT THIS LOOK
                 </a>

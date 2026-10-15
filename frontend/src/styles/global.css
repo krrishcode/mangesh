@@ -1,20 +1,23 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
-  --color-oxblood: #4A0E17;
-  --color-oxblood-dark: #32070E;
-  --color-oxblood-light: #66141F;
-  --color-oxblood-subtle: #FAF2F3;
-  --color-gold: #C5A880;
-  --color-gold-light: #E0D7CD;
+  --color-primary: #6b94b8;
+  --color-primary-dark: #527b9e;
+  --color-primary-light: #83a8c8;
+  --color-primary-subtle: #eaf1f7;
+  --color-primary-foreground: #17212b;
+  --color-primary-strong: #416886;
+  --color-secondary: #b7d1ea;
+  --color-gold: #c5a880;
+  --color-gold-light: #e0d7cd;
   --color-gold-dark: #997950;
-  --color-beige: #FAF8F5;
-  --color-beige-dark: #F3EFEA;
+  --color-beige: #faf8f5;
+  --color-beige-dark: #f3efea;
 }
 
 @layer base {
   /* Typography System */
-  
+
   .font-heading {
     font-family: 'Franklin Gothic', sans-serif;
     font-weight: 300;
@@ -24,7 +27,7 @@
   .font-serif-luxury {
     font-family: 'Franklin Gothic', sans-serif;
     font-weight: 300;
-    letter-spacing: 0.10em;
+    letter-spacing: 0.1em;
   }
 
   .font-serif-story {
@@ -44,53 +47,31 @@
     font-family: 'Franklin Gothic', sans-serif;
     color: #333333;
   }
-
-  /* Oxblood Luxury Utilities */
-  .bg-oxblood {
-    background-color: #4A0E17;
-  }
-  .bg-oxblood-dark {
-    background-color: #32070E;
-  }
-  .bg-oxblood-light {
-    background-color: #66141F;
-  }
-  .bg-oxblood-subtle {
-    background-color: #FAF2F3;
-  }
-  .text-oxblood {
-    color: #4A0E17;
-  }
-  .text-oxblood-light {
-    color: #801C27;
-  }
-  .border-oxblood {
-    border-color: #4A0E17;
-  }
-  .border-oxblood-light {
-    border-color: #801C27;
-  }
 }
 
-/* Custom Luxury Scrollbars in Oxblood & Gold */
+/* Scrollbars follow the primary blue palette. */
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #FAF8F5;
+  background: #faf8f5;
 }
 ::-webkit-scrollbar-thumb {
-  background: #4A0E17;
+  background: var(--color-primary);
   border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #66141F;
+  background: var(--color-primary-light);
 }
 
 @keyframes ticker {
-  0% { transform: translate3d(0, 0, 0); }
-  100% { transform: translate3d(-50%, 0, 0); }
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
 }
 
 .animate-ticker {
@@ -100,8 +81,14 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-fadeIn {

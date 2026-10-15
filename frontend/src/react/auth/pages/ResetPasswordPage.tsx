@@ -41,7 +41,7 @@ export const ResetPasswordPage: React.FC = () => {
         <div className="max-w-md w-full bg-white border border-[#EAE3DB] p-8 md:p-12 shadow-sm rounded-lg text-center">
           <h1 className="font-serif-luxury text-2xl tracking-widest text-[#333333] uppercase mb-4">Password Updated</h1>
           <p className="font-sans-clean font-light text-sm text-gray-500 mb-8">{message}</p>
-          <Link href="/login" className="inline-block w-full bg-[#333333] text-white py-4 text-xs font-sans-clean uppercase tracking-widest hover:bg-[#4A0E17] transition-colors">
+          <Link href="/login" className="inline-block w-full bg-[#333333] text-white py-4 text-xs font-sans-clean uppercase tracking-widest hover:bg-primary-dark hover:text-white transition-colors">
             Sign In Now
           </Link>
         </div>
@@ -60,14 +60,14 @@ export const ResetPasswordPage: React.FC = () => {
           {!token && (
             <div>
               <label className="block font-sans-clean text-xs uppercase tracking-widest text-[#333333] mb-2">Reset Token</label>
-              <input type="text" required value={token} onChange={(e) => setToken(e.target.value)} className="w-full border-b border-[#EAE3DB] bg-transparent pb-2 text-sm focus:outline-none focus:border-[#4A0E17]" />
+              <input type="text" required value={token} onChange={(e) => setToken(e.target.value)} className="w-full border-b border-[#EAE3DB] bg-transparent pb-2 text-sm focus:outline-none focus:border-primary-strong" />
             </div>
           )}
           <div>
             <label className="block font-sans-clean text-xs uppercase tracking-widest text-[#333333] mb-2">New Password</label>
-            <input type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} className="w-full border-b border-[#EAE3DB] bg-transparent pb-2 text-sm focus:outline-none focus:border-[#4A0E17]" />
+            <input type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} className="w-full border-b border-[#EAE3DB] bg-transparent pb-2 text-sm focus:outline-none focus:border-primary-strong" />
           </div>
-          <button disabled={status === 'loading'} type="submit" className="w-full bg-[#333333] text-white py-4 text-xs font-sans-clean uppercase tracking-widest hover:bg-[#4A0E17] transition-colors mt-8">
+          <button disabled={status === 'loading'} type="submit" className="w-full bg-[#333333] text-white py-4 text-xs font-sans-clean uppercase tracking-widest hover:bg-primary-dark hover:text-white transition-colors mt-8">
             {status === 'loading' ? 'Saving...' : 'Set Password'}
           </button>
         </form>

@@ -31,7 +31,7 @@ export const AppointmentsView: React.FC = () => {
               <div className="flex gap-3 items-center mb-1">
                 <h3 className="font-sans-clean font-medium text-sm text-[#333333]">{apt.location}</h3>
                 <span className={`px-2 py-0.5 text-[9px] uppercase tracking-widest ${
-                  apt.status === 'upcoming' ? 'bg-[#4A0E17]/10 text-[#4A0E17]' : 'bg-gray-100 text-gray-500'
+                  apt.status === 'upcoming' ? 'bg-primary/10 text-primary-foreground' : 'bg-gray-100 text-gray-500'
                 }`}>
                   {apt.status}
                 </span>

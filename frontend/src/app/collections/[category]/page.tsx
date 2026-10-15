@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { HeaderInteractive } from '@/components/HeaderInteractive';
 import { ShopListingView } from '@/components/ShopListingView';
 import Footer from '@/components/Footer';
+import { getCatalogProducts } from '@/lib/catalog';
 
 const CATEGORY_MAP = {
   sherwanis: 'Sherwanis',
@@ -12,6 +13,7 @@ const CATEGORY_MAP = {
   trousers: 'Trousers',
   shackets: 'Shackets',
   accessories: 'Accessories',
+  tuxedos: 'Tuxedos',
 } as const;
 
 type CollectionRouteProps = {
@@ -44,11 +46,13 @@ export default async function CollectionRoute({ params }: CollectionRouteProps) 
 
   if (!categoryName) notFound();
 
+  const products = await getCatalogProducts();
+
   return (
     <>
       <HeaderInteractive />
       <main className="min-h-screen">
-        <ShopListingView key={category} initialCategory={categoryName} />
+        <ShopListingView key={category} products={products} initialCategory={categoryName} />
       </main>
       <Footer />
     </>

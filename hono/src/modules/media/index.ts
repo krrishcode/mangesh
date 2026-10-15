@@ -10,7 +10,17 @@ if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-mediaModule.get('/', (c) => c.json({ success: true, module: 'media' }));
+import { db } from '../../db/index.js';
+import { media } from '../../db/schema/index.js';
+
+mediaModule.get('/', async (c) => {
+  try {
+    const data = await db.select().from(media);
+    return c.json({ success: true, data });
+  } catch (error: any) {
+    return c.json({ success: false, error: error.message }, 500);
+  }
+});
 
 // POST /api/media/upload
 // Supports multipart/form-data with one or multiple files ('files' or 'file')

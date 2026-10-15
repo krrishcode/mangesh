@@ -55,22 +55,22 @@ export const RegisterPage: React.FC = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block font-sans-clean text-xs uppercase tracking-widest text-[#333333] mb-2">Full Name</label>
-            <input type="text" required value={name} onChange={(e) => setName(e.target.value)} className="w-full border-b border-[#EAE3DB] bg-transparent pb-2 text-sm focus:outline-none focus:border-[#4A0E17]" />
+            <input type="text" required value={name} onChange={(e) => setName(e.target.value)} className="w-full border-b border-[#EAE3DB] bg-transparent pb-2 text-sm focus:outline-none focus:border-primary-strong" />
           </div>
           <div>
             <label className="block font-sans-clean text-xs uppercase tracking-widest text-[#333333] mb-2">Email</label>
-            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="w-full border-b border-[#EAE3DB] bg-transparent pb-2 text-sm focus:outline-none focus:border-[#4A0E17]" />
+            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="w-full border-b border-[#EAE3DB] bg-transparent pb-2 text-sm focus:outline-none focus:border-primary-strong" />
           </div>
           <div>
             <label className="block font-sans-clean text-xs uppercase tracking-widest text-[#333333] mb-2">Password</label>
-            <input type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} className="w-full border-b border-[#EAE3DB] bg-transparent pb-2 text-sm focus:outline-none focus:border-[#4A0E17]" />
+            <input type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} className="w-full border-b border-[#EAE3DB] bg-transparent pb-2 text-sm focus:outline-none focus:border-primary-strong" />
           </div>
-          <button disabled={loading} type="submit" className="w-full bg-[#333333] text-white py-4 text-xs font-sans-clean uppercase tracking-widest hover:bg-[#4A0E17] transition-colors mt-8">
+          <button disabled={loading} type="submit" className="w-full bg-[#333333] text-white py-4 text-xs font-sans-clean uppercase tracking-widest hover:bg-primary-dark hover:text-white transition-colors mt-8">
             {loading ? 'Creating...' : 'Register'}
           </button>
         </form>
         <div className="mt-8 text-center text-sm font-sans-clean font-light text-gray-500">
-          Already have an account? <Link href="/login" className="text-[#333333] font-medium hover:text-[#4A0E17]">Sign In</Link>
+          Already have an account? <Link href="/login" className="text-[#333333] font-medium hover:text-primary-foreground">Sign In</Link>
         </div>
       </div>
     </div>

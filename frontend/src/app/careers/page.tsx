@@ -149,7 +149,7 @@ export default function CareersPage() {
                   <div className="md:col-span-3 md:text-right">
                     <a
                       href={applyHref(`Application — ${role.title}`)}
-                      className="inline-flex items-center gap-2 text-[11px] font-medium tracking-[0.20em] text-[#333333] hover:text-[#4A0E17] transition border-b border-[#1A1A1A] hover:border-[#4A0E17] pb-1 uppercase"
+                      className="inline-flex items-center gap-2 text-[11px] font-medium tracking-[0.20em] text-[#333333] hover:text-primary-foreground transition border-b border-[#1A1A1A] hover:border-primary pb-1 uppercase"
                     >
                       <span>Send your CV</span>
                       <span aria-hidden="true">&rarr;</span>
@@ -166,7 +166,7 @@ export default function CareersPage() {
             <div className="text-center mt-5">
               <a
                 href={applyHref('General Application — House of Mangesh Mahadev')}
-                className="inline-flex items-center gap-2 text-[11px] font-medium tracking-[0.20em] text-[#4A0E17] hover:text-[#32070E] transition border-b border-[#4A0E17] pb-1 uppercase"
+                className="inline-flex items-center gap-2 text-[11px] font-medium tracking-[0.20em] text-primary-foreground hover:text-primary-foreground transition border-b border-primary pb-1 uppercase"
               >
                 <span>Apply to the house</span>
                 <span aria-hidden="true">&rarr;</span>

@@ -20,7 +20,7 @@ export const TextInput: React.FC<TextInputProps> = ({ label, error, id, classNam
         id={inputId}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? errorId : undefined}
-        className={`w-full min-h-[44px] border-b border-[#EAE3DB] bg-transparent px-0 py-2 text-sm font-light text-[#1C1917] placeholder:text-[#A8A29E] focus:outline-none focus:border-[#4A0E17] transition-colors ${error ? 'border-[#DC2626]' : ''} ${className}`}
+        className={`w-full min-h-[44px] border-b border-[#EAE3DB] bg-transparent px-0 py-2 text-sm font-light text-[#1C1917] placeholder:text-[#A8A29E] focus:outline-none focus:border-primary-strong transition-colors ${error ? 'border-[#DC2626]' : ''} ${className}`}
         {...rest}
       />
       {error && <FieldError id={errorId}>{error}</FieldError>}

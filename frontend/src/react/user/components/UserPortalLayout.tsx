@@ -47,7 +47,7 @@ export const UserPortalLayout: React.FC<LayoutProps> = ({ activeTab, children })
   return (
     <div className="max-w-[1440px] mx-auto px-4 md:px-8">
       <div className="flex flex-col md:grid md:grid-cols-4 gap-8">
-        
+
         {/* Left Sidebar */}
         <aside className="md:col-span-1 sticky top-[100px] self-start border border-[#EAE3DB] bg-white p-6 pb-2">
           <nav className="flex flex-row md:flex-col overflow-x-auto md:overflow-visible gap-2 md:gap-0 font-sans-clean font-light text-sm tracking-widest text-[#333333] uppercase whitespace-nowrap md:whitespace-normal">
@@ -58,8 +58,8 @@ export const UserPortalLayout: React.FC<LayoutProps> = ({ activeTab, children })
                   key={tab.id}
                   href={tab.href}
                   className={`block px-4 py-3 md:py-4 border-b-2 md:border-b-0 md:border-l-2 transition-colors duration-200 ${
-                    isActive 
-                      ? 'border-[#4A0E17] text-[#4A0E17] font-medium' 
+                    isActive
+                      ? 'border-primary text-primary-foreground font-medium'
                       : 'border-transparent text-gray-500 hover:text-[#333333]'
                   }`}
                 >
@@ -77,7 +77,7 @@ export const UserPortalLayout: React.FC<LayoutProps> = ({ activeTab, children })
         <div className="md:col-span-3 min-h-[500px]">
           {children}
         </div>
-        
+
       </div>
     </div>
   );

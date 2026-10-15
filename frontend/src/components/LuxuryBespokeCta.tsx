@@ -4,7 +4,7 @@ export default function LuxuryBespokeCta() {
       <section className="py-24 bg-[#FCFAF7] text-[#333333] border-t border-b border-[#EAE3DB]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           
-          <span className="font-sans-clean text-[10px] font-medium tracking-[0.25em] uppercase text-[#66141F] block mb-3">
+          <span className="font-sans-clean text-[10px] font-medium tracking-[0.25em] uppercase text-primary-foreground block mb-3">
             MANGESH MAHADEV BESPOKE GROOM ATELIER
           </span>
       
@@ -20,7 +20,7 @@ export default function LuxuryBespokeCta() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-md mx-auto">
             <a
               href="#bespoke-appointment"
-              className="w-full sm:w-auto px-8 py-3.5 bg-[#4A0E17] text-white text-[11px] font-medium tracking-[0.22em] uppercase hover:bg-[#66141F] transition"
+              className="w-full sm:w-auto px-8 py-3.5 bg-primary text-white text-[11px] font-medium tracking-[0.22em] uppercase hover:bg-primary-dark hover:text-white transition"
             >
               BOOK ATELIER APPOINTMENT
             </a>

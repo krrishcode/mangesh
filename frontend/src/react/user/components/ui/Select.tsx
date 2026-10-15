@@ -21,7 +21,7 @@ export const Select: React.FC<SelectProps> = ({ label, error, options, id, class
         id={selectId}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? errorId : undefined}
-        className={`w-full min-h-[44px] border-b border-[#EAE3DB] bg-transparent px-0 py-2 text-sm font-light text-[#1C1917] focus:outline-none focus:border-[#4A0E17] transition-colors cursor-pointer ${error ? 'border-[#DC2626]' : ''} ${className}`}
+        className={`w-full min-h-[44px] border-b border-[#EAE3DB] bg-transparent px-0 py-2 text-sm font-light text-[#1C1917] focus:outline-none focus:border-primary-strong transition-colors cursor-pointer ${error ? 'border-[#DC2626]' : ''} ${className}`}
         {...rest}
       >
         {options.map((opt) => (

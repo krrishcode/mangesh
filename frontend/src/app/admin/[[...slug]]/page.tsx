@@ -6,6 +6,10 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+export function generateStaticParams() {
+  return [{ slug: [] }];
+}
+
 export default function AdminRoute() {
   return (
     <div className="admin-panel">

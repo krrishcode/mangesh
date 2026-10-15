@@ -21,7 +21,7 @@ export const OverviewView: React.FC = () => {
             <h3 className="font-sans-clean text-xs font-medium tracking-widest text-gray-400 uppercase mb-4">Recent Order</h3>
             <p className="text-sm font-sans-clean font-light text-[#333333]">View your latest purchases</p>
           </div>
-          <Link href="/account/orders" className="mt-6 text-left text-[11px] font-sans-clean tracking-widest font-medium uppercase text-[#4A0E17] hover:underline">
+          <Link href="/account/orders" className="mt-6 text-left text-[11px] font-sans-clean tracking-widest font-medium uppercase text-primary-foreground hover:underline">
             View All Orders
           </Link>
         </div>
@@ -31,7 +31,7 @@ export const OverviewView: React.FC = () => {
             <h3 className="font-sans-clean text-xs font-medium tracking-widest text-gray-400 uppercase mb-4">Upcoming Appointment</h3>
             <p className="text-sm font-sans-clean font-light text-[#333333]">Manage your bespoke sessions</p>
           </div>
-          <Link href="/account/appointments" className="mt-6 text-left text-[11px] font-sans-clean tracking-widest font-medium uppercase text-[#4A0E17] hover:underline">
+          <Link href="/account/appointments" className="mt-6 text-left text-[11px] font-sans-clean tracking-widest font-medium uppercase text-primary-foreground hover:underline">
             Manage Appointments
           </Link>
         </div>

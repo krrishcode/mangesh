@@ -7,7 +7,7 @@ import { fetchApi } from '../../../../lib/api';
 export const ProfileView: React.FC = () => {
   const { user, setAuth, token } = useAuthStore();
   const [measurements, setMeasurements] = useState<any>(null);
-  
+
   // Profile state
   const [firstName, setFirstName] = useState(user?.name?.split(' ')[0] || '');
   const [lastName, setLastName] = useState(user?.name?.split(' ').slice(1).join(' ') || '');
@@ -68,11 +68,11 @@ export const ProfileView: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 font-sans-clean">
           <div>
             <label className="block text-[10px] uppercase tracking-widest text-gray-400 mb-2">First Name</label>
-            <input type="text" className="w-full border-b border-[#EAE3DB] bg-transparent py-2 text-sm font-light text-[#333333] focus:outline-none focus:border-[#4A0E17]" value={firstName} onChange={e => setFirstName(e.target.value)} />
+            <input type="text" className="w-full border-b border-[#EAE3DB] bg-transparent py-2 text-sm font-light text-[#333333] focus:outline-none focus:border-primary-strong" value={firstName} onChange={e => setFirstName(e.target.value)} />
           </div>
           <div>
             <label className="block text-[10px] uppercase tracking-widest text-gray-400 mb-2">Last Name</label>
-            <input type="text" className="w-full border-b border-[#EAE3DB] bg-transparent py-2 text-sm font-light text-[#333333] focus:outline-none focus:border-[#4A0E17]" value={lastName} onChange={e => setLastName(e.target.value)} />
+            <input type="text" className="w-full border-b border-[#EAE3DB] bg-transparent py-2 text-sm font-light text-[#333333] focus:outline-none focus:border-primary-strong" value={lastName} onChange={e => setLastName(e.target.value)} />
           </div>
           <div className="md:col-span-2">
             <label className="block text-[10px] uppercase tracking-widest text-gray-400 mb-2">Email</label>
@@ -80,10 +80,10 @@ export const ProfileView: React.FC = () => {
           </div>
           <div className="md:col-span-2">
             <label className="block text-[10px] uppercase tracking-widest text-gray-400 mb-2">Phone</label>
-            <input type="tel" className="w-full border-b border-[#EAE3DB] bg-transparent py-2 text-sm font-light text-[#333333] focus:outline-none focus:border-[#4A0E17]" value={phone} onChange={e => setPhone(e.target.value)} />
+            <input type="tel" className="w-full border-b border-[#EAE3DB] bg-transparent py-2 text-sm font-light text-[#333333] focus:outline-none focus:border-primary-strong" value={phone} onChange={e => setPhone(e.target.value)} />
           </div>
         </div>
-        <button onClick={handleProfileSave} disabled={savingProfile} className="mt-8 bg-[#333333] text-white px-8 py-3 text-[11px] font-sans-clean uppercase tracking-widest hover:bg-[#4A0E17] transition-colors">
+        <button onClick={handleProfileSave} disabled={savingProfile} className="mt-8 bg-[#333333] text-white px-8 py-3 text-[11px] font-sans-clean uppercase tracking-widest hover:bg-primary-dark hover:text-white transition-colors">
           {savingProfile ? 'Saving...' : 'Save Changes'}
         </button>
       </div>
@@ -91,7 +91,7 @@ export const ProfileView: React.FC = () => {
       <div className="border border-[#EAE3DB] bg-white p-6 md:p-8">
         <h2 className="text-lg font-serif-luxury tracking-wider text-[#333333] uppercase mb-6">Haute Couture Measurements</h2>
         <p className="text-xs font-sans-clean font-light text-gray-500 mb-6">Used for your bespoke fitting sessions. Measurements are in inches.</p>
-        
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-8 font-sans-clean">
           {[
             { key: 'chest', label: 'Chest / Bust' },
@@ -103,8 +103,8 @@ export const ProfileView: React.FC = () => {
           ].map((m) => (
             <div key={m.key}>
               <label className="block text-[10px] uppercase tracking-widest text-gray-400 mb-2">{m.label}</label>
-              <input type="text" className="w-full border-b border-[#EAE3DB] bg-transparent py-2 text-sm font-light text-[#333333] focus:outline-none focus:border-[#4A0E17]" 
-                     value={measurements?.[m.key] || ''} 
+              <input type="text" className="w-full border-b border-[#EAE3DB] bg-transparent py-2 text-sm font-light text-[#333333] focus:outline-none focus:border-primary-strong"
+                     value={measurements?.[m.key] || ''}
                      onChange={e => setMeasurements({...measurements, [m.key]: e.target.value})} />
             </div>
           ))}

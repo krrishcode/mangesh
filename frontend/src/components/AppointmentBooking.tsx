@@ -22,10 +22,10 @@ export const AppointmentBooking: React.FC = () => {
   return (
     <section id="bespoke-appointment" className="py-24 bg-[#FAF8F5] text-[#333333]">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Header */}
         <div className="text-center max-w-xl mx-auto mb-14">
-          <span className="font-sans-clean text-[10px] font-medium tracking-[0.25em] uppercase text-[#66141F] block mb-2">
+          <span className="font-sans-clean text-[10px] font-medium tracking-[0.25em] uppercase text-primary-foreground block mb-2">
             VIP BESPOKE CONCIERGE
           </span>
           <h2 className="font-serif-luxury text-3xl sm:text-4xl lg:text-[40px] tracking-[0.12em] text-[#333333] font-light uppercase">
@@ -40,10 +40,10 @@ export const AppointmentBooking: React.FC = () => {
         <div className="bg-[#FCFAF7] p-8 sm:p-12 border border-[#EAE3DB] rounded-xs shadow-xs">
           {submitted ? (
             <div className="text-center py-12">
-              <div className="w-14 h-14 rounded-full bg-[#FAF5F6] text-[#4A0E17] border border-[#E8D6D9] flex items-center justify-center mx-auto mb-4 text-xl font-bold">
+              <div className="w-14 h-14 rounded-full bg-primary-subtle text-primary-foreground border border-secondary flex items-center justify-center mx-auto mb-4 text-xl font-bold">
                 ✓
               </div>
-              <h4 className="font-serif-luxury text-lg text-[#4A0E17] tracking-[0.12em] mb-2 font-light uppercase">
+              <h4 className="font-serif-luxury text-lg text-primary-foreground tracking-[0.12em] mb-2 font-light uppercase">
                 APPOINTMENT INITIATED
               </h4>
               <p className="font-sans-clean text-[11px] text-gray-600 max-w-sm mx-auto leading-relaxed font-light">
@@ -51,7 +51,7 @@ export const AppointmentBooking: React.FC = () => {
               </p>
               <button
                 onClick={() => setSubmitted(false)}
-                className="mt-6 px-6 py-2.5 bg-[#4A0E17] text-white text-[11px] uppercase tracking-[0.16em] hover:bg-[#66141F] transition font-medium"
+                className="mt-6 px-6 py-2.5 bg-primary text-white text-[11px] uppercase tracking-[0.16em] hover:bg-primary-dark hover:text-white transition font-medium"
               >
                 Book Another Session
               </button>
@@ -69,7 +69,7 @@ export const AppointmentBooking: React.FC = () => {
                     placeholder="e.g. Johnathan Doe"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-4 py-3 bg-[#FAF8F5] border border-gray-200 rounded-xs text-xs focus:border-[#4A0E17] focus:outline-none"
+                    className="w-full px-4 py-3 bg-[#FAF8F5] border border-gray-200 rounded-xs text-xs focus:border-primary-strong focus:outline-none"
                   />
                 </div>
                 <div>
@@ -82,7 +82,7 @@ export const AppointmentBooking: React.FC = () => {
                     placeholder="client@luxury.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-4 py-3 bg-[#FAF8F5] border border-gray-200 rounded-xs text-xs focus:border-[#4A0E17] focus:outline-none"
+                    className="w-full px-4 py-3 bg-[#FAF8F5] border border-gray-200 rounded-xs text-xs focus:border-primary-strong focus:outline-none"
                   />
                 </div>
               </div>
@@ -98,7 +98,7 @@ export const AppointmentBooking: React.FC = () => {
                     placeholder="+1 (555) 000-0000"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full px-4 py-3 bg-[#FAF8F5] border border-gray-200 rounded-xs text-xs focus:border-[#4A0E17] focus:outline-none"
+                    className="w-full px-4 py-3 bg-[#FAF8F5] border border-gray-200 rounded-xs text-xs focus:border-primary-strong focus:outline-none"
                   />
                 </div>
                 <div>
@@ -108,7 +108,7 @@ export const AppointmentBooking: React.FC = () => {
                   <select
                     value={formData.city}
                     onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    className="w-full px-4 py-3 bg-[#FAF8F5] border border-gray-200 rounded-xs text-xs focus:border-[#4A0E17] focus:outline-none cursor-pointer"
+                    className="w-full px-4 py-3 bg-[#FAF8F5] border border-gray-200 rounded-xs text-xs focus:border-primary-strong focus:outline-none cursor-pointer"
                   >
                     <option>Mumbai Atelier (Kala Ghoda)</option>
                     <option>New Delhi Atelier (Mehrauli)</option>
@@ -127,7 +127,7 @@ export const AppointmentBooking: React.FC = () => {
                   <select
                     value={formData.occasion}
                     onChange={(e) => setFormData({ ...formData, occasion: e.target.value })}
-                    className="w-full px-4 py-3 bg-[#FAF8F5] border border-gray-200 rounded-xs text-xs focus:border-[#4A0E17] focus:outline-none cursor-pointer"
+                    className="w-full px-4 py-3 bg-[#FAF8F5] border border-gray-200 rounded-xs text-xs focus:border-primary-strong focus:outline-none cursor-pointer"
                   >
                     <option>Royal Wedding (Groom Ensemble)</option>
                     <option>Sangeet & Cocktail Celebration</option>
@@ -143,14 +143,14 @@ export const AppointmentBooking: React.FC = () => {
                     type="date"
                     value={formData.date}
                     onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                    className="w-full px-4 py-3 bg-[#FAF8F5] border border-gray-200 rounded-xs text-xs focus:border-[#4A0E17] focus:outline-none"
+                    className="w-full px-4 py-3 bg-[#FAF8F5] border border-gray-200 rounded-xs text-xs focus:border-primary-strong focus:outline-none"
                   />
                 </div>
               </div>
 
               <button
                 type="submit"
-                className="w-full py-4 bg-[#4A0E17] text-white text-[11px] font-medium tracking-[0.22em] uppercase hover:bg-[#66141F] transition mt-4"
+                className="w-full py-4 bg-primary text-white text-[11px] font-medium tracking-[0.22em] uppercase hover:bg-primary-dark hover:text-white transition mt-4"
               >
                 REQUEST APPOINTMENT &rarr;
               </button>

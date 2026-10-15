@@ -54,21 +54,21 @@ export const LoginPage: React.FC = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block font-sans-clean text-xs uppercase tracking-widest text-[#333333] mb-2">Email</label>
-            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="w-full border-b border-[#EAE3DB] bg-transparent pb-2 text-sm focus:outline-none focus:border-[#4A0E17]" />
+            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="w-full border-b border-[#EAE3DB] bg-transparent pb-2 text-sm focus:outline-none focus:border-primary-strong" />
           </div>
           <div>
             <div className="flex justify-between items-end mb-2">
               <label className="block font-sans-clean text-xs uppercase tracking-widest text-[#333333]">Password</label>
-              <Link href="/forgot-password" className="text-[10px] text-gray-500 hover:text-[#4A0E17] uppercase tracking-widest">Forgot?</Link>
+              <Link href="/forgot-password" className="text-[10px] text-gray-500 hover:text-primary-foreground uppercase tracking-widest">Forgot?</Link>
             </div>
-            <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className="w-full border-b border-[#EAE3DB] bg-transparent pb-2 text-sm focus:outline-none focus:border-[#4A0E17]" />
+            <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className="w-full border-b border-[#EAE3DB] bg-transparent pb-2 text-sm focus:outline-none focus:border-primary-strong" />
           </div>
-          <button disabled={loading} type="submit" className="w-full bg-[#333333] text-white py-4 text-xs font-sans-clean uppercase tracking-widest hover:bg-[#4A0E17] transition-colors mt-8">
+          <button disabled={loading} type="submit" className="w-full bg-[#333333] text-white py-4 text-xs font-sans-clean uppercase tracking-widest hover:bg-primary-dark hover:text-white transition-colors mt-8">
             {loading ? 'Authenticating...' : 'Sign In'}
           </button>
         </form>
         <div className="mt-8 text-center text-sm font-sans-clean font-light text-gray-500">
-          Don't have an account? <Link href="/register" className="text-[#333333] font-medium hover:text-[#4A0E17]">Create Account</Link>
+          Don't have an account? <Link href="/register" className="text-[#333333] font-medium hover:text-primary-foreground">Create Account</Link>
         </div>
       </div>
     </div>

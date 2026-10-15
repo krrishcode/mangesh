@@ -53,7 +53,7 @@ export const OrdersView: React.FC = () => {
                   </span>
                 </td>
                 <td className="px-6 py-5 text-right">
-                  <button className="text-[11px] font-medium tracking-widest uppercase text-[#4A0E17] hover:underline">
+                  <button className="text-[11px] font-medium tracking-widest uppercase text-primary-foreground hover:underline">
                     View
                   </button>
                 </td>

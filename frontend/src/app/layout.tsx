@@ -16,7 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en" data-scroll-behavior="smooth" className="scroll-smooth bg-[#FAF8F5]">
       <body
-        className="bg-[#FAF8F5] text-[#333333] antialiased selection:bg-[#4A0E17] selection:text-white"
+        className="bg-[#FAF8F5] text-[#333333] antialiased selection:bg-primary selection:text-primary-foreground"
         style={{ fontFamily: "'Franklin Gothic', sans-serif" }}
       >
         {children}

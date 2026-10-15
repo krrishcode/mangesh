@@ -72,7 +72,13 @@ export async function getCatalogProducts(): Promise<MensProduct[]> {
     // Keep the local catalog fallback when the backend is unavailable at build time.
   }
 
-  return Array.from(products.values());
+  // Local fallback ids and database ids differ for the same seeded products,
+  // so collapse duplicates by title with the database entry winning.
+  const byTitle = new Map<string, MensProduct>();
+  for (const product of products.values()) {
+    byTitle.set(product.title.trim().toLowerCase(), product);
+  }
+  return Array.from(byTitle.values());
 }
 
 export async function getCatalogProduct(id: string): Promise<MensProduct | undefined> {

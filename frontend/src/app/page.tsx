@@ -1,4 +1,3 @@
-import { AppointmentBooking } from '@/components/AppointmentBooking';
 import { CelebsShowcase } from '@/components/CelebsShowcase';
 import CategoryGrid from '@/components/CategoryGrid';
 import { HeaderInteractive } from '@/components/HeaderInteractive';
@@ -12,11 +11,12 @@ import { ProductCarousel } from '@/components/ProductCarousel';
 import ScheduleAppointmentBanner from '@/components/ScheduleAppointmentBanner';
 import TwoColEditorial from '@/components/TwoColEditorial';
 import Footer from '@/components/Footer';
+import '@/styles/home.css';
 
 export const metadata = {
-  title: 'Buy Mens Designer Clothes, Sherwanis & Bandhgalas Online | Mangesh Mahadev',
+  title: 'Menswear | Mangesh Mahadev',
   description:
-    'Shop Indian luxury menswear online at Mangesh Mahadev. Explore royal sherwanis, imperial bandhgalas, silk kurta sets, and bespoke groomswear.',
+    'Explore sherwanis, bandhgalas, kurtas and contemporary menswear from Mangesh Mahadev.',
 };
 
 export default function Page() {
@@ -24,22 +24,24 @@ export default function Page() {
     <>
       <HeaderInteractive />
 
-      <main id="main">
+      <main id="main" className="home-page">
+        <h1 className="sr-only">Mangesh Mahadev menswear</h1>
         <HeroSlider />
         <CategoryGrid />
-        <HandsFreeHeartsFull />
+        <TwoColEditorial />
         <RunwayBanner />
         <MensWearBanner />
         <ProductCarousel />
-        <InTheSpotlightGrid />
-        <TwoColEditorial />
+        <HandsFreeHeartsFull />
         <CelebsShowcase />
+        <InTheSpotlightGrid />
         <MoreToExplore />
-        <ScheduleAppointmentBanner />
-        <AppointmentBooking />
+        <div id="bespoke-appointment" className="home-section">
+          <ScheduleAppointmentBanner />
+        </div>
       </main>
 
-      <Footer />
+      <Footer compact />
     </>
   );
 }

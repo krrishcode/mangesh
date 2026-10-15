@@ -6,101 +6,90 @@ export interface CategoryItem {
   image: string;
   href: string;
 }
-
 const CATEGORIES: CategoryItem[] = [
   {
     id: 'sherwanis',
-    name: 'SHERWANIS',
-    image: 'https://www.anitadongre.com/dw/image/v2/BGCX_PRD/on/demandware.static/-/Sites-masterCatalog_AD_India/default/dwf27d8283/images/hires/FW26/F26MP8SR_BEIGE_1.jpg?sw=850&sh=1275&sm=fit&strip=false',
+    name: 'Sherwanis',
+    image: '/images/categories/sherwanis.png',
     href: '/collections/sherwanis',
   },
   {
     id: 'bandhgalas',
-    name: 'BANDHGALAS',
-    image: 'https://www.anitadongre.com/dw/image/v2/BGCX_PRD/on/demandware.static/-/Sites-masterCatalog_AD_India/default/dw67b07f8a/images/hires/FW26/F26MP32J_OFF%20WHITE_1.jpg?sw=850&sh=1275&sm=fit&strip=false',
+    name: 'Bandhgalas',
+    image: '/images/categories/bandhgalas.png',
     href: '/collections/bandhgalas',
   },
   {
     id: 'kurtas',
-    name: 'KURTAS',
-    image: 'https://www.anitadongre.com/dw/image/v2/BGCX_PRD/on/demandware.static/-/Sites-masterCatalog_AD_India/default/dwa1347020/images/hires/FW26/F26MP4K_OFF%20WHITE_1.jpg?sw=850&sh=1275&sm=fit&strip=false',
+    name: 'Kurtas',
+    image: '/images/categories/kurtas.png',
     href: '/collections/kurtas',
   },
   {
     id: 'nehru-jackets',
-    name: 'BANDI',
-    image: 'https://www.anitadongre.com/dw/image/v2/BGCX_PRD/on/demandware.static/-/Sites-masterCatalog_AD_India/default/dwfab212d9/images/hires/FW26/F26MP2B_SAGE_1.jpg?sw=850&sh=1275&sm=fit&strip=false',
+    name: 'Nehru jackets',
+    image: '/images/categories/bandi.png',
     href: '/collections/nehru-jackets',
   },
   {
     id: 'tuxedos',
-    name: 'TUXEDOS & SUITS',
-    image: 'https://www.anitadongre.com/dw/image/v2/BGCX_PRD/on/demandware.static/-/Sites-masterCatalog_AD_India/default/dw83bb767f/images/hires/FW26/F26MP31J_OFF%20WHITE_1.jpg?sw=850&sh=1275&sm=fit&strip=false',
-    href: '/collections/accessories',
+    name: 'Tuxedos & suits',
+    image: '/images/categories/tuxedos.png',
+    href: '/collections/tuxedos',
   },
   {
-    id: 'ceremonial-groom',
-    name: 'SHIRTS',
-    image: 'https://www.anitadongre.com/dw/image/v2/BGCX_PRD/on/demandware.static/-/Sites-masterCatalog_AD_India/default/dw1b754ca9/images/hires/FW26/F26MP6J_GOLD_1.jpg?sw=850&sh=1275&sm=fit&strip=false',
-    href: '/collections/sherwanis',
+    id: 'shackets',
+    name: 'Shackets',
+    image: '/products/black-ivory-shacket/black-ivory-shacket-01.webp',
+    href: '/collections/shackets',
   },
   {
-    id: 'safas-stoles',
-    name: 'TROUSERS',
-    image: 'https://www.anitadongre.com/dw/image/v2/BGCX_PRD/on/demandware.static/-/Sites-masterCatalog_AD_India/default/dweeadaa9a/images/hires/FW26/F26M7SR_PINK_1.jpg?sw=850&sh=1275&sm=fit&strip=false',
+    id: 'trousers',
+    name: 'Trousers',
+    image: '/images/categories/trousers.png',
     href: '/collections/trousers',
   },
   {
-    id: 'silk-couture',
-    name: 'HERITAGE SILKS',
-    image: 'https://www.anitadongre.com/dw/image/v2/BGCX_PRD/on/demandware.static/-/Sites-masterCatalog_AD_India/default/dwba1c1f0d/images/hires/FW26/F26MP4SR_IVORY_1.jpg?sw=850&sh=1275&sm=fit&strip=false',
-    href: '/collections/kurtas',
+    id: 'occasion-wear',
+    name: 'Occasion wear',
+    image: '/images/categories/heritage-silks.png',
+    href: '/shop',
   },
 ];
+
 export default function CategoryGrid() {
   return (
-    <>
-      <section className="py-20 bg-[#FAF8F5]">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
-          
-          {/* Clean Minimalist Header Matching Screenshot */}
-          <div className="text-center max-w-3xl mx-auto mb-12">
-            <h2 className="font-serif-luxury text-3xl sm:text-4xl lg:text-[40px] tracking-[0.14em] text-[#333333] font-light uppercase">
-              LOVE ALL | FW'26
-            </h2>
-            <p className="font-sans-clean text-[11px] sm:text-xs text-[#333333] tracking-[0.06em] mt-3 font-light normal-case">
-              A love that sustains is one that begins as a game of equals. Playful & honouring the other as they are.
-            </p>
-          </div>
-      
-          {/* 4-Column Clean Minimalist Category Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
-            {CATEGORIES.map((cat) => (
-              <Link
-                key={cat.id}
-                href={cat.href}
-                className="group block text-center cursor-pointer"
-              >
-                {/* Pure clean image container with no dark overlays */}
-                <div className="relative aspect-[3/4.6] overflow-hidden bg-[#ECE8E1] mb-4">
-                  <img
-                    src={cat.image}
-                    alt={cat.name}
-                    loading="lazy"
-                    className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
-                  />
-                </div>
-      
-                {/* Clean minimal text BELOW image */}
-                <h3 className="font-sans-clean text-[10px] sm:text-[11px] tracking-[0.20em] font-medium text-[#333333] uppercase group-hover:text-[#4A0E17] transition-colors">
-                  {cat.name}
-                </h3>
-              </Link>
-            ))}
-          </div>
-      
+    <section className="home-section" aria-labelledby="categories-title">
+      <div className="home-container">
+        <div className="home-section-header">
+          <h2 id="categories-title" className="home-heading">
+            Shop by category
+          </h2>
+          <Link href="/shop" className="home-action">
+            View all clothing
+          </Link>
         </div>
-      </section>
-    </>
+        <div className="grid grid-cols-2 gap-x-4 gap-y-7 sm:gap-x-6 md:grid-cols-4">
+          {CATEGORIES.map((category) => (
+            <Link
+              id={category.id}
+              key={category.id}
+              href={category.href}
+              className="block scroll-mt-28 hover:text-primary-foreground"
+            >
+              <div className="mb-3 aspect-[2/3] overflow-hidden bg-[#ECE8E1]">
+                <img
+                  src={category.image}
+                  alt=""
+                  loading="lazy"
+                  className="h-full w-full object-cover object-top"
+                />
+              </div>
+              <h3 className="home-label">{category.name}</h3>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }

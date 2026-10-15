@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import React, { useState } from 'react';
 import { MENS_PRODUCTS, type MensProduct } from '../data/mensCollection';
@@ -11,6 +12,7 @@ interface ProductDetailProps {
 }
 
 export const ProductDetailView: React.FC<ProductDetailProps> = ({ product: initialProduct }) => {
+  const router = useRouter();
   const product: MensProduct = initialProduct || MENS_PRODUCTS[0];
 
   // Color variants support (cloth can have multiple colors with independent size mapping)
@@ -116,7 +118,7 @@ export const ProductDetailView: React.FC<ProductDetailProps> = ({ product: initi
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const handleAddToCart = () => {
+  const addSelectedProduct = () => {
     addItem({
       product_id: product.id,
       quantity: 1,
@@ -124,9 +126,17 @@ export const ProductDetailView: React.FC<ProductDetailProps> = ({ product: initi
       title: `${product.title} (Size ${selectedSize})`,
       image_url: product.imageFront,
     });
+  };
 
+  const handleAddToCart = () => {
+    addSelectedProduct();
     setAddedToast(true);
     setTimeout(() => setAddedToast(false), 3500);
+  };
+
+  const handleBuyNow = () => {
+    addSelectedProduct();
+    router.push('/cart');
   };
 
   return (
@@ -135,11 +145,11 @@ export const ProductDetailView: React.FC<ProductDetailProps> = ({ product: initi
         
         {/* Minimalist Breadcrumbs */}
         <nav className="font-sans-clean text-[10.5px] text-[#333333] mb-4 flex flex-wrap items-center gap-2 tracking-[0.14em] uppercase">
-          <Link href="/" className="hover:text-[#4A0E17] transition font-medium">Home</Link>
+          <Link href="/" className="hover:text-primary-foreground transition font-medium">Home</Link>
           <span>/</span>
-          <Link href="/#fw26" className="hover:text-[#4A0E17] transition font-medium">MEN</Link>
+          <Link href="/#fw26" className="hover:text-primary-foreground transition font-medium">MEN</Link>
           <span>/</span>
-          <Link href="/#sherwanis" className="hover:text-[#4A0E17] transition font-medium">{product.category}</Link>
+          <Link href="/#sherwanis" className="hover:text-primary-foreground transition font-medium">{product.category}</Link>
           <span>/</span>
           <span className="text-[#333333] font-semibold truncate max-w-xs">{product.title}</span>
         </nav>
@@ -157,7 +167,7 @@ export const ProductDetailView: React.FC<ProductDetailProps> = ({ product: initi
                   key={idx}
                   onClick={() => setActiveImageIndex(idx)}
                   className={`relative aspect-[2/3] w-16 sm:w-20 shrink-0 overflow-hidden bg-[#ECE8E1] border transition-all ${
-                    activeImageIndex === idx ? 'border-[#4A0E17] shadow-xs' : 'border-transparent opacity-65 hover:opacity-100'
+                    activeImageIndex === idx ? 'border-primary shadow-xs' : 'border-transparent opacity-65 hover:opacity-100'
                   }`}
                 >
                   <img src={img} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover object-top" />
@@ -174,7 +184,7 @@ export const ProductDetailView: React.FC<ProductDetailProps> = ({ product: initi
                 alt={product.title}
                 className="w-full h-full object-cover object-top transition-transform duration-700 hover:scale-105 cursor-zoom-in"
               />
-              <span className="absolute top-3.5 left-3.5 bg-[#FAF8F5]/95 backdrop-blur-xs text-[#4A0E17] font-sans-clean text-[9.5px] font-semibold tracking-[0.25em] uppercase px-3 py-1.5 border border-[#E8D6D9]">
+              <span className="absolute top-3.5 left-3.5 bg-[#FAF8F5]/95 backdrop-blur-xs text-primary-foreground font-sans-clean text-[9.5px] font-semibold tracking-[0.25em] uppercase px-3 py-1.5 border border-secondary">
                 {product.badge || 'FW26 RUNWAY'}
               </span>
             </div>
@@ -186,13 +196,13 @@ export const ProductDetailView: React.FC<ProductDetailProps> = ({ product: initi
             {/* Top Brand & Title & Share Node */}
             <div>
               <div className="flex justify-between items-start">
-                <span className="font-heading text-[11px] sm:text-xs text-[#4A0E17] font-medium tracking-[0.20em] uppercase block mb-1">
+                <span className="font-heading text-[11px] sm:text-xs text-primary-foreground font-medium tracking-[0.20em] uppercase block mb-1">
 Mangesh Mahadev
                 </span>
 
                 {/* Minimalist Share Icon Node */}
                 <button
-                  className="text-gray-500 hover:text-[#4A0E17] transition p-1"
+                  className="text-gray-500 hover:text-primary-foreground transition p-1"
                   aria-label="Share product"
                   onClick={() => {
                     navigator.clipboard?.writeText(window.location.href);
@@ -261,7 +271,7 @@ Mangesh Mahadev
                       <div
                         key={v.color}
                         className={`p-0.5 rounded-full border transition-all ${
-                          isSelected ? 'border-[#4A0E17] scale-110 shadow-xs' : 'border-gray-300 hover:border-gray-500'
+                          isSelected ? 'border-primary scale-110 shadow-xs' : 'border-gray-300 hover:border-gray-500'
                         }`}
                       >
                         <button
@@ -275,7 +285,7 @@ Mangesh Mahadev
                     );
                   })}
                 </div>
-                <span className="font-sans-clean text-xs text-[#4A0E17] font-semibold">{selectedColor}</span>
+                <span className="font-sans-clean text-xs text-primary-foreground font-semibold">{selectedColor}</span>
               </div>
             </div>
 
@@ -294,7 +304,7 @@ Mangesh Mahadev
                             !s.inStock
                               ? 'border-gray-200 text-gray-300 cursor-not-allowed bg-gray-50'
                               : selectedSize === s.label
-                              ? 'border-[#4A0E17] bg-[#4A0E17] text-white font-semibold shadow-xs'
+                              ? 'border-primary bg-primary text-white font-semibold shadow-xs'
                               : 'border-[#D5CEC5] bg-white text-gray-800 hover:border-black'
                           }`}
                         >
@@ -315,7 +325,7 @@ Mangesh Mahadev
                 {/* View Size Guide on the Right */}
                 <button
                   onClick={() => setIsSizeGuideOpen(true)}
-                  className="font-sans-clean text-[10px] text-[#333333] font-medium underline tracking-[0.14em] uppercase self-end sm:self-auto hover:text-[#4A0E17] transition"
+                  className="font-sans-clean text-[10px] text-[#333333] font-medium underline tracking-[0.14em] uppercase self-end sm:self-auto hover:text-primary-foreground transition"
                 >
                   View Size Guide
                 </button>
@@ -366,14 +376,21 @@ Mangesh Mahadev
               </div>
             </div>
 
-            {/* Action CTA Button */}
-            <div className="pt-3 space-y-2.5 font-sans-clean">
+            {/* Purchase actions */}
+            <div className="grid grid-cols-2 gap-3 pt-3 font-sans-clean">
               <button
+                type="button"
                 onClick={handleAddToCart}
-                className="w-full py-4 bg-[#4A0E17] text-white hover:bg-[#66141F] transition text-[11px] font-medium tracking-[0.22em] uppercase shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                className="min-w-0 py-4 px-2 border border-primary text-primary-foreground hover:bg-primary-dark hover:text-white transition-colors text-[11px] font-medium tracking-[0.14em] sm:tracking-[0.22em] uppercase cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-strong"
               >
-                <span>ADD TO CART</span>
-                <span>&rarr;</span>
+                Add to Cart
+              </button>
+              <button
+                type="button"
+                onClick={handleBuyNow}
+                className="min-w-0 py-4 px-2 border border-primary bg-primary text-white hover:bg-primary-dark hover:text-white hover:border-primary-dark transition-colors text-[11px] font-medium tracking-[0.14em] sm:tracking-[0.22em] uppercase cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-strong"
+              >
+                Buy Now
               </button>
             </div>
 
@@ -386,10 +403,10 @@ Mangesh Mahadev
                   onClick={() => toggleSection('details')}
                   className="w-full flex justify-between items-center font-serif-luxury text-base sm:text-lg font-medium tracking-[0.10em] uppercase text-[#333333] text-left cursor-pointer group"
                 >
-                  <span className="group-hover:text-[#4A0E17] transition-colors">PRODUCT DETAILS</span>
-                  <span className="w-7 h-7 flex items-center justify-center text-[#333333] group-hover:text-[#4A0E17] transition-transform duration-300 ease-out">
+                  <span className="group-hover:text-primary-foreground transition-colors">PRODUCT DETAILS</span>
+                  <span className="w-7 h-7 flex items-center justify-center text-[#333333] group-hover:text-primary-foreground transition-transform duration-300 ease-out">
                     <svg
-                      className={`w-5 h-5 transition-transform duration-300 ease-out ${openSections.details ? 'rotate-45 text-[#4A0E17]' : 'rotate-0'}`}
+                      className={`w-5 h-5 transition-transform duration-300 ease-out ${openSections.details ? 'rotate-45 text-primary-foreground' : 'rotate-0'}`}
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
@@ -466,10 +483,10 @@ Mangesh Mahadev
                   onClick={() => toggleSection('stylist')}
                   className="w-full flex justify-between items-center font-serif-luxury text-base sm:text-lg font-medium tracking-[0.10em] uppercase text-[#333333] text-left cursor-pointer group"
                 >
-                  <span className="group-hover:text-[#4A0E17] transition-colors">CONTACT OUR STYLIST</span>
-                  <span className="w-7 h-7 flex items-center justify-center text-[#333333] group-hover:text-[#4A0E17] transition-transform duration-300 ease-out">
+                  <span className="group-hover:text-primary-foreground transition-colors">CONTACT OUR STYLIST</span>
+                  <span className="w-7 h-7 flex items-center justify-center text-[#333333] group-hover:text-primary-foreground transition-transform duration-300 ease-out">
                     <svg
-                      className={`w-5 h-5 transition-transform duration-300 ease-out ${openSections.stylist ? 'rotate-45 text-[#4A0E17]' : 'rotate-0'}`}
+                      className={`w-5 h-5 transition-transform duration-300 ease-out ${openSections.stylist ? 'rotate-45 text-primary-foreground' : 'rotate-0'}`}
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
@@ -526,7 +543,7 @@ Mangesh Mahadev
                     <div className="flex flex-wrap gap-2.5 pt-2 font-sans-clean">
                       <a
                         href="tel:+919999313366"
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 bg-white hover:border-[#4A0E17] hover:text-[#4A0E17] transition text-[11.5px] font-medium tracking-wide"
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 bg-white hover:border-primary hover:text-primary-foreground transition text-[11.5px] font-medium tracking-wide"
                       >
                         <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
                           <path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2a1 1 0 011.02-.24 11.72 11.72 0 003.68.59 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.72 11.72 0 00.59 3.68 1 1 0 01-.24 1.02l-2.23 2.09z" />
@@ -538,7 +555,7 @@ Mangesh Mahadev
                         href="https://api.whatsapp.com/send?phone=919999313366&text=Hi!%20I%20want%20to%20inquire%20about%20Shruti%20Mangesh%20Menswear"
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 bg-white hover:border-[#4A0E17] hover:text-[#4A0E17] transition text-[11.5px] font-medium tracking-wide"
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 bg-white hover:border-primary hover:text-primary-foreground transition text-[11.5px] font-medium tracking-wide"
                       >
                         <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
                           <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.634.073-1.045-.062-.317-.104-.707-.234-1.218-.456-2.152-.937-3.551-3.125-3.659-3.268-.107-.144-.868-1.157-.868-2.207 0-1.05.549-1.567.744-1.782.195-.215.426-.269.569-.269.143 0 .287.002.411.009.13.007.304-.049.475.362.179.43.612 1.493.666 1.603.054.11.09.239.018.383-.072.144-.108.233-.216.359-.108.126-.227.281-.324.377-.108.107-.221.224-.095.44.126.216.56 1.023 1.202 1.696.827.868 1.526 1.137 1.742 1.245.216.108.342.09.469-.054.126-.144.539-.628.683-.844.144-.216.287-.18.485-.108.198.072 1.258.593 1.474.701.216.108.359.162.413.252.054.09.054.521-.09 1.146z" />
@@ -548,7 +565,7 @@ Mangesh Mahadev
 
                       <a
                         href="mailto:care@shrutimangesh.com"
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 bg-white hover:border-[#4A0E17] hover:text-[#4A0E17] transition text-[11.5px] font-medium tracking-wide"
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 bg-white hover:border-primary hover:text-primary-foreground transition text-[11.5px] font-medium tracking-wide"
                       >
                         <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
                           <path d="M1.5 8.67v8.58a3 3 0 003 3h15a3 3 0 003-3V8.67l-8.928 5.493a3 3 0 01-3.144 0L1.5 8.67z" />
@@ -571,10 +588,10 @@ Mangesh Mahadev
                   onClick={() => toggleSection('delivery')}
                   className="w-full flex justify-between items-center font-serif-luxury text-base sm:text-lg font-medium tracking-[0.10em] uppercase text-[#333333] text-left cursor-pointer group"
                 >
-                  <span className="group-hover:text-[#4A0E17] transition-colors">DELIVERY & RETURNS</span>
-                  <span className="w-7 h-7 flex items-center justify-center text-[#333333] group-hover:text-[#4A0E17] transition-transform duration-300 ease-out">
+                  <span className="group-hover:text-primary-foreground transition-colors">DELIVERY & RETURNS</span>
+                  <span className="w-7 h-7 flex items-center justify-center text-[#333333] group-hover:text-primary-foreground transition-transform duration-300 ease-out">
                     <svg
-                      className={`w-5 h-5 transition-transform duration-300 ease-out ${openSections.delivery ? 'rotate-45 text-[#4A0E17]' : 'rotate-0'}`}
+                      className={`w-5 h-5 transition-transform duration-300 ease-out ${openSections.delivery ? 'rotate-45 text-primary-foreground' : 'rotate-0'}`}
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
@@ -597,7 +614,7 @@ Mangesh Mahadev
                     </p>
                     <a
                       href="#returns-policy"
-                      className="inline-block font-semibold text-[#333333] underline hover:text-[#4A0E17] transition"
+                      className="inline-block font-semibold text-[#333333] underline hover:text-primary-foreground transition"
                     >
                       Return & Exchange Policy
                     </a>
@@ -611,10 +628,10 @@ Mangesh Mahadev
                   onClick={() => toggleSection('disclaimer')}
                   className="w-full flex justify-between items-center font-serif-luxury text-base sm:text-lg font-medium tracking-[0.10em] uppercase text-[#333333] text-left cursor-pointer group"
                 >
-                  <span className="group-hover:text-[#4A0E17] transition-colors">DISCLAIMER</span>
-                  <span className="w-7 h-7 flex items-center justify-center text-[#333333] group-hover:text-[#4A0E17] transition-transform duration-300 ease-out">
+                  <span className="group-hover:text-primary-foreground transition-colors">DISCLAIMER</span>
+                  <span className="w-7 h-7 flex items-center justify-center text-[#333333] group-hover:text-primary-foreground transition-transform duration-300 ease-out">
                     <svg
-                      className={`w-5 h-5 transition-transform duration-300 ease-out ${openSections.disclaimer ? 'rotate-45 text-[#4A0E17]' : 'rotate-0'}`}
+                      className={`w-5 h-5 transition-transform duration-300 ease-out ${openSections.disclaimer ? 'rotate-45 text-primary-foreground' : 'rotate-0'}`}
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
@@ -671,7 +688,7 @@ Mangesh Mahadev
                     className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
                   />
                 </div>
-                <h3 className="font-serif-luxury text-[13px] tracking-[0.08em] text-[#333333] uppercase group-hover:text-[#4A0E17] transition-colors font-normal w-full h-[18px] overflow-hidden text-ellipsis whitespace-nowrap" title={rel.title}>
+                <h3 className="font-serif-luxury text-[13px] tracking-[0.08em] text-[#333333] uppercase group-hover:text-primary-foreground transition-colors font-normal w-full h-[18px] overflow-hidden text-ellipsis whitespace-nowrap" title={rel.title}>
                   {rel.title}
                 </h3>
                 <p className="font-sans-clean text-xs text-[#333333] font-medium mt-1">
@@ -695,14 +712,14 @@ Mangesh Mahadev
             >
               ✕
             </button>
-            <h3 className="font-heading text-xl tracking-[0.14em] text-[#4A0E17] uppercase mb-4 font-light">
+            <h3 className="font-heading text-xl tracking-[0.14em] text-primary-foreground uppercase mb-4 font-light">
               MEN'S COUTURE SIZE GUIDE
             </h3>
             <p className="font-sans-clean text-xs text-gray-500 mb-6">All measurements are in inches. Custom tailored fittings available.</p>
             
             <div className="overflow-x-auto">
               <table className="w-full font-sans-clean text-xs text-left border border-gray-200">
-                <thead className="bg-[#FAF2F3] text-[#4A0E17] font-semibold border-b border-gray-200">
+                <thead className="bg-primary-subtle text-primary-foreground font-semibold border-b border-gray-200">
                   <tr>
                     <th className="p-2.5">Size</th>
                     <th className="p-2.5">Chest (in)</th>
@@ -727,7 +744,7 @@ Mangesh Mahadev
 
       {/* Toast Notification */}
       {addedToast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#4A0E17] text-white px-6 py-3.5 rounded-xs shadow-2xl flex items-center gap-3 font-sans-clean text-xs tracking-wider animate-bounce border border-[#66141F]">
+        <div className="fixed bottom-6 right-6 z-50 bg-primary text-primary-foreground px-6 py-3.5 rounded-xs shadow-2xl flex items-center gap-3 font-sans-clean text-xs tracking-wider animate-bounce border border-primary-light">
           <span>✨</span>
           <span>Added to shopping bag successfully!</span>
         </div>

@@ -19,7 +19,7 @@ export const AddressesView: React.FC = () => {
     <div className="animate-fadeIn">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-lg font-serif-luxury tracking-wider text-[#333333] uppercase">Address Book</h2>
-        <button className="text-[11px] font-sans-clean font-medium tracking-widest uppercase text-[#4A0E17] hover:underline">
+        <button className="text-[11px] font-sans-clean font-medium tracking-widest uppercase text-primary-foreground hover:underline">
           Add New
         </button>
       </div>
@@ -40,8 +40,8 @@ export const AddressesView: React.FC = () => {
               <p className="mt-3 text-[#333333]">T: {addr.phone}</p>
             </div>
             <div className="mt-6 flex gap-4 text-[10px] font-sans-clean uppercase tracking-widest text-gray-400">
-              <button className="hover:text-[#4A0E17]">Edit</button>
-              <button className="hover:text-[#4A0E17]">Remove</button>
+              <button className="hover:text-primary-foreground">Edit</button>
+              <button className="hover:text-primary-foreground">Remove</button>
             </div>
           </div>
         ))}

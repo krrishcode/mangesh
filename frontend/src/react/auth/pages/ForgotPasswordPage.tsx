@@ -51,14 +51,14 @@ export const ForgotPasswordPage: React.FC = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block font-sans-clean text-xs uppercase tracking-widest text-[#333333] mb-2">Email</label>
-            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="w-full border-b border-[#EAE3DB] bg-transparent pb-2 text-sm focus:outline-none focus:border-[#4A0E17]" />
+            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="w-full border-b border-[#EAE3DB] bg-transparent pb-2 text-sm focus:outline-none focus:border-primary-strong" />
           </div>
-          <button disabled={status === 'loading'} type="submit" className="w-full bg-[#333333] text-white py-4 text-xs font-sans-clean uppercase tracking-widest hover:bg-[#4A0E17] transition-colors mt-8">
+          <button disabled={status === 'loading'} type="submit" className="w-full bg-[#333333] text-white py-4 text-xs font-sans-clean uppercase tracking-widest hover:bg-primary-dark hover:text-white transition-colors mt-8">
             {status === 'loading' ? 'Sending...' : 'Send Reset Link'}
           </button>
         </form>
         <div className="mt-8 text-center text-sm font-sans-clean font-light text-gray-500">
-          Remember your password? <Link href="/login" className="text-[#333333] font-medium hover:text-[#4A0E17]">Sign In</Link>
+          Remember your password? <Link href="/login" className="text-[#333333] font-medium hover:text-primary-foreground">Sign In</Link>
         </div>
       </div>
     </div>

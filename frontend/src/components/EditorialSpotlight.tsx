@@ -18,7 +18,7 @@ export default function EditorialSpotlight() {
       
             {/* Right Minimal Narrative */}
             <div className="lg:col-span-5 flex flex-col justify-center space-y-6 text-left">
-              <span className="font-sans-clean text-[10px] font-medium tracking-[0.25em] uppercase text-[#66141F]">
+              <span className="font-sans-clean text-[10px] font-medium tracking-[0.25em] uppercase text-primary-foreground">
                 THE WEDDING ATELIER
               </span>
       
@@ -38,7 +38,7 @@ export default function EditorialSpotlight() {
               <div className="flex flex-wrap gap-4 pt-4">
                 <a
                   href="#bespoke-appointment"
-                  className="px-8 py-3.5 bg-[#4A0E17] text-white text-[11px] font-medium tracking-[0.22em] uppercase hover:bg-[#66141F] transition inline-block"
+                  className="px-8 py-3.5 bg-primary text-white text-[11px] font-medium tracking-[0.22em] uppercase hover:bg-primary-dark hover:text-white transition inline-block"
                 >
                   BOOK GROOM CONSULTATION
                 </a>

@@ -66,7 +66,7 @@ export default function SpotlightCelebration() {
                   />
                 </div>
       
-                <h3 className="font-serif-luxury text-sm sm:text-base tracking-[0.12em] font-normal text-[#333333] uppercase group-hover:text-[#4A0E17] transition-colors">
+                <h3 className="font-serif-luxury text-sm sm:text-base tracking-[0.12em] font-normal text-[#333333] uppercase group-hover:text-primary-foreground transition-colors">
                   {item.name}
                 </h3>
                 <p className="font-sans-clean text-[10px] sm:text-[11px] text-[#333333] tracking-[0.06em] mt-1 font-light normal-case">
@@ -87,13 +87,13 @@ export default function SpotlightCelebration() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
               {PRESS_LOGOS.map((press) => (
                 <div key={press.name} className="p-6 bg-white/70 border border-gray-200/60 rounded-xs flex flex-col justify-between">
-                  <span className="font-sans-clean text-[10px] font-medium tracking-[0.16em] text-[#4A0E17] block mb-2 uppercase">
+                  <span className="font-sans-clean text-[10px] font-medium tracking-[0.16em] text-primary-foreground block mb-2 uppercase">
                     {press.name}
                   </span>
                   <p className="font-sans-clean text-[11px] text-gray-600 leading-relaxed font-light">
                     {press.quote}
                   </p>
-                  <div className="mt-4 pt-3 border-t border-gray-100 text-[9px] font-medium uppercase tracking-[0.16em] text-[#66141F]">
+                  <div className="mt-4 pt-3 border-t border-gray-100 text-[9px] font-medium uppercase tracking-[0.16em] text-primary-foreground">
                     Editorial Review
                   </div>
                 </div>
