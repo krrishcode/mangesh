@@ -53,7 +53,11 @@ export interface CategoryDto {
 
 // Cart & Checkout DTOs
 export interface CartItemDto {
+  line_id?: string;
   product_id: number | string;
+  size: string;
+  color: string;
+  max_quantity: number;
   quantity: number;
   price: number;
   title: string;

@@ -5,16 +5,13 @@ import { ProductDetailView } from '@/components/ProductDetailView';
 import Footer from '@/components/Footer';
 import { getCatalogProduct, getCatalogProducts } from '@/lib/catalog';
 
-export const dynamicParams = false;
+export const dynamic = 'force-dynamic';
 
 type ProductRouteProps = {
   params: Promise<{ id: string }>;
 };
 
-export async function generateStaticParams() {
-  const products = await getCatalogProducts();
-  return products.map((product) => ({ id: product.id }));
-}
+
 
 export async function generateMetadata({ params }: ProductRouteProps): Promise<Metadata> {
   const { id } = await params;
@@ -30,7 +27,8 @@ export async function generateMetadata({ params }: ProductRouteProps): Promise<M
 
 export default async function ProductDetailRoute({ params }: ProductRouteProps) {
   const { id } = await params;
-  const product = await getCatalogProduct(id);
+  const products = await getCatalogProducts();
+  const product = products.find((item) => item.id === id);
 
   if (!product) notFound();
 
@@ -38,9 +36,13 @@ export default async function ProductDetailRoute({ params }: ProductRouteProps) 
     <>
       <HeaderInteractive />
       <main id="main">
-        <ProductDetailView key={product.id} product={product} />
+        <ProductDetailView key={product.id} product={product} relatedProducts={
+          products.filter((item) => item.id !== product.id)
+            .sort((a, b) => Number(b.category === product.category) - Number(a.category === product.category))
+            .slice(0, 4)
+        } />
       </main>
-      <Footer />
+      <Footer compact />
     </>
   );
 }

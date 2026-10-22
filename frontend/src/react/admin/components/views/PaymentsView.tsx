@@ -49,7 +49,7 @@ export const PaymentsView: React.FC<PaymentsViewProps> = ({ onNavigate }) => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [newPayment, setNewPayment] = useState({
     orderId: '',
-    provider: 'Bespoke Atelier Wire',
+    provider: 'COD',
     reference: '',
     amount: '',
     status: 'paid',
@@ -116,7 +116,7 @@ export const PaymentsView: React.FC<PaymentsViewProps> = ({ onNavigate }) => {
       setShowAddModal(false);
       setNewPayment({
         orderId: '',
-        provider: 'Bespoke Atelier Wire',
+        provider: 'COD',
         reference: '',
         amount: '',
         status: 'paid',
@@ -350,7 +350,7 @@ export const PaymentsView: React.FC<PaymentsViewProps> = ({ onNavigate }) => {
             }}
           >
             <option value="all">All Gateways</option>
-            <option value="Razorpay">Razorpay</option>
+            <option value="COD">Cash on delivery</option>
             <option value="Stripe">Stripe</option>
             <option value="UPI">UPI</option>
             <option value="Wire">Atelier Wire / NEFT</option>
@@ -724,7 +724,7 @@ export const PaymentsView: React.FC<PaymentsViewProps> = ({ onNavigate }) => {
                 >
                   <option value="Bespoke Atelier Wire">Bespoke Atelier Wire (NEFT / RTGS)</option>
                   <option value="UPI (HDFC Bank)">UPI Direct (QR / PhonePe / GPay)</option>
-                  <option value="Razorpay Virtual Escrow">Razorpay Virtual Escrow</option>
+                  <option value="COD">Cash on delivery</option>
                   <option value="Stripe Concierge">Stripe Concierge</option>
                   <option value="Atelier Cash Concierge">Atelier Cash Concierge (COD)</option>
                 </select>

@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { db } from '../../db/index.js';
 import { products, categories } from '../../db/schema/index.js';
-import { eq, or } from 'drizzle-orm';
+import { eq, or, and } from 'drizzle-orm';
 
 export const productsModule = new Hono();
 
@@ -20,6 +20,7 @@ productsModule.get('/', async (c) => {
         sku: products.sku,
         categoryId: products.categoryId,
         categoryName: categories.name,
+        categorySlug: categories.slug,
         isActive: products.isActive,
         imageFront: products.imageFront,
         imageDetail: products.imageDetail,
@@ -52,7 +53,7 @@ productsModule.get('/', async (c) => {
 
     return c.json({ success: true, data: allProducts });
   } catch (error: any) {
-    return c.json({ success: true, data: [], note: 'Database ready for migration' });
+    return c.json({ success: false, error: 'The catalogue is temporarily unavailable. Please try again.' }, 503);
   }
 });
 
@@ -74,6 +75,7 @@ productsModule.get('/:identifier', async (c) => {
         sku: products.sku,
         categoryId: products.categoryId,
         categoryName: categories.name,
+        categorySlug: categories.slug,
         isActive: products.isActive,
         imageFront: products.imageFront,
         imageDetail: products.imageDetail,
@@ -105,14 +107,9 @@ productsModule.get('/:identifier', async (c) => {
 
     let rows;
     if (!isNaN(numericId)) {
-      if (numericId === 102) {
-        // Support legacy/demo product 102 mapping to MM-SHR-102 or ID 102
-        rows = await query.where(or(eq(products.id, 102), eq(products.sku, 'MM-SHR-102'))).limit(1);
-      } else {
-        rows = await query.where(eq(products.id, numericId)).limit(1);
-      }
+      rows = await query.where(and(eq(products.id, numericId), eq(products.isActive, true))).limit(1);
     } else {
-      rows = await query.where(or(eq(products.slug, identifier), eq(products.sku, identifier))).limit(1);
+      rows = await query.where(and(or(eq(products.slug, identifier), eq(products.sku, identifier)), eq(products.isActive, true))).limit(1);
     }
 
     if (!rows || rows.length === 0) {
@@ -121,6 +118,6 @@ productsModule.get('/:identifier', async (c) => {
 
     return c.json({ success: true, data: rows[0] });
   } catch (error: any) {
-    return c.json({ success: false, error: error.message }, 500);
+    return c.json({ success: false, error: 'The product is temporarily unavailable. Please try again.' }, 503);
   }
 });

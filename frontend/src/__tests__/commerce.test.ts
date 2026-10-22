@@ -1,0 +1,32 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+vi.hoisted(() => { const entries = new Map<string, string>(); vi.stubGlobal('localStorage', { getItem: (key: string) => entries.get(key) || null, setItem: (key: string, value: string) => entries.set(key, value), removeItem: (key: string) => entries.delete(key) }); });
+import { useCartStore, cartLineId, migrateCartState } from '../stores/cartStore';
+import { effectivePrice, productVariants } from '../lib/product';
+import { getCatalogProducts, normalizeProduct } from '../lib/catalog';
+import type { MensProduct } from '../data/mensCollection';
+const raw = { id: 44, title: 'Fixture kurta', categoryName: 'Bottoms', categorySlug: 'bottoms', price: '100.00', salePrice: '80.00', stock: 3, color: 'Blue', sizes: '["M","L"]', inStockSizes: '["M","L"]', colorVariants: null, imageFront: '/fixture.webp', deliveryMethod: 'both' };
+const product = normalizeProduct(raw);
+const line = { product_id: '44', title: product.title, price: 80, quantity: 1, color: 'Blue', size: 'M', max_quantity: 3 };
+beforeEach(() => useCartStore.getState().clearCart());
+afterEach(() => vi.restoreAllMocks());
+describe('catalogue and pricing', () => {
+  it('retains database stock and category slugs', () => { expect(product.stock).toBe(3); expect(product.categorySlug).toBe('bottoms'); });
+  it('does not invent descriptions, images, stock sizes, craft or category', () => { const value = normalizeProduct({ id: 999, title: 'No details', price: 1 }); expect(value.imageFront).toBe(''); expect(value.inStockSizes).toEqual([]); expect(value.sizes).toEqual([]); expect(value.category).toBe(''); expect(value.stock).toBe(0); expect(value.craft).toBe(''); });
+  it('uses the sale price consistently', () => { expect(effectivePrice(product)).toBe(80); expect(effectivePrice({ price: 100, salePrice: 150 })).toBe(100); expect(effectivePrice({ price: 100, salePrice: 0 })).toBe(100); });
+  it('zero aggregate stock disables every variant', () => { expect(productVariants({ ...product, stock: 0 })[0].inStockSizes).toEqual([]); });
+  it('variant data cannot invent missing stock sizes', () => { expect(productVariants({ ...product, inStockSizes: [] })[0].inStockSizes).toEqual([]); });
+  it('a healthy empty backend stays empty without local demo products', async () => { vi.spyOn(globalThis, 'fetch').mockResolvedValue(Response.json({ success: true, data: [] })); expect(await getCatalogProducts()).toEqual([]); });
+  it('catalogue errors surface instead of showing demo products', async () => { vi.spyOn(globalThis, 'fetch').mockResolvedValue(Response.json({ error: 'Offline' }, { status: 503 })); await expect(getCatalogProducts()).rejects.toThrow(); });
+  it('fetches fresh catalogue data without build-time caching', async () => { const fetch = vi.spyOn(globalThis, 'fetch').mockResolvedValue(Response.json({ success: true, data: [raw] })); expect((await getCatalogProducts())[0].id).toBe('44'); expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/products'), expect.objectContaining({ cache: 'no-store' })); });
+});
+describe('variant-aware shopping bag', () => {
+  it('keeps sizes separate', () => { const store = useCartStore.getState(); expect(store.addItem(line)).toBe(true); expect(store.addItem({ ...line, size: 'L' })).toBe(true); expect(useCartStore.getState().items).toHaveLength(2); });
+  it('keeps colours separate', () => { const store = useCartStore.getState(); store.addItem(line); store.addItem({ ...line, color: 'Ivory' }); expect(useCartStore.getState().items).toHaveLength(2); });
+  it('merges only the same actual variant', () => { const store = useCartStore.getState(); store.addItem(line); store.addItem({ ...line, price: 75 }); expect(useCartStore.getState().items[0]).toMatchObject({ quantity: 2, price: 75, size: 'M' }); });
+  it('checks aggregate stock across sizes and colours', () => { const store = useCartStore.getState(); store.addItem({ ...line, quantity: 2 }); expect(store.addItem({ ...line, size: 'L', quantity: 2 })).toBe(false); expect(store.addItem({ ...line, size: 'L' })).toBe(true); expect(store.addItem({ ...line, color: 'Ivory' })).toBe(false); });
+  it('updates and removes the intended line only', () => { const store = useCartStore.getState(); store.addItem(line); store.addItem({ ...line, size: 'L' }); store.updateQuantity(cartLineId(line), 2); expect(useCartStore.getState().items.find(item => item.size === 'M')?.quantity).toBe(2); store.removeItem(cartLineId(line)); expect(useCartStore.getState().items[0].size).toBe('L'); });
+  it('rejects fractional and excessive quantities', () => { const store = useCartStore.getState(); store.addItem(line); store.updateQuantity(cartLineId(line), 100000); store.updateQuantity(cartLineId(line), 1.5); expect(useCartStore.getState().items[0].quantity).toBe(1); });
+  it('refreshes bag prices and stock from the current catalogue', () => { const store = useCartStore.getState(); store.addItem(line); store.syncProducts([{ ...product, salePrice: 70, stock: 2 }]); expect(useCartStore.getState().items[0]).toMatchObject({ price: 70, max_quantity: 2 }); });
+  it('removed or unavailable products cannot remain purchasable', () => { const store = useCartStore.getState(); store.addItem(line); store.syncProducts([]); expect(useCartStore.getState().items[0].max_quantity).toBe(0); });
+  it('legacy bag migration preserves items for review without inventing a size', () => { const migrated = migrateCartState({ items: [{ product_id: '44', title: 'Legacy item', quantity: 1, price: 80 }] }); expect(migrated.items).toHaveLength(1); expect(migrated.items[0]).toMatchObject({ size: '', max_quantity: 0 }); expect(migrated.needsReview).toBe(true); });
+});

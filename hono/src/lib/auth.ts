@@ -28,15 +28,21 @@ export interface JwtPayload {
   email: string;
   role: 'admin' | 'customer';
   exp: number;
+  credentialVersion?: string;
 }
 
-export async function issueToken(user: { id: number; email: string; role: 'admin' | 'customer' }): Promise<string> {
+export function credentialVersion(passwordHash: string) {
+  return createHash('sha256').update(passwordHash).digest('hex');
+}
+
+export async function issueToken(user: { id: number; email: string; role: 'admin' | 'customer'; passwordHash?: string }): Promise<string> {
   const now = Math.floor(Date.now() / 1000);
   return await sign(
     {
       sub: user.id,
       email: user.email,
       role: user.role,
+      credentialVersion: user.passwordHash ? credentialVersion(user.passwordHash) : undefined,
       iat: now,
       exp: now + 60 * 60 * 24 * 7,
     },
@@ -48,6 +54,7 @@ export async function issueToken(user: { id: number; email: string; role: 'admin
 export async function verifyToken(token: string): Promise<JwtPayload | null> {
   try {
     const payload = await verify(token, env.jwtSecret, "HS256");
+    if (!Number.isInteger(payload.sub) || typeof payload.email !== 'string' || !['admin', 'customer'].includes(String(payload.role))) return null;
     return payload as unknown as JwtPayload;
   } catch {
     return null;

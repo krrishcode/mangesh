@@ -12,7 +12,7 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
       token: null,
       isAuthenticated: false,
@@ -22,6 +22,8 @@ export const useAuthStore = create<AuthState>()(
       },
 
       logout: () => {
+        const token = get().token;
+        if (token && typeof window !== 'undefined') void fetch('/api/account/auth/logout', { method: 'POST', headers: { Authorization: 'Bearer ' + token } }).catch(() => {});
         set({ user: null, token: null, isAuthenticated: false });
       },
     }),

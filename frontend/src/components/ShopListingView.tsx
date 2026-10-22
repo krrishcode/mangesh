@@ -4,6 +4,8 @@ import Link from 'next/link';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import type { MensProduct } from '../data/mensCollection';
 import { useCartStore } from '../stores';
+import { effectivePrice, productVariants } from '../lib/product';
+import { useWishlist } from '../lib/useWishlist';
 
 interface ShopListingViewProps {
   products: MensProduct[];
@@ -65,7 +67,7 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({
   const maxPrice = Math.max(
     10000,
     Math.ceil(
-      Math.max(0, ...products.map((product) => product.price)) / 10000
+      Math.max(0, ...products.map((product) => effectivePrice(product))) / 10000
     ) * 10000
   );
   const [selectedCategory, setSelectedCategory] = useState(
@@ -79,7 +81,7 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({
   const [sortBy, setSortBy] = useState('featured');
   const [gridColumns, setGridColumns] = useState<2 | 3 | 4>(4);
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
-  const [wishlistIds, setWishlistIds] = useState<string[]>([]);
+  const wishlist = useWishlist();
   const [quickAddId, setQuickAddId] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const filterTriggerRef = useRef<HTMLButtonElement>(null);
@@ -190,15 +192,15 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({
     setOnlyReadyToShip(false);
   };
   const handleQuickAdd = (product: MensProduct, size: string) => {
-    addItem({
-      product_id: product.id,
+    const added = addItem({
+      product_id: product.id, color: productVariants(product)[0]?.color || '', size, max_quantity: product.stock,
       quantity: 1,
-      price: product.price,
-      title: `${product.title} (Size ${size})`,
+      price: effectivePrice(product),
+      title: product.title,
       image_url: product.imageFront,
     });
     closeQuickAdd(product.id);
-    setToastMessage('Added to bag');
+    setToastMessage(added ? 'Added to bag' : 'All available stock is already in your bag.');
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
     toastTimerRef.current = setTimeout(() => setToastMessage(null), 3500);
   };
@@ -216,22 +218,22 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({
             return false;
           if (
             selectedSizes.length &&
-            !selectedSizes.some((size) => product.sizes.includes(size))
+            !selectedSizes.some((size) => productVariants(product).some(variant => variant.inStockSizes.includes(size)))
           )
             return false;
           if (selectedCrafts.length && !selectedCrafts.includes(product.craft))
             return false;
-          if (product.price > priceLimit) return false;
+          if (effectivePrice(product) > priceLimit) return false;
           if (onlyReadyToShip && !product.readyToShip) return false;
           return true;
         })
         .sort((a, b) => {
           if (sortBy === 'price-low' || sortBy === 'price-high') {
-            if (a.price <= 0 && b.price > 0) return 1;
-            if (b.price <= 0 && a.price > 0) return -1;
+            if (effectivePrice(a) <= 0 && effectivePrice(b) > 0) return 1;
+            if (effectivePrice(b) <= 0 && effectivePrice(a) > 0) return -1;
             return sortBy === 'price-low'
-              ? a.price - b.price
-              : b.price - a.price;
+              ? effectivePrice(a) - effectivePrice(b)
+              : effectivePrice(b) - effectivePrice(a);
           }
           if (sortBy === 'newest') return Number(b.id) - Number(a.id);
           return 0;
@@ -282,7 +284,7 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({
 
   return (
     <div className="min-h-screen bg-[#FAF8F5] pb-16 text-[#333333] font-sans-clean tracking-normal">
-      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-12">
+      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-12">{wishlist.error && <p role="alert" className="pt-4 text-sm">{wishlist.error} <button className="underline" onClick={wishlist.reload}>Try again</button></p>}
         <nav
           aria-label="Breadcrumb"
           className="flex items-center gap-2 pt-6 text-xs font-normal text-[#706B65]"
@@ -427,8 +429,8 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({
             className={`grid grid-cols-2 gap-x-4 gap-y-9 pt-7 sm:gap-x-6 sm:gap-y-12 md:grid-cols-3 lg:gap-x-7 ${gridColumns === 2 ? 'lg:grid-cols-2' : gridColumns === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-4'}`}
           >
             {filteredProducts.map((product) => {
-              const isWishlisted = wishlistIds.includes(product.id);
-              const availableSizes = product.inStockSizes ?? product.sizes;
+              const isWishlisted = wishlist.ids.includes(product.id);
+              const availableSizes = productVariants(product)[0]?.inStockSizes || [];
               const hasDetailImage = Boolean(
                 product.imageDetail &&
                 product.imageDetail !== product.imageFront
@@ -458,10 +460,10 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({
                     </Link>
                     <button
                       onClick={() =>
-                        toggleSelection(product.id, setWishlistIds)
+                        wishlist.toggle(product.id)
                       }
                       aria-label={`${isWishlisted ? 'Remove' : 'Save'} ${product.title} ${isWishlisted ? 'from' : 'to'} wishlist`}
-                      aria-pressed={isWishlisted}
+                      aria-pressed={isWishlisted} disabled={wishlist.loading || wishlist.busy !== null || Boolean(wishlist.error)}
                       className={`absolute right-2 top-2 flex h-9 w-9 items-center justify-center bg-[#FAF8F5] text-primary-foreground ${focusStyle}`}
                     >
                       <svg
@@ -522,11 +524,11 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({
                   </h2>
                   <div className="mt-2 flex flex-wrap items-baseline justify-between gap-x-2 gap-y-1">
                     <span className="text-[13px] font-medium sm:text-sm">
-                      {product.price > 0
-                        ? formatPrice(product.price)
+                      {effectivePrice(product) > 0
+                        ? formatPrice(effectivePrice(product))
                         : 'Price on request'}
                     </span>
-                    {product.price > 0 && availableSizes.length > 0 && (
+                    {effectivePrice(product) > 0 && availableSizes.length > 0 && (
                       <button
                         onClick={() =>
                           setQuickAddId(

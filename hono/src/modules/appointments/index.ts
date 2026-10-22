@@ -41,8 +41,8 @@ appointmentsModule.post('/', async (c) => {
   }
 
   const scheduledAt = new Date(parsed.data.scheduledAt);
-  if (Number.isNaN(scheduledAt.getTime())) {
-    return c.json({ success: false, error: 'Invalid appointment date' }, 400);
+  if (!Number.isFinite(scheduledAt.getTime()) || scheduledAt.getTime() <= Date.now()) {
+    return c.json({ success: false, error: 'Choose a future appointment date and time' }, 400);
   }
 
   const [header] = await db.insert(appointments).values({
@@ -76,14 +76,14 @@ appointmentsModule.post('/', async (c) => {
 appointmentsModule.patch('/:id/cancel', async (c) => {
   const authUser = c.get('authUser');
   const id = Number(c.req.param('id'));
-  if (!Number.isInteger(id)) return c.json({ success: false, error: 'Invalid appointment id' }, 400);
+  if (!Number.isSafeInteger(id) || id <= 0) return c.json({ success: false, error: 'Invalid appointment id' }, 400);
 
   const [updated] = await db
     .update(appointments)
     .set({ status: 'cancelled' })
     .where(and(eq(appointments.id, id), eq(appointments.userId, authUser.id), eq(appointments.status, 'upcoming')));
 
-  if (!updated) return c.json({ success: false, error: 'Upcoming appointment not found' }, 404);
+  if (!updated.affectedRows) return c.json({ success: false, error: 'Upcoming appointment not found' }, 404);
   return c.json({ success: true, message: 'Appointment cancelled' });
 });
 
@@ -91,7 +91,7 @@ appointmentsModule.patch('/:id/cancel', async (c) => {
 appointmentsModule.put('/:id', async (c) => {
   const authUser = c.get('authUser');
   const id = Number(c.req.param('id'));
-  if (!Number.isInteger(id)) return c.json({ success: false, error: 'Invalid appointment id' }, 400);
+  if (!Number.isSafeInteger(id) || id <= 0) return c.json({ success: false, error: 'Invalid appointment id' }, 400);
 
   const body = await c.req.json().catch(() => null);
   const parsed = updateAppointmentSchema.safeParse(body);
@@ -100,25 +100,31 @@ appointmentsModule.put('/:id', async (c) => {
   }
 
   const values: Record<string, unknown> = {};
+  const owned = and(eq(appointments.id, id), eq(appointments.userId, authUser.id));
+  const [existing] = await db.select().from(appointments).where(owned).limit(1);
+  if (!existing) return c.json({ success: false, error: 'Appointment not found' }, 404);
+  if (existing.status !== 'upcoming') return c.json({ success: false, error: 'Only upcoming appointments can be changed' }, 409);
   if (parsed.data.location !== undefined) values.location = parsed.data.location;
   if (parsed.data.occasion !== undefined) values.occasion = parsed.data.occasion;
   if (parsed.data.scheduledAt !== undefined) {
     const scheduledAt = new Date(parsed.data.scheduledAt);
-    if (Number.isNaN(scheduledAt.getTime())) {
-      return c.json({ success: false, error: 'Invalid appointment date' }, 400);
+    if (!Number.isFinite(scheduledAt.getTime()) || scheduledAt.getTime() <= Date.now()) {
+      return c.json({ success: false, error: 'Choose a future appointment date and time' }, 400);
     }
     values.scheduledAt = scheduledAt;
   }
   if (parsed.data.notes !== undefined) values.notes = parsed.data.notes;
 
+  if (!Object.keys(values).length) return c.json({ success: false, error: 'No changes supplied' }, 400);
   const [updated] = await db
     .update(appointments)
     .set(values)
-    .where(and(eq(appointments.id, id), eq(appointments.userId, authUser.id)));
+    .where(and(owned, eq(appointments.status, 'upcoming')));
 
-  if (!updated) return c.json({ success: false, error: 'Appointment not found' }, 404);
+  if (!updated.affectedRows) return c.json({ success: false, error: 'Appointment could not be updated. Refresh and try again.' }, 409);
 
-  const [record] = await db.select().from(appointments).where(eq(appointments.id, id)).limit(1);
+  const [record] = await db.select().from(appointments).where(owned).limit(1);
+  if (!record) return c.json({ success: false, error: 'Appointment not found' }, 404);
   return c.json({ success: true, data: {
     id: record.id,
     location: record.location,
@@ -133,7 +139,7 @@ appointmentsModule.put('/:id', async (c) => {
 appointmentsModule.patch('/:id/reschedule', async (c) => {
   const authUser = c.get('authUser');
   const id = Number(c.req.param('id'));
-  if (!Number.isInteger(id)) return c.json({ success: false, error: 'Invalid appointment id' }, 400);
+  if (!Number.isSafeInteger(id) || id <= 0) return c.json({ success: false, error: 'Invalid appointment id' }, 400);
 
   const body = await c.req.json().catch(() => null);
   const parsed = updateAppointmentSchema.safeParse(body);
@@ -146,8 +152,8 @@ appointmentsModule.patch('/:id/reschedule', async (c) => {
   }
 
   const scheduledAt = new Date(parsed.data.scheduledAt);
-  if (Number.isNaN(scheduledAt.getTime())) {
-    return c.json({ success: false, error: 'Invalid appointment date' }, 400);
+  if (!Number.isFinite(scheduledAt.getTime()) || scheduledAt.getTime() <= Date.now()) {
+    return c.json({ success: false, error: 'Choose a future appointment date and time' }, 400);
   }
 
   const [updated] = await db
@@ -155,6 +161,6 @@ appointmentsModule.patch('/:id/reschedule', async (c) => {
     .set({ scheduledAt })
     .where(and(eq(appointments.id, id), eq(appointments.userId, authUser.id), eq(appointments.status, 'upcoming')));
 
-  if (!updated) return c.json({ success: false, error: 'Upcoming appointment not found' }, 404);
+  if (!updated.affectedRows) return c.json({ success: false, error: 'Upcoming appointment not found' }, 404);
   return c.json({ success: true, message: 'Appointment rescheduled' });
 });

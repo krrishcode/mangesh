@@ -1,51 +1,65 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { fetchApi } from '../../../../lib/api';
+import { useState, type FormEvent } from 'react';
+import { accountApi, useAccountData } from '../../useAccountData';
+import type { Address } from '../../account';
+import { AccountDialog, AccountEmpty, AccountError, AccountFeedback, AccountLoading } from '../ui/AccountElements';
 
-export const AddressesView: React.FC = () => {
-  const [addresses, setAddresses] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+type AddressForm = Omit<Address, 'id'> & { id?: number };
+const emptyAddress: AddressForm = { label: 'shipping', isDefault: false, fullName: '', phone: '', line1: '', line2: '', city: '', state: '', postalCode: '', country: 'India' };
 
-  useEffect(() => {
-    fetchApi<{ success: boolean; data: any[] }>('/users/me/addresses')
-      .then(res => setAddresses(res.data))
-      .finally(() => setLoading(false));
-  }, []);
-
-  if (loading) return <div className="p-8 text-center text-sm font-sans-clean">Loading addresses...</div>;
-
-  return (
-    <div className="animate-fadeIn">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-lg font-serif-luxury tracking-wider text-[#333333] uppercase">Address Book</h2>
-        <button className="text-[11px] font-sans-clean font-medium tracking-widest uppercase text-primary-foreground hover:underline">
-          Add New
-        </button>
-      </div>
-      
-      {addresses.length === 0 && <div className="text-gray-500 text-sm">No addresses found.</div>}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {addresses.map(addr => (
-          <div key={addr.id} className="border border-[#EAE3DB] bg-white p-6 relative">
-            <span className="absolute top-6 right-6 text-[9px] bg-gray-100 text-gray-600 px-2 py-1 uppercase tracking-widest">
-              {addr.isDefault ? `Default ${addr.label}` : addr.label}
-            </span>
-            <h3 className="font-sans-clean text-sm font-medium text-[#333333] mb-3">{addr.fullName || 'No Name'}</h3>
-            <div className="font-sans-clean text-xs font-light text-gray-500 leading-relaxed space-y-1">
-              <p>{addr.line1}</p>
-              {addr.line2 && <p>{addr.line2}</p>}
-              <p>{addr.city}, {addr.state} {addr.postalCode}</p>
-              <p>{addr.country}</p>
-              <p className="mt-3 text-[#333333]">T: {addr.phone}</p>
-            </div>
-            <div className="mt-6 flex gap-4 text-[10px] font-sans-clean uppercase tracking-widest text-gray-400">
-              <button className="hover:text-primary-foreground">Edit</button>
-              <button className="hover:text-primary-foreground">Remove</button>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
+export function AddressesView() {
+  const { data, loading, error, reload } = useAccountData<Address[]>('/users/me/addresses');
+  const [editor, setEditor] = useState<AddressForm | null>(null);
+  const [removing, setRemoving] = useState<Address | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState('');
+  const [feedback, setFeedback] = useState('');
+  function openEditor(address?: Address) { setFormError(''); setEditor(address ? { ...address } : { ...emptyAddress }); }
+  async function save(event: FormEvent) {
+    event.preventDefault(); if (!editor) return; setSaving(true); setFormError('');
+    const { id, ...payload } = editor;
+    try {
+      await accountApi(`/users/me/addresses${id ? `/${id}` : ''}`, { method: id ? 'PUT' : 'POST', body: JSON.stringify(payload) });
+      setEditor(null); setFeedback(id ? 'Address updated.' : 'Address added.'); reload();
+    } catch { setFormError('We couldn’t save this address. Check the details and try again.'); }
+    finally { setSaving(false); }
+  }
+  async function remove() {
+    if (!removing) return; setSaving(true); setFormError('');
+    try { await accountApi(`/users/me/addresses/${removing.id}`, { method: 'DELETE' }); setRemoving(null); setFeedback('Address removed.'); reload(); }
+    catch { setFormError('We couldn’t remove this address. Please try again.'); }
+    finally { setSaving(false); }
+  }
+  return <div className="account-stack">
+    <div className="account-toolbar"><p className="account-muted">{loading ? 'Your saved addresses' : `${data?.length || 0} saved ${data?.length === 1 ? 'address' : 'addresses'}`}</p><button type="button" className="account-button" onClick={() => openEditor()}>Add address</button></div>
+    <AccountFeedback message={feedback} />
+    {loading ? <AccountLoading /> : error ? <AccountError retry={reload} /> : !data?.length ? <AccountEmpty title="No saved addresses"><p>Add your delivery or billing address to keep it ready for your next order.</p></AccountEmpty> : <div className="account-address-grid">{data.map((address) => <article key={address.id} className="account-panel">
+      <header className="account-panel-heading"><h2>{address.label === 'shipping' ? 'Delivery address' : 'Billing address'}</h2>{address.isDefault && <span className="account-badge active">Default</span>}</header>
+      <address className="account-address-lines"><strong>{address.fullName}</strong><span>{address.line1}</span>{address.line2 && <span>{address.line2}</span>}<span>{address.city}, {address.state} {address.postalCode}</span><span>{address.country}</span><span className="account-address-phone">{address.phone}</span></address>
+      <div className="account-card-actions"><button className="account-link" onClick={() => openEditor(address)}>Edit address</button><button className="account-link account-muted" onClick={() => { setFormError(''); setRemoving(address); }}>Remove</button></div>
+    </article>)}</div>}
+    {editor && <AccountDialog title={editor.id ? 'Edit address' : 'Add address'} onClose={() => setEditor(null)}>
+      <form onSubmit={save}>
+        <div className="account-form-grid">
+          <label className="account-full-width">Full name<input autoComplete="name" required minLength={2} value={editor.fullName} onChange={(event) => setEditor({ ...editor, fullName: event.target.value })} /></label>
+          <label>Phone<input type="tel" autoComplete="tel" required minLength={6} maxLength={32} value={editor.phone} onChange={(event) => setEditor({ ...editor, phone: event.target.value })} /></label>
+          <label>Address type<select value={editor.label} onChange={(event) => setEditor({ ...editor, label: event.target.value as Address['label'] })}><option value="shipping">Delivery</option><option value="billing">Billing</option></select></label>
+          <label className="account-full-width">Address line 1<input autoComplete="address-line1" required minLength={4} value={editor.line1} onChange={(event) => setEditor({ ...editor, line1: event.target.value })} /></label>
+          <label className="account-full-width">Address line 2 <span className="account-muted">(optional)</span><input autoComplete="address-line2" value={editor.line2 || ''} onChange={(event) => setEditor({ ...editor, line2: event.target.value })} /></label>
+          <label>City<input autoComplete="address-level2" required minLength={2} value={editor.city} onChange={(event) => setEditor({ ...editor, city: event.target.value })} /></label>
+          <label>State / region<input autoComplete="address-level1" required minLength={2} value={editor.state} onChange={(event) => setEditor({ ...editor, state: event.target.value })} /></label>
+          <label>Postal code<input autoComplete="postal-code" required minLength={4} maxLength={16} value={editor.postalCode} onChange={(event) => setEditor({ ...editor, postalCode: event.target.value })} /></label>
+          <label>Country<input autoComplete="country-name" required value={editor.country} onChange={(event) => setEditor({ ...editor, country: event.target.value })} /></label>
+        </div>
+        <label className="account-checkbox"><input type="checkbox" checked={editor.isDefault} onChange={(event) => setEditor({ ...editor, isDefault: event.target.checked })} />Use as my default {editor.label === 'shipping' ? 'delivery' : 'billing'} address</label>
+        <AccountFeedback message={formError} error />
+        <div className="account-form-actions"><button className="account-button" disabled={saving}>{saving ? 'Saving…' : 'Save address'}</button><button type="button" className="account-button secondary" onClick={() => setEditor(null)}>Cancel</button></div>
+      </form>
+    </AccountDialog>}
+    {removing && <AccountDialog title="Remove this address?" onClose={() => setRemoving(null)}>
+      <p className="account-muted">The saved address for {removing.fullName} at {removing.line1} will be removed.</p><AccountFeedback message={formError} error />
+      <div className="account-form-actions"><button className="account-button" disabled={saving} onClick={remove}>{saving ? 'Removing…' : 'Remove address'}</button><button className="account-button secondary" onClick={() => setRemoving(null)}>Keep address</button></div>
+    </AccountDialog>}
+  </div>;
+}

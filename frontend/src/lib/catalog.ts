@@ -1,87 +1,33 @@
-import { MENS_PRODUCTS, type MensProduct } from '../data/mensCollection';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
-
-function parseJson<T>(value: unknown, fallback: T): T {
-  if (typeof value !== 'string') return (value as T) ?? fallback;
-
-  try {
-    return JSON.parse(value) as T;
-  } catch {
-    return fallback;
-  }
-}
-
-function normalizeProduct(raw: Record<string, any>): MensProduct {
-  const sizes = parseJson<string[]>(raw.sizes, ['38', '40', '42', '44', '46', '48']);
-  const inStockSizes = parseJson<string[]>(raw.inStockSizes, ['38', '40', '42', '44', '46']);
-
-  return {
-    id: String(raw.id),
-    title: raw.title,
-    category: raw.categoryName || 'Sherwanis',
-    price: Number(raw.price),
-    salePrice: raw.salePrice ? Number(raw.salePrice) : null,
-    sku: raw.sku,
-    imageFront:
-      raw.imageFront ||
-      'https://www.anitadongre.com/dw/image/v2/BGCX_PRD/on/demandware.static/-/Sites-masterCatalog_AD_India/default/dwf27d8283/images/hires/FW26/F26MP8SR_BEIGE_1.jpg?sw=850&sh=1275&sm=fit&strip=false',
-    imageDetail:
-      raw.imageDetail ||
-      'https://www.anitadongre.com/dw/image/v2/BGCX_PRD/on/demandware.static/-/Sites-masterCatalog_AD_India/default/dw6c58fa09/images/hires/FW26/F26MP8SR_BEIGE_3.jpg?sw=850&sh=1275&sm=fit&strip=false',
-    color: raw.color || 'Beige',
-    colorHex: raw.colorHex || '#D6C7B2',
-    craft: raw.craft || 'Imperial Metallic Zardozi & Resham',
-    description: raw.description || '',
-    badge: raw.badge || 'EXCLUSIVE',
-    sizes,
-    inStockSizes,
-    readyToShip: Boolean(raw.readyToShip),
-    styleNumber: raw.styleNumber,
-    measurements: raw.measurements,
-    fabricContent: raw.fabricContent,
-    componentsCount: raw.componentsCount,
-    setIncludes: raw.setIncludes,
-    washCare: raw.washCare,
-    countryOfOrigin: raw.countryOfOrigin,
-    manufacturerAddress: raw.manufacturerAddress,
-    returnsPolicy: raw.returnsPolicy,
-    disclaimer: raw.disclaimer,
-    editorialStory: raw.editorialStory,
-    styleNote: raw.styleNote,
-    deliveryMethod: raw.deliveryMethod || 'both',
-    colorVariants: parseJson(raw.colorVariants, raw.colorVariants),
-    gallery: parseJson<string[]>(raw.gallery, []),
+import type { MensProduct } from '../data/mensCollection';
+import { stringArray } from './product';
+const API_BASE_URL = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+export interface CatalogCategory { id: number; name: string; slug: string; image?: string }
+export function normalizeProduct(raw: Record<string, any>): MensProduct {
+  const price = Number(raw.price);
+  return { ...raw, id: String(raw.id), title: String(raw.title || ''),
+    category: raw.categoryName || '', categorySlug: raw.categorySlug || '',
+    price: Number.isFinite(price) ? price : 0, salePrice: Number(raw.salePrice) > 0 ? Number(raw.salePrice) : null,
+    stock: Math.max(0, Math.floor(Number(raw.stock) || 0)),
+    imageFront: raw.imageFront || '', imageDetail: raw.imageDetail || '',
+    color: raw.color || '', colorHex: raw.colorHex || '', craft: raw.craft || '', description: raw.description || '',
+    sizes: stringArray(raw.sizes), inStockSizes: stringArray(raw.inStockSizes),
+    gallery: stringArray(raw.gallery), readyToShip: Boolean(raw.readyToShip), deliveryMethod: raw.deliveryMethod || '',
   };
 }
-
-export async function getCatalogProducts(): Promise<MensProduct[]> {
-  const products = new Map<string, MensProduct>(MENS_PRODUCTS.map((product) => [product.id, product]));
-
-  try {
-    const response = await fetch(`${API_BASE_URL}/products`, { cache: 'force-cache' });
-    if (response.ok) {
-      const json = await response.json();
-      if (Array.isArray(json?.data)) {
-        json.data.forEach((product: Record<string, any>) => {
-          products.set(String(product.id), normalizeProduct(product));
-        });
-      }
-    }
-  } catch {
-    // Keep the local catalog fallback when the backend is unavailable at build time.
-  }
-
-  // Local fallback ids and database ids differ for the same seeded products,
-  // so collapse duplicates by title with the database entry winning.
-  const byTitle = new Map<string, MensProduct>();
-  for (const product of products.values()) {
-    byTitle.set(product.title.trim().toLowerCase(), product);
-  }
-  return Array.from(byTitle.values());
+async function readCatalog<T>(endpoint: string): Promise<T> {
+  const response = await fetch(`${API_BASE_URL}/${endpoint}`, { cache: 'no-store', signal: AbortSignal.timeout(10000) });
+  if (!response.ok) throw new Error('The catalogue is temporarily unavailable. Please try again.');
+  const result = await response.json();
+  if (!result.success || !Array.isArray(result.data)) throw new Error('The catalogue is temporarily unavailable. Please try again.');
+  return result.data;
 }
-
+export async function getCatalogProducts(): Promise<MensProduct[]> {
+  return (await readCatalog<Record<string, any>[]>('products')).map(normalizeProduct);
+}
+export async function getCatalogCategories(): Promise<CatalogCategory[]> { return readCatalog<CatalogCategory[]>('categories'); }
 export async function getCatalogProduct(id: string): Promise<MensProduct | undefined> {
-  const products = await getCatalogProducts();
-  return products.find((product) => product.id === id);
+  const response = await fetch(`${API_BASE_URL}/products/${encodeURIComponent(id)}`, { cache: 'no-store', signal: AbortSignal.timeout(10000) });
+  if (response.status === 404) return undefined;
+  if (!response.ok) throw new Error('The product is temporarily unavailable. Please try again.');
+  return normalizeProduct((await response.json()).data);
 }

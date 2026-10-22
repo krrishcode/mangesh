@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useAuthStore } from '../../../../stores/authStore';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
 
 interface AdminLoginViewProps {
   onSuccess: () => void;
@@ -27,7 +26,7 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = ({ onSuccess }) => 
     setError(null);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/auth/login`, {
+      const res = await fetch('/api/account/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.trim(), password }),
@@ -55,11 +54,7 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = ({ onSuccess }) => 
     }
   };
 
-  const handleQuickFill = () => {
-    setEmail('admin@example.com');
-    setPassword('admin123');
-    setError(null);
-  };
+
 
   return (
     <div style={{
@@ -179,7 +174,7 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = ({ onSuccess }) => 
                 <input
                   type="email"
                   required
-                  placeholder="admin@example.com"
+                  placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   style={{
@@ -329,37 +324,7 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = ({ onSuccess }) => 
             </button>
           </form>
 
-          {/* Quick Demo Fill Helper */}
-          <div style={{
-            marginTop: 24,
-            padding: '12px 14px',
-            background: 'rgba(255, 255, 255, 0.02)',
-            borderRadius: 8,
-            border: '1px dashed #292524',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}>
-            <div style={{ fontSize: 11, color: '#78716C' }}>
-              <div>Demo Admin: <span style={{ color: '#D6D3D1' }}>admin@example.com</span></div>
-            </div>
-            <button
-              type="button"
-              onClick={handleQuickFill}
-              style={{
-                background: 'rgba(255, 255, 255, 0.06)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                color: '#FAFAF9',
-                padding: '4px 10px',
-                borderRadius: 6,
-                fontSize: 11,
-                fontWeight: 500,
-                cursor: 'pointer',
-              }}
-            >
-              Autofill
-            </button>
-          </div>
+
         </div>
 
         {/* Footer Security Notice */}

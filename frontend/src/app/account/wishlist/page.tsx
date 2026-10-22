@@ -12,15 +12,12 @@ export default function AccountWishlistRoute() {
   return (
     <>
       <HeaderInteractive />
-      <main className="bg-[#FAF8F5] min-h-screen pt-8 pb-20">
+      <main id="main" className="bg-[#FAF8F5] min-h-[65vh]">
         <UserPortalLayout activeTab="wishlist">
           <WishlistView />
         </UserPortalLayout>
       </main>
-      <Footer />
+      <Footer compact />
     </>
   );
 }
-
-
-

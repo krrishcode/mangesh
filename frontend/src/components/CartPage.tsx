@@ -1,161 +1,37 @@
 'use client';
-
 import Link from 'next/link';
-
-import React from 'react';
-import { useCartStore } from '../stores';
-
-export const CartPage: React.FC = () => {
-  const { items, removeItem, updateQuantity, totalPrice, clearCart } = useCartStore();
-
-  const subtotal = totalPrice();
-  const shipping = 0;
-  const total = subtotal + shipping;
-
-  const formatINR = (amount: number) =>
-    `₹${Math.round(amount).toLocaleString('en-IN')}`;
-
-  return (
-    <main className="bg-[#FAF8F5] min-h-screen pt-4 pb-16 text-[#333333]">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
-        {/* Breadcrumb */}
-        <nav className="font-sans-clean text-[10.5px] text-[#333333] mb-4 flex flex-wrap items-center gap-2 tracking-[0.14em] uppercase">
-          <Link href="/" className="hover:text-primary-foreground transition font-medium">Home</Link>
-          <span>/</span>
-          <span className="text-[#333333] font-semibold">Shopping Bag</span>
-        </nav>
-
-        <h1 className="font-heading text-2xl sm:text-3xl tracking-[0.14em] text-[#333333] uppercase font-light mb-8">
-          SHOPPING BAG
-        </h1>
-
-        {items.length === 0 ? (
-          <div className="text-center py-24 bg-[#FCFAF7] border border-[#EAE3DB] rounded-xs">
-            <h2 className="font-serif-luxury text-2xl tracking-[0.12em] text-[#333333] uppercase mb-2 font-light">
-              Your Bag is Empty
-            </h2>
-            <p className="font-sans-clean text-[11px] text-[#333333] tracking-[0.06em] font-light normal-case mb-6">
-              Discover our handcrafted couture and begin your bespoke journey.
-            </p>
-            <Link
-              href="/shop"
-              className="inline-block px-10 py-3.5 bg-primary text-white text-[11px] font-medium tracking-[0.20em] uppercase hover:bg-primary-dark hover:text-white transition"
-            >
-              EXPLORE COLLECTION
-            </Link>
+import { useEffect, useState } from 'react';
+import { cartLineId, useCartStore } from '../stores/cartStore';
+import { formatPrice } from '../lib/product';
+import '../styles/commerce.css';
+export function CartPage() {
+  const { items, removeItem, updateQuantity, totalPrice, clearCart, syncProducts, needsReview } = useCartStore();
+  const [ready, setReady] = useState(false);
+  const [error, setError] = useState('');
+  const [version, setVersion] = useState(0);
+  useEffect(() => {
+    const controller = new AbortController(); setReady(false); setError('');
+    fetch('/api/catalog', { signal: controller.signal, cache: 'no-store' }).then(async response => {
+      if (!response.ok) throw new Error('We couldn’t check availability. Please try again.');
+      const data = await response.json(); syncProducts(data.products);
+    }).catch(reason => { if (!controller.signal.aborted) setError(reason.message); }).finally(() => { if (!controller.signal.aborted) setReady(true); });
+    return () => controller.abort();
+  }, [syncProducts, version]);
+  const quantities = (id: string | number) => items.filter(item => String(item.product_id) === String(id)).reduce((sum, item) => sum + item.quantity, 0);
+  const invalid = items.some(item => item.max_quantity <= 0 || quantities(item.product_id) > item.max_quantity);
+  return <main id="main" className="commerce-shell"><nav className="commerce-breadcrumb" aria-label="Breadcrumb"><Link href="/shop">Shop</Link><span>/</span><span>Shopping bag</span></nav><h1>Shopping bag</h1>
+    {!ready ? <p role="status">Loading your bag…</p> : <>
+      {needsReview && <p className="commerce-notice">Please reselect any items added before the bag update so their size and colour are saved correctly.</p>}
+      {error && <div role="alert" className="commerce-notice">{error} <button onClick={() => setVersion(value => value + 1)}>Try again</button></div>}
+      {!items.length ? <div className="commerce-panel commerce-empty"><h2>Your bag is empty</h2><p>Browse clothing to find your next piece.</p><Link className="commerce-button" href="/shop">Browse clothing</Link></div> : <div className="commerce-layout"><section aria-label="Bag items" className="commerce-stack">
+        {items.map(item => <article key={cartLineId(item)} className="commerce-panel commerce-bag-item">
+          <Link href={`/products/${item.product_id}`} className="commerce-bag-image">{item.image_url ? <img src={item.image_url} alt={item.title} /> : <span>Image unavailable</span>}</Link>
+          <div className="commerce-bag-details"><Link href={`/products/${item.product_id}`}><h2>{item.title}</h2></Link><p className="commerce-muted">{[item.color, item.size ? `Size ${item.size}` : 'Choose size'].filter(Boolean).join(' · ')}</p>
+            <p>{formatPrice(item.price)}</p>{item.max_quantity <= 0 ? <p role="alert">This selection is currently unavailable. Please remove it or choose another size.</p> : quantities(item.product_id) > item.max_quantity && <p role="alert">Only {item.max_quantity} available. Reduce your quantity to continue.</p>}
+            <div className="commerce-line-actions"><div className="commerce-quantity"><button aria-label={`Decrease quantity of ${item.title}, size ${item.size}`} disabled={item.quantity <= 1} onClick={() => updateQuantity(cartLineId(item), item.quantity - 1)}>−</button><span>{item.quantity}</span><button aria-label={`Increase quantity of ${item.title}, size ${item.size}`} disabled={quantities(item.product_id) >= item.max_quantity || item.quantity >= 99} onClick={() => updateQuantity(cartLineId(item), item.quantity + 1)}>+</button></div><button className="commerce-link" onClick={() => removeItem(cartLineId(item))}>Remove</button><strong>{formatPrice(item.price * item.quantity)}</strong></div>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-            {/* Items List */}
-            <div className="lg:col-span-2 space-y-6">
-              {items.map((item) => (
-                <div
-                  key={item.product_id}
-                  className="flex gap-4 sm:gap-6 bg-[#FCFAF7] border border-[#EAE3DB] rounded-xs p-4 sm:p-6"
-                >
-                  <Link
-                    href={`/products/${item.product_id}`}
-                    className="w-24 sm:w-32 shrink-0 aspect-[3/4] overflow-hidden bg-[#ECE8E1] rounded-xs block hover:opacity-80 transition"
-                  >
-                    <img
-                      src={item.image_url}
-                      alt={item.title}
-                      className="w-full h-full object-cover object-top"
-                    />
-                  </Link>
-
-                  <div className="flex-1 flex flex-col justify-between">
-                    <div className="flex justify-between items-start gap-4">
-                      <Link
-                        href={`/products/${item.product_id}`}
-                        className="font-serif-luxury text-sm sm:text-base tracking-[0.10em] text-[#333333] uppercase font-normal leading-snug hover:text-primary-foreground transition-colors"
-                      >
-                        {item.title}
-                      </Link>
-                      <button
-                        onClick={() => removeItem(item.product_id)}
-                        className="text-[11px] font-medium text-gray-500 hover:text-primary-foreground transition tracking-wider uppercase shrink-0"
-                      >
-                        Remove
-                      </button>
-                    </div>
-
-                    <div className="mt-3 flex items-end justify-between gap-4">
-                      <div className="flex items-center border border-[#D5CEC5] rounded-xs">
-                        <button
-                          onClick={() => updateQuantity(item.product_id, item.quantity - 1)}
-                          className="w-9 h-9 flex items-center justify-center text-gray-700 hover:text-primary-foreground transition"
-                          aria-label="Decrease quantity"
-                        >
-                          −
-                        </button>
-                        <span className="w-10 text-center text-sm font-medium text-[#333333]">
-                          {item.quantity}
-                        </span>
-                        <button
-                          onClick={() => updateQuantity(item.product_id, item.quantity + 1)}
-                          className="w-9 h-9 flex items-center justify-center text-gray-700 hover:text-primary-foreground transition"
-                          aria-label="Increase quantity"
-                        >
-                          +
-                        </button>
-                      </div>
-
-                      <div className="text-right">
-                        <p className="font-serif-luxury text-lg text-[#333333] font-normal tracking-wider">
-                          {formatINR(item.price * item.quantity)}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-
-              <button
-                onClick={clearCart}
-                className="font-sans-clean text-[11px] text-primary-foreground font-medium underline tracking-[0.14em] uppercase hover:text-black transition"
-              >
-                Clear All
-              </button>
-            </div>
-
-            {/* Order Summary */}
-            <div className="lg:col-span-1">
-              <div className="bg-[#FCFAF7] border border-[#EAE3DB] rounded-xs p-6 sm:p-8 sticky top-24">
-                <h2 className="font-serif-luxury text-xl tracking-[0.12em] text-[#333333] uppercase font-light mb-6">
-                  ORDER SUMMARY
-                </h2>
-
-                <div className="space-y-3 text-[13px]">
-                  <div className="flex justify-between text-[#333333]">
-                    <span className="font-sans-clean text-[11px] tracking-[0.14em] uppercase font-medium">Subtotal</span>
-                    <span className="font-serif-luxury tracking-wider">{formatINR(subtotal)}</span>
-                  </div>
-                  <div className="flex justify-between text-[#333333]">
-                    <span className="font-sans-clean text-[11px] tracking-[0.14em] uppercase font-medium">Shipping</span>
-                    <span className="font-serif-luxury tracking-wider text-primary-foreground font-medium">COMPLIMENTARY</span>
-                  </div>
-                  <div className="flex justify-between border-t border-[#EAE3DB] pt-3 text-[#333333]">
-                    <span className="font-sans-clean text-[11px] tracking-[0.14em] uppercase font-medium">Total</span>
-                    <span className="font-serif-luxury text-xl tracking-wider">{formatINR(total)}</span>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => alert('Proceeding to Bespoke Concierge & Secure Checkout')}
-                  className="w-full mt-6 py-4 bg-primary text-white text-[11px] font-medium tracking-[0.20em] uppercase hover:bg-primary-dark hover:text-white transition shadow-md"
-                >
-                  PROCEED TO CHECKOUT →
-                </button>
-
-                <p className="font-sans-clean text-[10px] text-gray-500 text-center mt-3 font-light tracking-wide">
-                  Bespoke customization & fittings available post-order
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </main>
-  );
-};
+        </article>)}<button className="commerce-link" onClick={clearCart}>Clear bag</button>
+      </section><aside className="commerce-panel commerce-summary"><h2>Order summary</h2><dl><div><dt>Subtotal</dt><dd>{formatPrice(totalPrice())}</dd></div><div><dt>Delivery</dt><dd>Calculated at checkout</dd></div></dl><p className="commerce-muted">Cash on delivery available.</p>{invalid || error ? <button className="commerce-button" disabled>Review your bag</button> : <Link href="/checkout" className="commerce-button">Proceed to checkout</Link>}<Link href="/shop" className="commerce-link">Continue shopping</Link></aside></div>}
+    </>}
+  </main>;
+}

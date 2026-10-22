@@ -1,9 +1,10 @@
 import { z } from 'zod';
+export const phoneSchema = z.string().trim().min(6).max(32).refine(value => /^\+?[\d\s().-]+$/.test(value) && value.replace(/\D/g, '').length >= 7 && value.replace(/\D/g, '').length <= 15, 'Enter a valid phone number, including the country code when needed.');
 
 export const registerSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
-  name: z.string().min(2),
+  name: z.string().trim().min(2).max(255),
 });
 
 export const loginSchema = z.object({
@@ -21,8 +22,8 @@ export const resetPasswordSchema = z.object({
 });
 
 export const updateProfileSchema = z.object({
-  name: z.string().min(2).optional(),
-  phone: z.string().max(32).nullable().optional(),
+  name: z.string().trim().min(2).max(255).optional(),
+  phone: phoneSchema.nullable().optional(),
 });
 
 export const updateMeasurementsSchema = z.object({
@@ -38,23 +39,23 @@ export const updateMeasurementsSchema = z.object({
 export const createAddressSchema = z.object({
   label: z.enum(['shipping', 'billing']).default('shipping'),
   isDefault: z.boolean().default(false),
-  fullName: z.string().min(2),
-  phone: z.string().min(6).max(32),
-  line1: z.string().min(4),
-  line2: z.string().optional().nullable(),
-  city: z.string().min(2),
-  state: z.string().min(2),
-  postalCode: z.string().min(4).max(16),
-  country: z.string().default('India'),
+  fullName: z.string().trim().min(2).max(255),
+  phone: phoneSchema,
+  line1: z.string().trim().min(4).max(255),
+  line2: z.string().trim().max(255).optional().nullable(),
+  city: z.string().trim().min(2).max(128),
+  state: z.string().trim().min(2).max(128),
+  postalCode: z.string().trim().min(4).max(255).max(16),
+  country: z.string().trim().min(2).max(128).default('India'),
 });
 
 export const updateAddressSchema = createAddressSchema.partial();
 
 export const createAppointmentSchema = z.object({
-  location: z.string().min(2),
-  occasion: z.string().min(2),
-  scheduledAt: z.string().datetime().or(z.string().min(10)),
-  notes: z.string().optional().nullable(),
+  location: z.string().trim().min(2).max(255),
+  occasion: z.string().trim().min(2).max(255),
+  scheduledAt: z.string().datetime({ offset: true }).refine(value => new Date(value).getTime() > Date.now(), 'Choose a future date and time'),
+  notes: z.string().max(4000).optional().nullable(),
 });
 
 export const addToWishlistSchema = z.object({
@@ -67,8 +68,8 @@ export const changePasswordSchema = z.object({
 });
 
 export const updateAppointmentSchema = z.object({
-  location: z.string().min(2).optional(),
-  occasion: z.string().min(2).optional(),
-  scheduledAt: z.string().datetime().or(z.string().min(10)).optional(),
-  notes: z.string().optional().nullable(),
+  location: z.string().trim().min(2).max(255).optional(),
+  occasion: z.string().trim().min(2).max(255).optional(),
+  scheduledAt: z.string().datetime({ offset: true }).refine(value => new Date(value).getTime() > Date.now(), 'Choose a future date and time').optional(),
+  notes: z.string().max(4000).optional().nullable(),
 });

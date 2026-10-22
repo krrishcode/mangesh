@@ -1,67 +1,43 @@
 'use client';
-
-import React, { useState, useEffect } from 'react';
-import { fetchApi } from '../../../../lib/api';
-
-export const OrdersView: React.FC = () => {
-  const [orders, setOrders] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchApi<{ success: boolean; data: any[] }>('/orders')
-      .then((res) => {
-        setOrders(res.data);
-      })
-      .finally(() => setLoading(false));
-  }, []);
-
-  if (loading) return <div className="p-8 text-center text-sm font-sans-clean">Loading orders...</div>;
-
-  return (
-    <div className="border border-[#EAE3DB] bg-white animate-fadeIn">
-      <div className="p-6 border-b border-[#EAE3DB]">
-        <h2 className="text-lg font-serif-luxury tracking-wider text-[#333333] uppercase">Order History</h2>
-      </div>
-      <div className="overflow-x-auto">
-        <table className="w-full text-left font-sans-clean text-sm font-light">
-          <thead className="bg-[#FAF8F5] border-b border-[#EAE3DB] text-[11px] text-gray-500 uppercase tracking-[0.14em]">
-            <tr>
-              <th className="px-6 py-4 font-normal">Order</th>
-              <th className="px-6 py-4 font-normal">Date</th>
-              <th className="px-6 py-4 font-normal">Total</th>
-              <th className="px-6 py-4 font-normal">Status</th>
-              <th className="px-6 py-4 font-normal text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-[#EAE3DB]">
-            {orders.length === 0 && (
-              <tr><td colSpan={5} className="px-6 py-8 text-center text-gray-500">No orders found.</td></tr>
-            )}
-            {orders.map((ord) => (
-              <tr key={ord.id} className="hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-5">
-                  <span className="font-medium text-[#333333]">{ord.order_number}</span>
-                  <div className="text-xs text-gray-400 mt-1">{ord.items_count} item(s)</div>
-                </td>
-                <td className="px-6 py-5 text-gray-600">{new Date(ord.created_at).toLocaleDateString()}</td>
-                <td className="px-6 py-5 text-[#333333]">₹{ord.total_amount.toLocaleString()}</td>
-                <td className="px-6 py-5">
-                  <span className={`inline-block px-2.5 py-1 text-[10px] tracking-widest uppercase ${
-                    ord.status === 'delivered' ? 'bg-[#EAE3DB]/40 text-gray-600' : 'bg-yellow-50 text-yellow-700'
-                  }`}>
-                    {ord.status}
-                  </span>
-                </td>
-                <td className="px-6 py-5 text-right">
-                  <button className="text-[11px] font-medium tracking-widest uppercase text-primary-foreground hover:underline">
-                    View
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-};
+import Link from 'next/link';
+import { useState } from 'react';
+import { accountApi, useAccountData } from '../../useAccountData';
+import { dateLabel, money, type AccountOrder } from '../../account';
+import { AccountDialog, AccountEmpty, AccountError, AccountFeedback, AccountLoading } from '../ui/AccountElements';
+import { StatusBadge } from '../ui/StatusBadge';
+import { GuestOrders } from '../../../../components/GuestOrders';
+export function OrdersView() {
+  const { data, loading, error, reload } = useAccountData<AccountOrder[]>('/orders');
+  const [filter, setFilter] = useState('all');
+  const [cancelling, setCancelling] = useState<AccountOrder | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [feedback, setFeedback] = useState('');
+  const [cancelError, setCancelError] = useState('');
+  async function cancel() {
+    if (!cancelling) return; setSaving(true); setCancelError('');
+    try { await accountApi(`/orders/${cancelling.id}/cancel`, { method: 'PATCH' }); setCancelling(null); setFeedback('Order cancelled.'); reload(); }
+    catch (reason) { setCancelError(reason instanceof Error ? reason.message : 'Unable to cancel this order.'); }
+    finally { setSaving(false); }
+  }
+  if (loading) return <AccountLoading />;
+  if (error) return <AccountError retry={reload} />;
+  if (!data?.length) return <div className="account-stack"><AccountEmpty title="No orders yet"><p>Your order history and delivery updates will appear here.</p><Link href="/shop" className="account-button">Browse clothing</Link></AccountEmpty><GuestOrders compact /></div>;
+  const orders = data.filter(order => filter === 'all' || order.status === filter);
+  return <div className="account-stack"><AccountFeedback message={feedback} />
+    <div className="account-toolbar"><p className="account-muted">{data.length} {data.length === 1 ? 'order' : 'orders'}</p><label className="account-filter">Status<select value={filter} onChange={event => setFilter(event.target.value)}><option value="all">All orders</option>{['pending','processing','shipped','delivered','cancelled'].map(status => <option key={status} value={status}>{status.charAt(0).toUpperCase() + status.slice(1)}</option>)}</select></label></div>
+    {!orders.length && <AccountEmpty title="No matching orders"><p>Choose another status to view your purchases.</p><button className="account-button secondary" onClick={() => setFilter('all')}>Show all orders</button></AccountEmpty>}
+    {orders.map(order => <article className="account-panel account-order" key={order.id}>
+      <div className="account-order-header"><div><h2>{order.order_number}</h2><p className="account-muted">Placed {dateLabel(order.created_at)}</p></div><StatusBadge status={order.status} /></div>
+      <div className="account-order-meta"><p>{order.items_count} {order.items_count === 1 ? 'item' : 'items'}</p><p>Total <strong>{money(order.total_amount)}</strong></p></div>
+      {order.payment_method === 'cod' && <p className="account-muted">{order.fulfilment === 'pickup' ? 'Pay at collection' : 'Cash on delivery'}{order.payment_status === 'pending' && order.status !== 'cancelled' ? ' · Payment due' : order.payment_status === 'paid' ? ' · Paid' : ''}</p>}
+      <details className="account-order-details"><summary>View order details<span aria-hidden="true">+</span></summary>
+        <div className="account-order-items">{order.items?.length ? order.items.map(item => <div key={item.id}><div>{item.product_id ? <Link href={`/products/${item.product_id}`}>{item.title}</Link> : <p>{item.title}</p>}<span>{[item.color, item.size && `Size ${item.size}`, `Quantity ${item.quantity}`].filter(Boolean).join(' · ')}</span></div><p>{money(item.price * item.quantity)}</p></div>) : <p className="account-muted">Contact customer care for item details.</p>}</div>
+        {order.shipping_address && <div className="account-stack"><h3>Delivery address</h3><address className="account-address-lines"><strong>{order.shipping_address.fullName}</strong><span>{order.shipping_address.line1}</span>{order.shipping_address.line2 && <span>{order.shipping_address.line2}</span>}<span>{order.shipping_address.city}, {order.shipping_address.state} {order.shipping_address.postalCode}</span><span>{order.shipping_address.country}</span></address></div>}
+        {order.shipments?.map((shipment, index) => <div className="account-panel" key={shipment.tracking_number || index}><h3>{shipment.carrier || 'Delivery update'}</h3><p className="account-muted">{shipment.status.replaceAll('_', ' ')}</p>{shipment.tracking_number && <p>Tracking number: {shipment.tracking_number}</p>}<p className="account-muted">Updated {dateLabel(shipment.updated_at)}</p></div>)}
+        <div className="account-card-actions"><a href={`mailto:care@shrutimangesh.com?subject=${encodeURIComponent(`Order ${order.order_number}`)}`} className="account-link">Get help with this order</a>{order.status === 'pending' && order.payment_method === 'cod' && order.payment_status !== 'paid' && <button className="account-link" onClick={() => { setCancelError(''); setCancelling(order); }}>Cancel order</button>}</div>
+      </details>
+    </article>)}
+    <GuestOrders compact />
+    {cancelling && <AccountDialog title={`Cancel ${cancelling.order_number}?`} onClose={() => { if (!saving) setCancelling(null); }}><p>This order will be cancelled. You can place a new order if you change your mind.</p><AccountFeedback message={cancelError} error /><div className="account-form-actions"><button className="account-button" disabled={saving} onClick={cancel}>{saving ? 'Cancelling…' : 'Cancel order'}</button><button className="account-button secondary" disabled={saving} onClick={() => setCancelling(null)}>Keep order</button></div></AccountDialog>}
+  </div>;
+}

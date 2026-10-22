@@ -2,16 +2,23 @@ import React, { useEffect, useState } from 'react';
 import { fetchApi } from '../../../../lib/api';
 import { DataTable, type Column } from '../ui/DataTable';
 import { StatusBadge } from '../ui/StatusBadge';
+import type { Address } from '../../../user/account';
 
 interface Order {
   id: number;
   order_number: string;
   customer_name: string;
   customer_email: string;
+  customer_phone?: string;
+  guest?: boolean;
+  shipping_address?: Address | null;
+  fulfilment?: string | null;
+  payment_method?: string | null;
+  payment_status?: string | null;
   total_amount: number;
   status: string;
   items_count: number;
-  items: { id: number; title: string; quantity: number; price: number }[];
+  items: { id: number; title: string; quantity: number; price: number; size?: string | null; color?: string | null }[];
   created_at: string;
 }
 
@@ -49,6 +56,7 @@ export const OrdersView: React.FC = () => {
       <div>
         <div>{o.customer_name}</div>
         <div style={{ fontSize: 11, color: '#78716C' }}>{o.customer_email}</div>
+        {o.guest && <div style={{ fontSize: 11 }}>Guest checkout</div>}
       </div>
     )},
     { key: 'items_count', label: 'Items', width: '70px' },
@@ -129,13 +137,16 @@ export const OrdersView: React.FC = () => {
               <tbody>
                 {order.items.map(item => (
                   <tr key={item.id}>
-                    <td>{item.title}</td>
+                    <td>{item.title}<small style={{ display: 'block' }}>{[item.color, item.size && `Size ${item.size}`].filter(Boolean).join(' · ')}</small></td>
                     <td>{item.quantity}</td>
                     <td>₹{item.price.toLocaleString('en-IN')}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
+            <p>Payment: {order.payment_method === 'cod' ? 'Cash on delivery' : order.payment_method || 'Contact customer'} · {order.payment_status || 'Status unavailable'}</p>
+            {order.customer_phone && <p>Phone: {order.customer_phone}</p>}
+            {order.shipping_address ? <address style={{ fontStyle: 'normal', marginTop: 16 }}><strong>{order.shipping_address.fullName}</strong><br />{[order.shipping_address.line1, order.shipping_address.line2, order.shipping_address.city, order.shipping_address.state, order.shipping_address.postalCode, order.shipping_address.country].filter(Boolean).join(', ')}<br />{order.shipping_address.phone}</address> : order.fulfilment === 'pickup' && <p>Store pickup</p>}
           </div>
         );
       })()}

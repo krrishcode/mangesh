@@ -1,3 +1,4 @@
+import { useAuthStore } from '../../../../stores/authStore';
 import React, { useEffect, useState, useRef } from 'react';
 import { fetchApi } from '../../../../lib/api';
 import { FormField } from '../ui/FormField';
@@ -153,19 +154,15 @@ function generateStyleCode(title: string): string {
   return `F26${letters}${num}`;
 }
 
-const INITIAL_GALLERY = [
-  'https://www.anitadongre.com/dw/image/v2/BGCX_PRD/on/demandware.static/-/Sites-masterCatalog_AD_India/default/dwf27d8283/images/hires/FW26/F26MP8SR_BEIGE_1.jpg?sw=850&sh=1275&sm=fit&strip=false',
-  'https://www.anitadongre.com/dw/image/v2/BGCX_PRD/on/demandware.static/-/Sites-masterCatalog_AD_India/default/dw6c58fa09/images/hires/FW26/F26MP8SR_BEIGE_3.jpg?sw=850&sh=1275&sm=fit&strip=false',
-  'https://www.anitadongre.com/dw/image/v2/BGCX_PRD/on/demandware.static/-/Sites-masterCatalog_AD_India/default/dw67b07f8a/images/hires/FW26/F26MP32J_OFF%20WHITE_1.jpg?sw=850&sh=1275&sm=fit&strip=false',
-];
+const INITIAL_GALLERY: string[] = [];
 
 const BLANK_COLOR_VARIANTS: ColorVariant[] = [
   {
     id: 'var-1',
     color: '',
     colorHex: '#CCCCCC',
-    sizes: ['38', '40', '42', '44', '46', '48'],
-    inStockSizes: ['38', '40', '42', '44'],
+    sizes: [],
+    inStockSizes: [],
   },
 ];
 
@@ -178,9 +175,9 @@ const BLANK_FORM = {
   styleNumber: '',
   price: '',
   salePrice: '',
-  stock: '1',
+  stock: '0',
   description: '',
-  readyToShip: true,
+  readyToShip: false,
   isActive: true,
   deliveryMethod: 'both' as 'both' | 'home' | 'pickup',
   gallery: [] as string[],
@@ -192,7 +189,7 @@ const BLANK_FORM = {
   setIncludes: '',
   washCare: '',
   countryOfOrigin: 'India',
-  manufacturerAddress: 'House of Mangesh Mahadev Private Limited, Plot No R 847/1/1, TTC Ind. Area, MIDC, Rabale, Navi Mumbai, India - 400701.',
+  manufacturerAddress: '',
 };
 
 export const ProductFormView: React.FC<ProductFormViewProps> = ({ productId, onNavigate }) => {
@@ -227,7 +224,7 @@ export const ProductFormView: React.FC<ProductFormViewProps> = ({ productId, onN
       setLoading(false);
     } else {
       setLoading(true);
-      fetchApi<{ data: any }>(`/products/${productId}`)
+      fetchApi<{ data: any }>(`/admin/products/${productId}`)
         .then(res => {
           const p = res.data;
           if (p) {
@@ -253,24 +250,24 @@ export const ProductFormView: React.FC<ProductFormViewProps> = ({ productId, onN
                 if (Array.isArray(arr) && arr.length > 0) {
                   parsedVariants = arr.map((v: any) => ({
                     id: v.id || `var-${Math.random()}`,
-                    color: v.color || 'Beige',
-                    colorHex: v.colorHex || resolveColorNameToHex(v.color || 'Beige'),
-                    sizes: Array.isArray(v.sizes) ? v.sizes : ['38', '40', '42', '44', '46', '48'],
-                    inStockSizes: Array.isArray(v.inStockSizes) ? v.inStockSizes : ['38', '40', '42', '44', '46'],
+                    color: v.color || '',
+                    colorHex: v.colorHex || resolveColorNameToHex(v.color || ''),
+                    sizes: Array.isArray(v.sizes) ? v.sizes : [],
+                    inStockSizes: Array.isArray(v.inStockSizes) ? v.inStockSizes : [],
                   }));
                 }
               } catch {}
             }
 
             if (parsedVariants.length === 0) {
-              let legacySizes = ['38', '40', '42', '44', '46', '48'];
-              let legacyInStock = ['38', '40', '42', '44', '46'];
+              let legacySizes: string[] = [];
+              let legacyInStock: string[] = [];
               try {
                 if (p.sizes) legacySizes = typeof p.sizes === 'string' ? JSON.parse(p.sizes) : p.sizes;
                 if (p.inStockSizes) legacyInStock = typeof p.inStockSizes === 'string' ? JSON.parse(p.inStockSizes) : p.inStockSizes;
               } catch {}
 
-              const colorName = p.color || 'Beige';
+              const colorName = p.color || '';
               parsedVariants = [
                 {
                   id: 'var-1',
@@ -293,21 +290,21 @@ export const ProductFormView: React.FC<ProductFormViewProps> = ({ productId, onN
               styleNumber: p.styleNumber || 'F26MP8',
               price: p.price ? String(p.price) : '',
               salePrice: p.salePrice ? String(p.salePrice) : '',
-              stock: p.stock !== undefined ? String(p.stock) : '10',
+              stock: p.stock !== undefined ? String(p.stock) : '0',
               description: p.description || '',
-              readyToShip: p.readyToShip !== undefined ? Boolean(p.readyToShip) : true,
+              readyToShip: p.readyToShip !== undefined ? Boolean(p.readyToShip) : false,
               isActive: p.isActive !== undefined ? Boolean(p.isActive) : true,
               deliveryMethod: p.deliveryMethod || 'both',
               gallery: parsedGallery,
               primaryImage: primaryImg,
               colorVariants: parsedVariants,
-              measurements: p.measurements || `Sherwani Length - 110 cm (43.3 In)\nChuridar Fabric - 250 cm (2.5 Mtrs)\nDraped Stole - 250 cm (2.5 Mtrs)`,
-              fabricContent: p.fabricContent || '100% Silk + Lining : 100% Viscose',
-              componentsCount: String(p.componentsCount || 3),
-              setIncludes: p.setIncludes || 'Hand-embroidered Sherwani, Churidar Fabric & Handcrafted Silk Stole',
-              washCare: p.washCare || 'Dry Clean / Spot Clean',
+              measurements: p.measurements || '',
+              fabricContent: p.fabricContent || '',
+              componentsCount: String(p.componentsCount || 1),
+              setIncludes: p.setIncludes || '',
+              washCare: p.washCare || '',
               countryOfOrigin: p.countryOfOrigin || 'India',
-              manufacturerAddress: p.manufacturerAddress || 'House of Mangesh Mahadev Private Limited, Plot No R 847/1/1, TTC Ind. Area, MIDC, Rabale, Navi Mumbai, India - 400701.',
+              manufacturerAddress: p.manufacturerAddress || '',
             });
           }
         })
@@ -353,8 +350,9 @@ export const ProductFormView: React.FC<ProductFormViewProps> = ({ productId, onN
     }
 
     try {
-      const res = await fetch('http://localhost:4000/api/media/upload', {
+      const res = await fetch('/api/account/media/upload', {
         method: 'POST',
+        headers: { Authorization: 'Bearer ' + useAuthStore.getState().token },
         body: formData,
       });
       const data = await res.json();
@@ -418,10 +416,10 @@ export const ProductFormView: React.FC<ProductFormViewProps> = ({ productId, onN
     const newId = `var-${Date.now()}`;
     const newVariant: ColorVariant = {
       id: newId,
-      color: 'Blue',
+      color: '',
       colorHex: resolveColorNameToHex('Blue'),
-      sizes: ['40', '42', '44'],
-      inStockSizes: ['40', '44'],
+      sizes: [],
+      inStockSizes: [],
     };
     setForm(f => ({ ...f, colorVariants: [...f.colorVariants, newVariant] }));
     setActiveColorTab(newId);
@@ -497,10 +495,10 @@ export const ProductFormView: React.FC<ProductFormViewProps> = ({ productId, onN
 
     setSaving(true);
     const primaryVariant = form.colorVariants[0] || {
-      color: 'Beige',
+      color: '',
       colorHex: '#D6C7B2',
-      sizes: ['38', '40', '42', '44', '46'],
-      inStockSizes: ['38', '40', '42', '44'],
+      sizes: [],
+      inStockSizes: [],
     };
 
     const allSizesSet = new Set<string>();
@@ -537,13 +535,11 @@ export const ProductFormView: React.FC<ProductFormViewProps> = ({ productId, onN
       inStockSizes: Array.from(allInStockSet),
       measurements: form.measurements || null,
       fabricContent: form.fabricContent || null,
-      componentsCount: Number(form.componentsCount || 3),
+      componentsCount: Number(form.componentsCount || 1),
       setIncludes: form.setIncludes || null,
       washCare: form.washCare || null,
       countryOfOrigin: form.countryOfOrigin || 'India',
-      manufacturerAddress: form.manufacturerAddress || 'House of Mangesh Mahadev Private Limited, Plot No R 847/1/1, TTC Ind. Area, MIDC, Rabale, Navi Mumbai, India - 400701.',
-      returnsPolicy: 'This item is not eligible for return or exchange. Custom tailored couture fittings available.',
-      disclaimer: 'The colour of the product may vary slightly from how it appears here due to photographic lighting filters and screen calibrations.',
+      manufacturerAddress: form.manufacturerAddress || '',
     };
 
     try {
@@ -1344,7 +1340,7 @@ export const ProductFormView: React.FC<ProductFormViewProps> = ({ productId, onN
                 <input
                   value={form.fabricContent}
                   onChange={e => setForm(f => ({ ...f, fabricContent: e.target.value }))}
-                  placeholder="100% Silk + Lining : 100% Viscose"
+                  placeholder="Add fabric composition"
                 />
               </FormField>
 
@@ -1379,7 +1375,7 @@ export const ProductFormView: React.FC<ProductFormViewProps> = ({ productId, onN
                 rows={3}
                 value={form.measurements}
                 onChange={e => setForm(f => ({ ...f, measurements: e.target.value }))}
-                placeholder="Sherwani Length - 110 cm (43.3 In)&#10;Churidar Fabric - 250 cm (2.5 Mtrs)&#10;Draped Stole - 250 cm (2.5 Mtrs)"
+                placeholder="Add garment measurements"
               />
             </FormField>
 

@@ -1,118 +1,93 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuthStore } from '../../../../stores/authStore';
-import { fetchApi } from '../../../../lib/api';
+import type { UserDto } from '../../../../types';
+import { accountApi, useAccountData } from '../../useAccountData';
+import { AccountError, AccountFeedback, AccountLoading } from '../ui/AccountElements';
 
-export const ProfileView: React.FC = () => {
+const dimensions = [{ key: 'chest', label: 'Chest' }, { key: 'waist', label: 'Waist' }, { key: 'hip', label: 'Hip' }, { key: 'shoulder', label: 'Shoulder' }, { key: 'sleeveLength', label: 'Sleeve length' }, { key: 'inseam', label: 'Inseam' }] as const;
+type Measurements = Partial<Record<typeof dimensions[number]['key'], string | number | null>> & { unit?: 'inches' | 'cm' };
+
+export function ProfileView() {
+  const router = useRouter();
   const { user, setAuth, token } = useAuthStore();
-  const [measurements, setMeasurements] = useState<any>(null);
-
-  // Profile state
+  const measurementData = useAccountData<Measurements | null>('/users/me/measurements');
+  const security = useAccountData<{ passwordEnabled: boolean; googleConnected: boolean }>('/auth/security');
   const [firstName, setFirstName] = useState(user?.name?.split(' ')[0] || '');
   const [lastName, setLastName] = useState(user?.name?.split(' ').slice(1).join(' ') || '');
   const [phone, setPhone] = useState(user?.phone || '');
-
-  // loading
-  const [loading, setLoading] = useState(true);
+  const [measurements, setMeasurements] = useState<Measurements>({ unit: 'inches' });
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingMeasurements, setSavingMeasurements] = useState(false);
+  const [profileMessage, setProfileMessage] = useState({ text: '', error: false });
+  const [measurementMessage, setMeasurementMessage] = useState({ text: '', error: false });
+  const [passwords, setPasswords] = useState({ current: '', next: '', confirm: '' });
+  const [passwordError, setPasswordError] = useState('');
+  const [savingPassword, setSavingPassword] = useState(false);
+  useEffect(() => { if (!measurementData.loading && !measurementData.error) setMeasurements(measurementData.data || { unit: 'inches' }); }, [measurementData.data, measurementData.loading, measurementData.error]);
 
-  useEffect(() => {
-    fetchApi<{ data: any }>('/users/me/measurements')
-      .then(res => setMeasurements(res.data || {}))
-      .finally(() => setLoading(false));
-  }, []);
-
-  const handleProfileSave = async () => {
-    setSavingProfile(true);
+  async function saveProfile(event: FormEvent) {
+    event.preventDefault(); setSavingProfile(true); setProfileMessage({ text: '', error: false });
     try {
-      const res = await fetchApi<{ data: any }>('/users/me', {
-        method: 'PUT',
-        body: JSON.stringify({ name: `${firstName} ${lastName}`.trim(), phone })
-      });
-      setAuth(res.data, token!);
-      alert('Profile updated');
-    } catch(err) {
-      alert('Failed to update profile');
-    } finally {
-      setSavingProfile(false);
-    }
-  };
-
-  const handleMeasurementsSave = async () => {
-    setSavingMeasurements(true);
+      const response = await accountApi<{ data: UserDto }>('/users/me', { method: 'PUT', body: JSON.stringify({ name: `${firstName} ${lastName}`.trim(), phone: phone || null }) });
+      setAuth(response.data, token!); setProfileMessage({ text: 'Personal details saved.', error: false });
+    } catch { setProfileMessage({ text: 'We couldn’t save your details. Please try again.', error: true }); }
+    finally { setSavingProfile(false); }
+  }
+  async function saveMeasurements(event: FormEvent) {
+    event.preventDefault(); setSavingMeasurements(true); setMeasurementMessage({ text: '', error: false });
+    const payload: Record<string, string | number | null> = { unit: measurements.unit || 'inches' };
+    dimensions.forEach(({ key }) => { payload[key] = measurements[key] === '' || measurements[key] == null ? null : Number(measurements[key]); });
     try {
-      const payload: any = { unit: measurements.unit || 'inches' };
-      ['chest', 'waist', 'hip', 'shoulder', 'sleeveLength', 'inseam'].forEach(k => {
-        if (measurements[k]) payload[k] = Number(measurements[k]);
-      });
-      await fetchApi('/users/me/measurements', {
-        method: 'PUT',
-        body: JSON.stringify(payload)
-      });
-      alert('Measurements updated');
-    } catch(err) {
-      alert('Failed to save measurements');
-    } finally {
-      setSavingMeasurements(false);
-    }
-  };
-
-  if (loading) return <div className="p-8 text-center text-sm font-sans-clean">Loading profile...</div>;
-
-  return (
-    <div className="space-y-8 animate-fadeIn">
-      <div className="border border-[#EAE3DB] bg-white p-6 md:p-8">
-        <h2 className="text-lg font-serif-luxury tracking-wider text-[#333333] uppercase mb-6">Personal Details</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 font-sans-clean">
-          <div>
-            <label className="block text-[10px] uppercase tracking-widest text-gray-400 mb-2">First Name</label>
-            <input type="text" className="w-full border-b border-[#EAE3DB] bg-transparent py-2 text-sm font-light text-[#333333] focus:outline-none focus:border-primary-strong" value={firstName} onChange={e => setFirstName(e.target.value)} />
-          </div>
-          <div>
-            <label className="block text-[10px] uppercase tracking-widest text-gray-400 mb-2">Last Name</label>
-            <input type="text" className="w-full border-b border-[#EAE3DB] bg-transparent py-2 text-sm font-light text-[#333333] focus:outline-none focus:border-primary-strong" value={lastName} onChange={e => setLastName(e.target.value)} />
-          </div>
-          <div className="md:col-span-2">
-            <label className="block text-[10px] uppercase tracking-widest text-gray-400 mb-2">Email</label>
-            <input type="email" className="w-full border-b border-[#EAE3DB] bg-transparent py-2 text-sm font-light text-[#333333] mt-1 opacity-70" value={user?.email || ''} disabled />
-          </div>
-          <div className="md:col-span-2">
-            <label className="block text-[10px] uppercase tracking-widest text-gray-400 mb-2">Phone</label>
-            <input type="tel" className="w-full border-b border-[#EAE3DB] bg-transparent py-2 text-sm font-light text-[#333333] focus:outline-none focus:border-primary-strong" value={phone} onChange={e => setPhone(e.target.value)} />
-          </div>
+      await accountApi('/users/me/measurements', { method: 'PUT', body: JSON.stringify(payload) });
+      setMeasurementMessage({ text: 'Measurements saved.', error: false });
+    } catch { setMeasurementMessage({ text: 'We couldn’t save your measurements. Please try again.', error: true }); }
+    finally { setSavingMeasurements(false); }
+  }
+  function changeUnit(unit: 'inches' | 'cm') {
+    const factor = unit === 'cm' ? 2.54 : 1 / 2.54;
+    const converted = { ...measurements, unit };
+    dimensions.forEach(({ key }) => { const value = measurements[key]; if (value !== '' && value != null) converted[key] = Math.round(Number(value) * factor * 100) / 100; });
+    setMeasurements(converted);
+  }
+  async function changePassword(event: FormEvent) {
+    event.preventDefault(); setPasswordError('');
+    if (passwords.next !== passwords.confirm) { setPasswordError('The new passwords do not match.'); return; }
+    setSavingPassword(true);
+    try {
+      await accountApi('/users/me/change-password', { method: 'POST', body: JSON.stringify({ currentPassword: passwords.current, newPassword: passwords.next }) });
+      useAuthStore.getState().logout(); router.replace('/login?passwordUpdated=1');
+    } catch (reason) { setPasswordError(reason instanceof Error ? reason.message : 'Unable to change your password.'); }
+    finally { setSavingPassword(false); }
+  }
+  return <div className="account-stack">
+    <section className="account-panel"><header className="account-section-intro"><h2>Personal details</h2><p>Your name and contact information.</p></header>
+      <form onSubmit={saveProfile}>
+        <div className="account-form-grid">
+          <label>First name<input name="given-name" autoComplete="given-name" required minLength={1} value={firstName} onChange={(event) => setFirstName(event.target.value)} /></label>
+          <label>Last name<input name="family-name" autoComplete="family-name" value={lastName} onChange={(event) => setLastName(event.target.value)} /></label>
+          <label className="account-full-width">Email<input type="email" value={user?.email || ''} readOnly aria-describedby="account-email-note" /><small id="account-email-note">Your email is used to sign in.</small></label>
+          <label className="account-full-width">Phone<input type="tel" name="tel" autoComplete="tel" maxLength={32} value={phone} onChange={(event) => setPhone(event.target.value)} /></label>
         </div>
-        <button onClick={handleProfileSave} disabled={savingProfile} className="mt-8 bg-[#333333] text-white px-8 py-3 text-[11px] font-sans-clean uppercase tracking-widest hover:bg-primary-dark hover:text-white transition-colors">
-          {savingProfile ? 'Saving...' : 'Save Changes'}
-        </button>
-      </div>
-
-      <div className="border border-[#EAE3DB] bg-white p-6 md:p-8">
-        <h2 className="text-lg font-serif-luxury tracking-wider text-[#333333] uppercase mb-6">Haute Couture Measurements</h2>
-        <p className="text-xs font-sans-clean font-light text-gray-500 mb-6">Used for your bespoke fitting sessions. Measurements are in inches.</p>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-8 font-sans-clean">
-          {[
-            { key: 'chest', label: 'Chest / Bust' },
-            { key: 'waist', label: 'Waist' },
-            { key: 'hip', label: 'Hip' },
-            { key: 'shoulder', label: 'Shoulder' },
-            { key: 'sleeveLength', label: 'Sleeve Length' },
-            { key: 'inseam', label: 'Inseam' },
-          ].map((m) => (
-            <div key={m.key}>
-              <label className="block text-[10px] uppercase tracking-widest text-gray-400 mb-2">{m.label}</label>
-              <input type="text" className="w-full border-b border-[#EAE3DB] bg-transparent py-2 text-sm font-light text-[#333333] focus:outline-none focus:border-primary-strong"
-                     value={measurements?.[m.key] || ''}
-                     onChange={e => setMeasurements({...measurements, [m.key]: e.target.value})} />
-            </div>
-          ))}
-        </div>
-        <button onClick={handleMeasurementsSave} disabled={savingMeasurements} className="mt-8 border border-[#EAE3DB] text-[#333333] px-8 py-3 text-[11px] font-sans-clean uppercase tracking-widest hover:bg-[#FAF8F5] transition-colors">
-           {savingMeasurements ? 'Saving...' : 'Update Profile'}
-        </button>
-      </div>
-    </div>
-  );
-};
+        <div className="account-form-actions"><button className="account-button" disabled={savingProfile}>{savingProfile ? 'Saving…' : 'Save details'}</button><AccountFeedback message={profileMessage.text} error={profileMessage.error} /></div>
+      </form>
+    </section>
+    <section className="account-panel"><header className="account-section-intro"><h2>Measurements</h2><p>Keep your measurements up to date for fittings.</p></header>
+      {measurementData.loading ? <AccountLoading /> : measurementData.error ? <AccountError retry={measurementData.reload} /> : <form onSubmit={saveMeasurements}>
+        <label className="account-unit-field">Unit<select value={measurements.unit || 'inches'} onChange={(event) => changeUnit(event.target.value as 'inches' | 'cm')}><option value="inches">Inches</option><option value="cm">Centimetres</option></select></label>
+        <div className="account-form-grid account-measurements">{dimensions.map(({ key, label }) => <label key={key}>{label}<div className="account-input-unit"><input type="number" min="0.01" max="200" step="0.01" inputMode="decimal" value={measurements[key] ?? ''} onChange={(event) => setMeasurements({ ...measurements, [key]: event.target.value })} /><span>{measurements.unit === 'cm' ? 'cm' : 'in'}</span></div></label>)}</div>
+        <div className="account-form-actions"><button className="account-button secondary" disabled={savingMeasurements}>{savingMeasurements ? 'Saving…' : 'Save measurements'}</button><AccountFeedback message={measurementMessage.text} error={measurementMessage.error} /></div>
+      </form>}
+    </section>
+    <section className="account-panel"><header className="account-section-intro"><h2>Sign-in & security</h2><p>{security.data?.googleConnected ? 'Google is connected to your account.' : 'Manage your account password.'}</p></header>
+      {security.loading ? <AccountLoading /> : security.error ? <AccountError retry={security.reload} /> : !security.data?.passwordEnabled ? <div className="account-stack"><p>You sign in with Google. To also use a password, request an email reset link.</p><Link href="/forgot-password" className="account-link">Set up an account password</Link></div> : <form onSubmit={changePassword}><p className="account-muted">Changing your password signs out your existing sessions.</p><div className="account-form-grid">
+        <label className="account-full-width">Current password<input type="password" autoComplete="current-password" required value={passwords.current} onChange={event => setPasswords({ ...passwords, current: event.target.value })} /></label>
+        <label>New password<input type="password" autoComplete="new-password" minLength={8} required value={passwords.next} onChange={event => setPasswords({ ...passwords, next: event.target.value })} /></label>
+        <label>Confirm new password<input type="password" autoComplete="new-password" minLength={8} required value={passwords.confirm} onChange={event => setPasswords({ ...passwords, confirm: event.target.value })} /></label>
+      </div><div className="account-form-actions"><button className="account-button secondary" disabled={savingPassword}>{savingPassword ? 'Updating…' : 'Update password'}</button><AccountFeedback message={passwordError} error /></div></form>}
+    </section>
+  </div>;
+}

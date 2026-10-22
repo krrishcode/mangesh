@@ -1,53 +1,35 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { fetchApi } from '../../../../lib/api';
+import Link from 'next/link';
+import { effectivePrice, formatPrice } from '../../../../lib/product';
+import { useState } from 'react';
+import { accountApi, useAccountData } from '../../useAccountData';
+import { money, type WishlistItem } from '../../account';
+import { AccountEmpty, AccountError, AccountFeedback, AccountLoading } from '../ui/AccountElements';
 
-export const WishlistView: React.FC = () => {
-  const [items, setItems] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchApi<{ success: boolean; data: any[] }>('/wishlist')
-      .then((res) => setItems(res.data))
-      .finally(() => setLoading(false));
-  }, []);
-
-  const handleRemove = async (id: number) => {
-    try {
-      await fetchApi(`/wishlist/${id}`, { method: 'DELETE' });
-      setItems(items.filter(i => i.product_id !== id));
-    } catch(err) {
-      console.error(err);
-    }
+export function WishlistView() {
+  const { data, loading, error, reload } = useAccountData<WishlistItem[]>('/wishlist');
+  const [removing, setRemoving] = useState<number | null>(null);
+  const [feedback, setFeedback] = useState('');
+  async function remove(id: number) {
+    setRemoving(id); setFeedback('');
+    try { await accountApi(`/wishlist/${id}`, { method: 'DELETE' }); reload(); }
+    catch { setFeedback('We couldn’t remove this item. Please try again.'); }
+    finally { setRemoving(null); }
   }
-
-  if (loading) return <div className="p-8 text-center text-sm font-sans-clean">Loading wishlist...</div>;
-
-  return (
-    <div className="animate-fadeIn">
-      <h2 className="text-lg font-serif-luxury tracking-wider text-[#333333] uppercase mb-6">Your Wishlist</h2>
-      {items.length === 0 && <div className="text-gray-500 text-sm">Your wishlist is empty.</div>}
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
-        {items.map((item) => (
-          <div key={item.id} className="group relative">
-            <div className="aspect-[3/4] overflow-hidden bg-gray-100 flex items-center justify-center">
-              {/* Fallback image */}
-              <img src="https://images.unsplash.com/photo-1594938291221-94f18cbb5660?q=80&w=800&auto=format&fit=crop" alt={item.title} className="object-cover w-full h-full opacity-90 group-hover:opacity-100 transition-opacity duration-500" />
-              <button onClick={() => handleRemove(item.product_id)} className="absolute top-3 right-3 text-white mix-blend-difference hover:scale-110 transition-transform">
-                <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-              </button>
-            </div>
-            <div className="mt-4 text-center">
-              <h3 className="font-sans-clean text-xs font-light tracking-wide text-[#333333] truncate uppercase">{item.title}</h3>
-              <p className="mt-1 font-sans-clean text-sm font-medium">₹{(item.sale_price || item.price || 0).toLocaleString()}</p>
-            </div>
-            <button className="w-full mt-4 border border-[#EAE3DB] py-2 text-[10px] uppercase tracking-widest font-sans-clean hover:bg-[#333333] hover:text-white transition-colors duration-300">
-              Add to Cart
-            </button>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
+  if (loading) return <AccountLoading />;
+  if (error) return <AccountError retry={reload} />;
+  return <div>
+    <AccountFeedback message={feedback} error />
+    {!data?.length ? <AccountEmpty title="Your wishlist is empty"><p>Saved pieces will appear here.</p><Link href="/shop" className="account-button">Browse clothing</Link></AccountEmpty> : <>
+      <div className="account-toolbar"><p className="account-muted">{data.length} saved {data.length === 1 ? 'piece' : 'pieces'}</p><Link href="/shop" className="account-link">Continue shopping</Link></div>
+      <div className="account-wishlist-grid">{data.map((item) => <article key={item.id} className="account-wishlist-item">
+        <Link className="account-wishlist-image" href={`/products/${item.product_id}`}>{item.image_url ? <img src={item.image_url} alt={item.title} loading="lazy" /> : <span>Image unavailable</span>}</Link>
+        <button className="account-wishlist-remove" type="button" disabled={removing === item.product_id} onClick={() => remove(item.product_id)} aria-label={`Remove ${item.title} from wishlist`}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6" /></svg></button>
+        <h2><Link href={`/products/${item.product_id}`}>{item.title}</Link></h2><p>{formatPrice(effectivePrice({ price: Number(item.price), salePrice: item.sale_price }))}</p>
+        {!item.in_stock && <p className="account-muted">Currently unavailable</p>}
+        <Link href={`/products/${item.product_id}`} className="account-button secondary">View product</Link>
+      </article>)}</div>
+    </>}
+  </div>;
+}

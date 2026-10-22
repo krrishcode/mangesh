@@ -1,84 +1,28 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Hono } from 'hono';
-
-// Mock the token verification so middleware tests are hermetic (no JWT/secret).
-vi.mock('../lib/auth.js', () => ({
-  verifyToken: vi.fn(),
-}));
-
+const fixture = vi.hoisted(() => ({ user: { id: 7, email: 'buyer@example.invalid', role: 'customer', passwordHash: 'new-hash' } as any, revoked: false }));
+vi.mock('../lib/auth.js', () => ({ verifyToken: vi.fn(), credentialVersion: (hash: string) => 'version:' + hash, hashResetToken: () => 'test-token-hash' }));
+vi.mock('../db/index.js', () => ({ db: { select: () => ({ from: (table: any) => {
+  const rows = table[Symbol.for('drizzle:Name')] === 'users' ? (fixture.user ? [fixture.user] : []) : fixture.revoked ? [{ tokenHash: 'test-token-hash' }] : [];
+  const chain: any = { where: () => chain, limit: () => Promise.resolve(rows) }; return chain;
+} }) } }));
 import { verifyToken } from '../lib/auth.js';
 import { requireAuth, optionalAuth } from '../middleware/auth.js';
-
-function buildApp() {
-  const app = new Hono();
-  app.get('/secure', requireAuth, (c) => c.json({ success: true, authUser: c.get('authUser') }));
-  app.get('/public', optionalAuth, (c) => c.json({ success: true, authUser: c.get('authUser') ?? null }));
-  return app;
-}
-
-describe('requireAuth', () => {
-  let app: Hono;
-
-  beforeEach(() => {
-    app = buildApp();
-    vi.mocked(verifyToken).mockReset();
-  });
-
-  it('returns 401 when no Authorization header', async () => {
-    const res = await app.request('/secure');
-    expect(res.status).toBe(401);
-    const body = await res.json();
-    expect(body.success).toBe(false);
-  });
-
-  it('returns 401 for a non-Bearer header', async () => {
-    const res = await app.request('/secure', { headers: { Authorization: 'Basic abc' } });
-    expect(res.status).toBe(401);
-  });
-
-  it('returns 401 when the token is invalid or expired', async () => {
-    vi.mocked(verifyToken).mockResolvedValue(null);
-    const res = await app.request('/secure', { headers: { Authorization: 'Bearer bad.token.here' } });
-    expect(res.status).toBe(401);
-    expect(verifyToken).toHaveBeenCalledWith('bad.token.here');
-  });
-
-  it('sets authUser and proceeds for a valid token', async () => {
-    vi.mocked(verifyToken).mockResolvedValue({ sub: 7, email: 'a@b.com', role: 'customer', exp: 1e12 });
-    const res = await app.request('/secure', { headers: { Authorization: 'Bearer valid.token' } });
-    expect(res.status).toBe(200);
-    const body = await res.json();
-    expect(body.authUser).toEqual({ id: 7, email: 'a@b.com', role: 'customer' });
-  });
-});
-
-describe('optionalAuth', () => {
-  let app: Hono;
-
-  beforeEach(() => {
-    app = buildApp();
-    vi.mocked(verifyToken).mockReset();
-  });
-
-  it('passes through with authUser null when no header', async () => {
-    const res = await app.request('/public');
-    expect(res.status).toBe(200);
-    const body = await res.json();
-    expect(body.authUser).toBeNull();
-  });
-
-  it('sets authUser when a valid token is present', async () => {
-    vi.mocked(verifyToken).mockResolvedValue({ sub: 9, email: 'c@d.com', role: 'admin', exp: 1e12 });
-    const res = await app.request('/public', { headers: { Authorization: 'Bearer ok' } });
-    const body = await res.json();
-    expect(body.authUser).toEqual({ id: 9, email: 'c@d.com', role: 'admin' });
-  });
-
-  it('ignores an invalid token (still passes through)', async () => {
-    vi.mocked(verifyToken).mockResolvedValue(null);
-    const res = await app.request('/public', { headers: { Authorization: 'Bearer nope' } });
-    expect(res.status).toBe(200);
-    const body = await res.json();
-    expect(body.authUser).toBeNull();
-  });
+const payload = { sub: 7, email: 'buyer@example.invalid', role: 'customer' as const, exp: 1e12, credentialVersion: 'version:new-hash' };
+const buildApp = () => { const app = new Hono(); app.get('/secure', requireAuth, c => c.json({ user: c.get('authUser') })); app.get('/public', optionalAuth, c => c.json({ user: c.get('authUser') || null })); return app; };
+const request = (path = '/secure', authorization = 'Bearer valid') => buildApp().request(path, { headers: { Authorization: authorization } });
+beforeEach(() => { vi.mocked(verifyToken).mockReset(); fixture.user = { id: 7, email: 'buyer@example.invalid', role: 'customer', passwordHash: 'new-hash' }; fixture.revoked = false; });
+describe('account access and session revocation', () => {
+  it('requires bearer authentication', async () => { expect((await buildApp().request('/secure')).status).toBe(401); expect((await request('/secure', 'Basic abc')).status).toBe(401); });
+  it('rejects invalid or expired tokens', async () => { vi.mocked(verifyToken).mockResolvedValue(null); expect((await request()).status).toBe(401); });
+  it('accepts an active session using current database identity', async () => { vi.mocked(verifyToken).mockResolvedValue(payload); const response = await request(); expect(response.status).toBe(200); expect((await response.json()).user).toEqual({ id: 7, email: 'buyer@example.invalid', role: 'customer' }); });
+  it('rejects sessions issued before a password change', async () => { vi.mocked(verifyToken).mockResolvedValue({ ...payload, credentialVersion: 'version:old-hash' }); expect((await request()).status).toBe(401); });
+  it('rejects logged-out sessions', async () => { fixture.revoked = true; vi.mocked(verifyToken).mockResolvedValue(payload); expect((await request()).status).toBe(401); });
+  it('rejects legacy sessions without a credential version', async () => { vi.mocked(verifyToken).mockResolvedValue({ ...payload, credentialVersion: undefined }); expect((await request()).status).toBe(401); });
+  it('rejects a deleted account', async () => { fixture.user = null; vi.mocked(verifyToken).mockResolvedValue(payload); expect((await request()).status).toBe(401); });
+  it('does not trust a stale admin role in the token', async () => { vi.mocked(verifyToken).mockResolvedValue({ ...payload, role: 'admin' }); const response = await request(); expect((await response.json()).user.role).toBe('customer'); });
+  it('allows anonymous public reads', async () => { const response = await buildApp().request('/public'); expect(response.status).toBe(200); expect((await response.json()).user).toBe(null); });
+  it('ignores an invalid optional session', async () => { vi.mocked(verifyToken).mockResolvedValue(null); expect((await (await request('/public')).json()).user).toBe(null); });
+  it('ignores a revoked optional session', async () => { fixture.revoked = true; vi.mocked(verifyToken).mockResolvedValue(payload); expect((await (await request('/public')).json()).user).toBe(null); });
+  it('loads identity for a valid optional session', async () => { vi.mocked(verifyToken).mockResolvedValue(payload); expect((await (await request('/public')).json()).user.id).toBe(7); });
 });

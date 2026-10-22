@@ -3,23 +3,12 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
-import { MENS_PRODUCTS, type MensProduct } from '../data/mensCollection';
+import type { MensProduct } from '../data/mensCollection';
+import type { CatalogCategory } from '../lib/catalog';
+import { effectivePrice, formatPrice } from '../lib/product';
 import { useCartStore } from '../stores';
 import '../styles/header.css';
 
-const SHOP_LINKS = [
-  { name: 'All clothing', href: '/shop' },
-  { name: 'Sherwanis', href: '/collections/sherwanis' },
-  { name: 'Bandhgalas', href: '/collections/bandhgalas' },
-  { name: 'Kurtas', href: '/collections/kurtas' },
-  { name: 'Nehru jackets', href: '/collections/nehru-jackets' },
-  { name: 'Trousers', href: '/collections/trousers' },
-];
-const MOBILE_SHOP_LINKS = [
-  ...SHOP_LINKS,
-  { name: 'Tuxedos & suits', href: '/collections/tuxedos' },
-  { name: 'Shackets', href: '/collections/shackets' },
-];
 const EXPLORE_LINKS = [
   { name: 'Celebrity looks', href: '/celebrities' },
   { name: 'Personal styling', href: '/#get-styled' },
@@ -92,8 +81,12 @@ export function HeaderInteractive() {
     null
   );
   const [query, setQuery] = useState('');
-  const [catalog, setCatalog] = useState<MensProduct[]>(MENS_PRODUCTS);
+  const [catalog, setCatalog] = useState<MensProduct[]>([]);
   const [catalogLoaded, setCatalogLoaded] = useState(false);
+  const [categories, setCategories] = useState<CatalogCategory[]>([]);
+  const [catalogError, setCatalogError] = useState('');
+  const SHOP_LINKS = [{ name: 'All clothing', href: '/shop' }, ...categories.filter(category => catalog.some(product => product.categorySlug === category.slug)).map(category => ({ name: category.name, href: '/collections/' + category.slug }))];
+  const MOBILE_SHOP_LINKS = SHOP_LINKS;
   const [isLoading, setIsLoading] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const openerRef = useRef<HTMLElement | null>(null);
@@ -106,7 +99,7 @@ export function HeaderInteractive() {
   }, []);
 
   useEffect(() => {
-    if (activePanel !== 'search' || catalogLoaded) return;
+    if (catalogLoaded) return;
     let isCurrent = true;
     setIsLoading(true);
     fetch('/api/catalog')
@@ -114,12 +107,13 @@ export function HeaderInteractive() {
         if (!response.ok) throw new Error('Could not load catalogue');
         return response.json();
       })
-      .then((data: { products: MensProduct[] }) => {
+      .then((data: { products: MensProduct[]; categories: CatalogCategory[] }) => {
         if (isCurrent && Array.isArray(data.products))
           setCatalog(data.products);
+        if (isCurrent && Array.isArray(data.categories)) setCategories(data.categories);
       })
       .catch(() => {
-        if (isCurrent) setCatalog(MENS_PRODUCTS);
+        if (isCurrent) setCatalogError('Search is temporarily unavailable. Please try again later.');
       })
       .finally(() => {
         if (!isCurrent) return;
@@ -129,7 +123,7 @@ export function HeaderInteractive() {
     return () => {
       isCurrent = false;
     };
-  }, [activePanel, catalogLoaded]);
+  }, [catalogLoaded]);
 
   useEffect(() => {
     if (!activePanel) return;
@@ -260,7 +254,7 @@ export function HeaderInteractive() {
             </div>
           </div>
           <nav className="site-desktop-nav" aria-label="Main navigation">
-            {SHOP_LINKS.map((link) => (
+            {SHOP_LINKS.slice(0, 6).map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -377,6 +371,7 @@ export function HeaderInteractive() {
               </>
             ) : (
               <div className="site-search-content">
+                {catalogError && <p role="alert">{catalogError}</p>}
                 {!query.trim() ? (
                   <nav aria-label="Browse categories">
                     <h3 className="site-nav-caption">Browse clothing</h3>
@@ -434,8 +429,8 @@ export function HeaderInteractive() {
                                   {product.title}
                                 </span>
                                 <span className="site-search-product-price">
-                                  {product.price > 0
-                                    ? `₹${product.price.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`
+                                  {effectivePrice(product) > 0
+                                    ? `₹${effectivePrice(product).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`
                                     : 'Price on request'}
                                 </span>
                               </span>

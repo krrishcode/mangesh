@@ -12,6 +12,8 @@ import ScheduleAppointmentBanner from '@/components/ScheduleAppointmentBanner';
 import TwoColEditorial from '@/components/TwoColEditorial';
 import Footer from '@/components/Footer';
 import '@/styles/home.css';
+import { getCatalogProducts, getCatalogCategories } from '@/lib/catalog';
+export const dynamic = 'force-dynamic';
 
 export const metadata = {
   title: 'Menswear | Mangesh Mahadev',
@@ -19,7 +21,8 @@ export const metadata = {
     'Explore sherwanis, bandhgalas, kurtas and contemporary menswear from Mangesh Mahadev.',
 };
 
-export default function Page() {
+export default async function Page() {
+  const [products, categories] = await Promise.all([getCatalogProducts(), getCatalogCategories()]);
   return (
     <>
       <HeaderInteractive />
@@ -27,11 +30,11 @@ export default function Page() {
       <main id="main" className="home-page">
         <h1 className="sr-only">Mangesh Mahadev menswear</h1>
         <HeroSlider />
-        <CategoryGrid />
+        <CategoryGrid products={products} categories={categories} />
         <TwoColEditorial />
         <RunwayBanner />
         <MensWearBanner />
-        <ProductCarousel />
+        <ProductCarousel products={products.slice(0, 8)} />
         <HandsFreeHeartsFull />
         <CelebsShowcase />
         <InTheSpotlightGrid />

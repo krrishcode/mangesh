@@ -3,9 +3,12 @@ import { eq, desc, sql, count, sum, and, like, or } from 'drizzle-orm';
 import { db } from '../../db/index.js';
 import {
   products, orders, orderItems, users, categories,
-  appointments, reviews, adminSettings, payments
+  appointments, reviews, adminSettings, payments, guestOrderDetails
 } from '../../db/schema/index.js';
 import { requireAuth } from '../../middleware/auth.js';
+import { cancelOrder } from '../../lib/order-actions.js';
+import { manualPaymentSchema, paymentStatusSchema, recordManualPayment, changePaymentStatus } from '../../lib/payment-actions.js';
+import { orderData } from '../orders/index.js';
 
 export const adminModule = new Hono();
 
@@ -38,11 +41,12 @@ adminModule.get('/dashboard', async (c) => {
         totalAmount: orders.totalAmount,
         status: orders.status,
         createdAt: orders.createdAt,
-        customerName: users.name,
-        customerEmail: users.email,
+        customerName: sql<string>`coalesce(${users.name}, ${guestOrderDetails.name})`,
+        customerEmail: sql<string>`coalesce(${users.email}, ${guestOrderDetails.email})`,
       })
       .from(orders)
       .leftJoin(users, eq(orders.userId, users.id))
+      .leftJoin(guestOrderDetails, eq(orders.id, guestOrderDetails.orderId))
       .orderBy(desc(orders.createdAt))
       .limit(10);
 
@@ -178,6 +182,13 @@ adminModule.post('/products', async (c) => {
   return c.json({ success: true, data: created, message: 'Product created' }, 201);
 });
 
+adminModule.get('/products/:id', async (c) => {
+  const id = Number(c.req.param('id'));
+  if (!Number.isSafeInteger(id) || id <= 0) return c.json({ success: false, error: 'Invalid product ID' }, 400);
+  const [row] = await db.select().from(products).where(eq(products.id, id)).limit(1);
+  if (!row) return c.json({ success: false, error: 'Product not found' }, 404);
+  return c.json({ success: true, data: row });
+});
 adminModule.put('/products/:id', async (c) => {
   const id = Number(c.req.param('id'));
   if (!Number.isInteger(id)) return c.json({ success: false, error: 'Invalid ID' }, 400);
@@ -240,39 +251,33 @@ adminModule.get('/orders', async (c) => {
         id: orders.id, userId: orders.userId,
         totalAmount: orders.totalAmount, status: orders.status,
         createdAt: orders.createdAt, updatedAt: orders.updatedAt,
-        customerName: users.name, customerEmail: users.email,
+        customerName: sql<string>`coalesce(${users.name}, ${guestOrderDetails.name})`, customerEmail: sql<string>`coalesce(${users.email}, ${guestOrderDetails.email})`, customerPhone: guestOrderDetails.phone,
       })
       .from(orders)
       .leftJoin(users, eq(orders.userId, users.id))
+      .leftJoin(guestOrderDetails, eq(orders.id, guestOrderDetails.orderId))
       .orderBy(desc(orders.createdAt));
 
-    const orderIds = allOrders.map((o) => o.id);
-    let items: any[] = [];
-    if (orderIds.length > 0) {
-      items = await db.select().from(orderItems).where(sql`${orderItems.orderId} IN (${sql.join(orderIds.map(id => sql`${id}`), sql`, `)})`);
-    }
+    const expanded = await orderData(allOrders);
 
     const data = allOrders.map((o) => {
-      const oItems = items.filter((i) => i.orderId === o.id);
       return {
+        ...expanded.find(order => order.id === o.id),
         id: o.id,
         order_number: `ORD-${String(o.id).padStart(4, '0')}`,
         customer_name: o.customerName ?? 'Unknown',
         customer_email: o.customerEmail ?? '',
+        customer_phone: o.customerPhone ?? '',
+        guest: o.userId === null,
         total_amount: Number(o.totalAmount),
         status: o.status,
-        items_count: oItems.reduce((s, i) => s + i.quantity, 0),
-        items: oItems.map((i) => ({
-          id: i.id, title: i.title,
-          quantity: i.quantity, price: Number(i.price),
-        })),
         created_at: o.createdAt,
       };
     });
 
     return c.json({ success: true, data });
   } catch {
-    return c.json({ success: true, data: [] });
+    return c.json({ success: false, error: 'Orders could not be loaded. Please try again.' }, 503);
   }
 });
 
@@ -282,8 +287,13 @@ adminModule.patch('/orders/:id/status', async (c) => {
   const { status } = await c.req.json();
   const valid = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
   if (!valid.includes(status)) return c.json({ success: false, error: 'Invalid status' }, 400);
-
-  await db.update(orders).set({ status }).where(eq(orders.id, id));
+  if (status === 'cancelled') await cancelOrder(id);
+  else {
+    const [existing] = await db.select().from(orders).where(eq(orders.id, id)).limit(1);
+    if (!existing) return c.json({ success: false, error: 'Order not found' }, 404);
+    if (existing.status === 'cancelled') return c.json({ success: false, error: 'A cancelled order cannot be reopened. Create a new order instead.' }, 409);
+    await db.update(orders).set({ status }).where(and(eq(orders.id, id), sql`${orders.status} <> 'cancelled'`));
+  }
   return c.json({ success: true, message: 'Order status updated' });
 });
 
@@ -467,12 +477,13 @@ adminModule.get('/payments', async (c) => {
         createdAt: payments.createdAt,
         updatedAt: payments.updatedAt,
         orderStatus: orders.status,
-        customerName: users.name,
-        customerEmail: users.email,
+        customerName: sql<string>`coalesce(${users.name}, ${guestOrderDetails.name})`,
+        customerEmail: sql<string>`coalesce(${users.email}, ${guestOrderDetails.email})`,
       })
       .from(payments)
       .leftJoin(orders, eq(payments.orderId, orders.id))
       .leftJoin(users, eq(orders.userId, users.id))
+      .leftJoin(guestOrderDetails, eq(orders.id, guestOrderDetails.orderId))
       .orderBy(desc(payments.createdAt));
 
     let totalSettled = 0;
@@ -523,43 +534,14 @@ adminModule.get('/payments', async (c) => {
 });
 
 adminModule.post('/payments', async (c) => {
-  try {
-    const body = await c.req.json();
-    const { orderId, provider, reference, amount, status } = body;
-
-    if (!orderId || !amount) {
-      return c.json({ success: false, error: 'orderId and amount are required' }, 400);
-    }
-
-    const [inserted] = await db.insert(payments).values({
-      orderId: Number(orderId),
-      provider: provider || 'Manual / Cash on Delivery',
-      reference: reference || `MAN-${Date.now().toString().slice(-6)}`,
-      amount: String(amount),
-      status: (status as any) || 'paid',
-    });
-
-    if (status === 'paid') {
-      await db.update(orders).set({ status: 'processing' }).where(eq(orders.id, Number(orderId)));
-    }
-
-    const [record] = await db.select().from(payments).where(eq(payments.id, inserted.insertId)).limit(1);
-    return c.json({ success: true, data: record, message: 'Payment recorded successfully' }, 201);
-  } catch (error: any) {
-    return c.json({ success: false, error: error.message }, 500);
-  }
+  const parsed = manualPaymentSchema.safeParse(await c.req.json().catch(() => null));
+  if (!parsed.success) return c.json({ success: false, error: 'Provide a valid order ID, positive amount, provider and status.' }, 400);
+  return c.json({ success: true, data: await recordManualPayment(parsed.data), message: 'Payment recorded' }, 201);
 });
-
 adminModule.patch('/payments/:id/status', async (c) => {
   const id = Number(c.req.param('id'));
-  if (!Number.isInteger(id)) return c.json({ success: false, error: 'Invalid ID' }, 400);
-
-  const { status } = await c.req.json();
-  if (!['pending', 'paid', 'failed', 'refunded'].includes(status)) {
-    return c.json({ success: false, error: 'Invalid status value' }, 400);
-  }
-
-  await db.update(payments).set({ status }).where(eq(payments.id, id));
-  const [updated] = await db.select().from(payments).where(eq(payments.id, id)).limit(1);
-  return c.json({ success: true, data: updated, message: `Payment status updated to ${status}` });
+  const body = await c.req.json().catch(() => null);
+  const parsed = paymentStatusSchema.safeParse(body?.status);
+  if (!Number.isSafeInteger(id) || id <= 0 || !parsed.success) return c.json({ success: false, error: 'Provide a valid payment ID and status.' }, 400);
+  return c.json({ success: true, data: await changePaymentStatus(id, parsed.data), message: 'Payment status updated' });
 });

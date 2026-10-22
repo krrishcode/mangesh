@@ -2,9 +2,10 @@
 
 import Link from 'next/link';
 import { useRef } from 'react';
-import { MENS_PRODUCTS } from '../data/mensCollection';
+import type { MensProduct } from '../data/mensCollection';
+import { effectivePrice, formatPrice } from '../lib/product';
 
-export function ProductCarousel() {
+export function ProductCarousel({ products }: { products: MensProduct[] }) {
   const trackRef = useRef<HTMLDivElement>(null);
   const scroll = (direction: number) => {
     const track = trackRef.current;
@@ -17,6 +18,7 @@ export function ProductCarousel() {
     });
   };
 
+  if (!products.length) return null;
   return (
     <section
       id="fw26"
@@ -57,7 +59,7 @@ export function ProductCarousel() {
           className="home-product-track overflow-x-auto snap-x snap-mandatory pb-2"
           style={{ scrollbarWidth: 'none' }}
         >
-          {MENS_PRODUCTS.map((product) => (
+          {products.map((product) => (
             <article key={product.id} className="min-w-0 snap-start">
               <Link
                 href={`/products/${product.id}`}
@@ -88,9 +90,7 @@ export function ProductCarousel() {
                 </Link>
               </h3>
               <p className="home-label mt-2">
-                {product.price > 0
-                  ? `₹${product.price.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`
-                  : 'Price on request'}
+                {formatPrice(effectivePrice(product))}
               </p>
             </article>
           ))}

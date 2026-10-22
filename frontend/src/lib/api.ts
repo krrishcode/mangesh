@@ -1,30 +1,12 @@
 import { useAuthStore } from '../stores/authStore';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
-
 export async function fetchApi<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const token = useAuthStore.getState().token;
-  
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  };
-  
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-
-  const res = await fetch(`${API_BASE_URL}${endpoint}`, {
-    headers: {
-      ...headers,
-      ...options.headers,
-    },
-    ...options,
-  });
-
-  if (!res.ok) {
-    const errorData = await res.json().catch(() => ({}));
-    throw new Error(errorData?.error || errorData?.message || `Request failed with status ${res.status}`);
-  }
-
-  return res.json();
+  const headers = new Headers(options.headers);
+  if (!headers.has('Content-Type')) headers.set('Content-Type', 'application/json');
+  if (token) headers.set('Authorization', `Bearer ${token}`);
+  const response = await fetch(`/api/account${endpoint}`, { ...options, headers });
+  const result = await response.json().catch(() => ({}));
+  if (response.status === 401 && !endpoint.startsWith('/auth/')) useAuthStore.getState().logout();
+  if (!response.ok) throw new Error(result.error || 'Unable to complete this request. Please try again.');
+  return result;
 }

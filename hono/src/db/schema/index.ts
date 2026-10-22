@@ -135,7 +135,7 @@ export const products = mysqlTable('products', {
 // Orders Table
 export const orders = mysqlTable('orders', {
   id: int('id').autoincrement().primaryKey(),
-  userId: int('user_id').notNull(),
+  userId: int('user_id'),
   totalAmount: decimal('total_amount', { precision: 10, scale: 2 }).notNull(),
   status: mysqlEnum('status', ['pending', 'processing', 'shipped', 'delivered', 'cancelled']).default('pending').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -217,6 +217,47 @@ export const auditLogs = mysqlTable('audit_logs', {
 });
 
 // Type inference directly from DB schema for backend domain usage
+// Checkout snapshots are separate from the original operational tables so older
+// orders remain readable and address edits never change a placed order.
+export const orderCheckoutDetails = mysqlTable('order_checkout_details', {
+  orderId: int('order_id').primaryKey(),
+  userId: int('user_id'),
+  requestKey: varchar('request_key', { length: 64 }).notNull().unique(),
+  requestHash: varchar('request_hash', { length: 64 }).notNull(),
+  shippingAddress: text('shipping_address'),
+  fulfilment: mysqlEnum('fulfilment', ['home', 'pickup']).notNull(),
+  paymentMethod: varchar('payment_method', { length: 32 }).notNull(),
+  subtotal: decimal('subtotal', { precision: 10, scale: 2 }).notNull(),
+  shippingAmount: decimal('shipping_amount', { precision: 10, scale: 2 }).notNull(),
+});
+export const orderItemVariants = mysqlTable('order_item_variants', {
+  orderItemId: int('order_item_id').primaryKey(),
+  size: varchar('size', { length: 64 }).notNull(),
+  color: varchar('color', { length: 100 }).notNull(),
+  sku: varchar('sku', { length: 100 }),
+  imageUrl: text('image_url'),
+});
+export const revokedSessions = mysqlTable('revoked_sessions', {
+  tokenHash: varchar('token_hash', { length: 64 }).primaryKey(),
+  expiresAt: timestamp('expires_at').notNull(),
+});
+
+export const guestSessions = mysqlTable('guest_sessions', {
+  tokenHash: varchar('token_hash', { length: 64 }).primaryKey(),
+  expiresAt: timestamp('expires_at').notNull(),
+});
+export const guestOrderDetails = mysqlTable('guest_order_details', {
+  orderId: int('order_id').primaryKey(),
+  sessionHash: varchar('session_hash', { length: 64 }).notNull(),
+  email: varchar('email', { length: 255 }).notNull(),
+  name: varchar('name', { length: 255 }).notNull(),
+  phone: varchar('phone', { length: 32 }).notNull(),
+});
+export const googleIdentities = mysqlTable('google_identities', {
+  subject: varchar('subject', { length: 255 }).primaryKey(),
+  userId: int('user_id').notNull().unique(),
+});
+
 export type UserRecord = typeof users.$inferSelect;
 export type NewUserRecord = typeof users.$inferInsert;
 export type ProductRecord = typeof products.$inferSelect;

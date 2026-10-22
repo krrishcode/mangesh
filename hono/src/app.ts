@@ -3,6 +3,7 @@ import { serve } from '@hono/node-server';
 import { serveStatic } from '@hono/node-server/serve-static';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
+import { bodyLimit } from 'hono/body-limit';
 import { env } from './config/index.js';
 import { errorHandler } from './middleware/index.js';
 import { checkDatabase } from './db/index.js';
@@ -14,8 +15,6 @@ import { productsModule } from './modules/products/index.js';
 import { categoriesModule } from './modules/categories/index.js';
 import { designersModule } from './modules/designers/index.js';
 import { collectionsModule } from './modules/collections/index.js';
-import { inventoryModule } from './modules/inventory/index.js';
-import { cartModule } from './modules/cart/index.js';
 import { checkoutModule } from './modules/checkout/index.js';
 import { ordersModule } from './modules/orders/index.js';
 import { paymentsModule } from './modules/payments/index.js';
@@ -30,6 +29,9 @@ export const app = new Hono();
 
 // Global Middlewares
 app.use('*', logger());
+app.use('*', async (c, next) => { c.header('X-Content-Type-Options', 'nosniff'); c.header('Cache-Control', 'no-store'); await next(); });
+const jsonLimit = bodyLimit({ maxSize: 1024 * 1024, onError: c => c.json({ success: false, error: 'Request is too large' }, 413) });
+app.use('/api/*', async (c, next) => c.req.path === '/api/media/upload' ? next() : jsonLimit(c, next));
 app.use(
   '*',
   cors({
@@ -62,8 +64,6 @@ app.route('/api/products', productsModule);
 app.route('/api/categories', categoriesModule);
 app.route('/api/designers', designersModule);
 app.route('/api/collections', collectionsModule);
-app.route('/api/inventory', inventoryModule);
-app.route('/api/cart', cartModule);
 app.route('/api/checkout', checkoutModule);
 app.route('/api/orders', ordersModule);
 app.route('/api/payments', paymentsModule);

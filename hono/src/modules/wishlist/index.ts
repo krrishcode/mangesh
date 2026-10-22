@@ -1,7 +1,8 @@
 import { Hono } from 'hono';
 import { eq, and, desc } from 'drizzle-orm';
 import { db } from '../../db/index.js';
-import { wishlistItems, products } from '../../db/schema/index.js';
+import { wishlistItems, products, users } from '../../db/schema/index.js';
+import { AppError } from '../../lib/errors.js';
 import { addToWishlistSchema } from '../../validation/index.js';
 import { requireAuth } from '../../middleware/auth.js';
 
@@ -22,9 +23,10 @@ wishlistModule.get('/', async (c) => {
       price: products.price,
       salePrice: products.salePrice,
       stock: products.stock,
+      imageFront: products.imageFront,
     })
     .from(wishlistItems)
-    .leftJoin(products, eq(wishlistItems.productId, products.id))
+    .innerJoin(products, and(eq(wishlistItems.productId, products.id), eq(products.isActive, true)))
     .where(eq(wishlistItems.userId, authUser.id))
     .orderBy(desc(wishlistItems.createdAt));
 
@@ -36,6 +38,7 @@ wishlistModule.get('/', async (c) => {
     price: row.price !== null ? Number(row.price) : null,
     sale_price: row.salePrice !== null ? Number(row.salePrice) : null,
     in_stock: (row.stock ?? 0) > 0,
+    image_url: row.imageFront,
     added_at: row.createdAt,
   }));
 
@@ -51,35 +54,35 @@ wishlistModule.post('/', async (c) => {
     return c.json({ success: false, error: 'Validation failed', details: parsed.error.flatten().fieldErrors }, 400);
   }
 
-  const [product] = await db.select({ id: products.id }).from(products).where(eq(products.id, parsed.data.productId)).limit(1);
-  if (!product) {
-    return c.json({ success: false, error: 'Product not found' }, 404);
-  }
-
-  const existing = await db
+  const result = await db.transaction(async tx => {
+  await tx.select({ id: users.id }).from(users).where(eq(users.id, authUser.id)).for('update');
+  const [product] = await tx.select({ id: products.id }).from(products).where(and(eq(products.id, parsed.data.productId), eq(products.isActive, true))).limit(1);
+  if (!product) throw new AppError(404, 'Product not found');
+  const existing = await tx
     .select({ id: wishlistItems.id })
     .from(wishlistItems)
     .where(and(eq(wishlistItems.userId, authUser.id), eq(wishlistItems.productId, parsed.data.productId)))
     .limit(1);
 
   if (existing.length > 0) {
-    return c.json({ success: true, data: { id: existing[0].id }, message: 'Already in wishlist' });
+    return { data: { id: existing[0].id }, added: false };
   }
 
-  const [header] = await db
+  const [header] = await tx
     .insert(wishlistItems)
     .values({ userId: authUser.id, productId: parsed.data.productId });
 
-  const [created] = await db.select().from(wishlistItems).where(eq(wishlistItems.id, header.insertId)).limit(1);
-
-  return c.json({ success: true, data: created, message: 'Added to wishlist' }, 201);
+  const [created] = await tx.select().from(wishlistItems).where(eq(wishlistItems.id, header.insertId)).limit(1);
+  return { data: created, added: true };
+  });
+  return c.json({ success: true, data: result.data, message: result.added ? 'Added to wishlist' : 'Already in wishlist' }, result.added ? 201 : 200);
 });
 
 // Remove an item from the wishlist
 wishlistModule.delete('/:productId', async (c) => {
   const authUser = c.get('authUser');
   const productId = Number(c.req.param('productId'));
-  if (!Number.isInteger(productId)) {
+  if (!Number.isSafeInteger(productId) || productId <= 0) {
     return c.json({ success: false, error: 'Invalid product id' }, 400);
   }
 
@@ -87,6 +90,6 @@ wishlistModule.delete('/:productId', async (c) => {
     .delete(wishlistItems)
     .where(and(eq(wishlistItems.userId, authUser.id), eq(wishlistItems.productId, productId)));
 
-  if (!deleted) return c.json({ success: false, error: 'Item not found in wishlist' }, 404);
+  if (!deleted.affectedRows) return c.json({ success: false, error: 'Item not found in wishlist' }, 404);
   return c.json({ success: true, message: 'Removed from wishlist' });
 });

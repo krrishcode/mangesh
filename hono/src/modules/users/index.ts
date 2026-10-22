@@ -1,7 +1,8 @@
 import { Hono } from 'hono';
 import { eq, and, desc } from 'drizzle-orm';
 import { db } from '../../db/index.js';
-import { users, addresses, userMeasurements } from '../../db/schema/index.js';
+import { users, addresses, userMeasurements, passwordResetTokens } from '../../db/schema/index.js';
+import { AppError } from '../../lib/errors.js';
 import { updateProfileSchema, updateMeasurementsSchema, createAddressSchema, updateAddressSchema, changePasswordSchema } from '../../validation/index.js';
 import { requireAuth } from '../../middleware/auth.js';
 import { verifyPassword, hashPassword } from '../../lib/auth.js';
@@ -37,9 +38,10 @@ usersModule.put('/me', async (c) => {
     return c.json({ success: false, error: 'Validation failed', details: parsed.error.flatten().fieldErrors }, 400);
   }
 
-  const [updated] = await db.update(users).set(parsed.data).where(eq(users.id, authUser.id));
-  if (!updated) return c.json({ success: false, error: 'User not found' }, 404);
+  if (!Object.keys(parsed.data).length) return c.json({ success: false, error: 'No changes supplied' }, 400);
+  await db.update(users).set(parsed.data).where(eq(users.id, authUser.id));
   const [synced] = await db.select().from(users).where(eq(users.id, authUser.id)).limit(1);
+  if (!synced) return c.json({ success: false, error: 'User not found' }, 404);
   return c.json({ success: true, data: publicUser(synced), message: 'Profile updated' });
 });
 
@@ -60,7 +62,11 @@ usersModule.post('/me/change-password', async (c) => {
   }
 
   const passwordHash = await hashPassword(parsed.data.newPassword);
-  await db.update(users).set({ passwordHash }).where(eq(users.id, authUser.id));
+  await db.transaction(async (tx) => {
+    const [result] = await tx.update(users).set({ passwordHash }).where(and(eq(users.id, authUser.id), eq(users.passwordHash, user.passwordHash)));
+    if (!result.affectedRows) throw new AppError(409, 'Your password changed. Sign in and try again.');
+    await tx.update(passwordResetTokens).set({ usedAt: new Date() }).where(eq(passwordResetTokens.userId, authUser.id));
+  });
 
   return c.json({ success: true, message: 'Password updated' });
 });
@@ -98,11 +104,12 @@ usersModule.put('/me/measurements', async (c) => {
     .limit(1);
 
   if (existing) {
-    const [updated] = await db
+    await db
       .update(userMeasurements)
       .set(values)
       .where(eq(userMeasurements.id, existing.id));
-    return c.json({ success: true, data: updated, message: 'Measurements updated' });
+    const [record] = await db.select().from(userMeasurements).where(eq(userMeasurements.id, existing.id)).limit(1);
+    return c.json({ success: true, data: record, message: 'Measurements updated' });
   }
 
   const [header] = await db.insert(userMeasurements).values(values as typeof userMeasurements.$inferInsert);
@@ -129,25 +136,21 @@ usersModule.post('/me/addresses', async (c) => {
     return c.json({ success: false, error: 'Validation failed', details: parsed.error.flatten().fieldErrors }, 400);
   }
 
-  const values = { ...parsed.data, userId: authUser.id };
-
-  // Only one default per label: clear previous defaults of the same label when this one is default.
-  if (values.isDefault) {
-    await db
-      .update(addresses)
-      .set({ isDefault: false })
-      .where(and(eq(addresses.userId, authUser.id), eq(addresses.label, values.label)));
-  }
-
-  const [header] = await db.insert(addresses).values(values);
-  const [created] = await db.select().from(addresses).where(eq(addresses.id, header.insertId)).limit(1);
+  const created = await db.transaction(async (tx) => {
+    await tx.select({ id: users.id }).from(users).where(eq(users.id, authUser.id)).for('update');
+    const values = { ...parsed.data, userId: authUser.id };
+    if (values.isDefault) await tx.update(addresses).set({ isDefault: false }).where(and(eq(addresses.userId, authUser.id), eq(addresses.label, values.label)));
+    const [header] = await tx.insert(addresses).values(values);
+    const [record] = await tx.select().from(addresses).where(and(eq(addresses.id, header.insertId), eq(addresses.userId, authUser.id))).limit(1);
+    return record;
+  });
   return c.json({ success: true, data: created, message: 'Address added' }, 201);
 });
 
 usersModule.put('/me/addresses/:id', async (c) => {
   const authUser = c.get('authUser');
   const id = Number(c.req.param('id'));
-  if (!Number.isInteger(id)) return c.json({ success: false, error: 'Invalid address id' }, 400);
+  if (!Number.isSafeInteger(id) || id <= 0) return c.json({ success: false, error: 'Invalid address id' }, 400);
 
   const body = await c.req.json().catch(() => null);
   const parsed = updateAddressSchema.safeParse(body);
@@ -155,31 +158,30 @@ usersModule.put('/me/addresses/:id', async (c) => {
     return c.json({ success: false, error: 'Validation failed', details: parsed.error.flatten().fieldErrors }, 400);
   }
 
-  if (parsed.data.isDefault && parsed.data.label) {
-    await db
-      .update(addresses)
-      .set({ isDefault: false })
-      .where(and(eq(addresses.userId, authUser.id), eq(addresses.label, parsed.data.label)));
-  }
-
-  const [updated] = await db
-    .update(addresses)
-    .set(parsed.data)
-    .where(and(eq(addresses.id, id), eq(addresses.userId, authUser.id)));
-
-  if (!updated) return c.json({ success: false, error: 'Address not found' }, 404);
+  if (!Object.keys(parsed.data).length) return c.json({ success: false, error: 'No changes supplied' }, 400);
+  const updated = await db.transaction(async (tx) => {
+    await tx.select({ id: users.id }).from(users).where(eq(users.id, authUser.id)).for('update');
+    const owned = and(eq(addresses.id, id), eq(addresses.userId, authUser.id));
+    const [existing] = await tx.select().from(addresses).where(owned).limit(1).for('update');
+    if (!existing) throw new AppError(404, 'Address not found');
+    const next = { ...existing, ...parsed.data };
+    if (next.isDefault) await tx.update(addresses).set({ isDefault: false }).where(and(eq(addresses.userId, authUser.id), eq(addresses.label, next.label)));
+    await tx.update(addresses).set({ ...parsed.data, isDefault: next.isDefault }).where(owned);
+    const [record] = await tx.select().from(addresses).where(owned).limit(1);
+    return record;
+  });
   return c.json({ success: true, data: updated, message: 'Address updated' });
 });
 
 usersModule.delete('/me/addresses/:id', async (c) => {
   const authUser = c.get('authUser');
   const id = Number(c.req.param('id'));
-  if (!Number.isInteger(id)) return c.json({ success: false, error: 'Invalid address id' }, 400);
+  if (!Number.isSafeInteger(id) || id <= 0) return c.json({ success: false, error: 'Invalid address id' }, 400);
 
   const [deleted] = await db
     .delete(addresses)
     .where(and(eq(addresses.id, id), eq(addresses.userId, authUser.id)));
 
-  if (!deleted) return c.json({ success: false, error: 'Address not found' }, 404);
+  if (!deleted.affectedRows) return c.json({ success: false, error: 'Address not found' }, 404);
   return c.json({ success: true, message: 'Address removed' });
 });
