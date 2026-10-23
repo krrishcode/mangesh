@@ -1,98 +1,140 @@
-# E-commerce Monorepo
+# Mangesh Mahadev
 
-E-commerce application with a Next.js storefront, React 19 client
-components/islands, Tailwind CSS v4, Zustand, and a Hono backend backed by
-MySQL.
+Full-stack menswear storefront for Mangesh Mahadev. Everything runs in one
+Next.js application at the repository root: storefront, account and admin UI,
+API route handlers, authentication, checkout, and MySQL access. There is no
+separate backend process.
 
-## Project structure
+## Stack
+
+- Next.js 16 App Router + React 19
+- Tailwind CSS v4
+- Zustand stores for the local shopping bag and bearer session
+- MySQL + Drizzle ORM
+- JWT bearer sessions, scrypt password hashing, guest order cookies
+- Cash-on-delivery checkout with server-side stock locking
+- Vercel Blob direct uploads for admin product images
+- Optional Upstash rate limiting, SMTP password recovery, Google sign-in
+
+## Structure
 
 ```text
-frontend/                  # Next.js App Router storefront and admin/user UI
-  src/app/                 # Routes, layouts, metadata, and dynamic segments
-  src/components/          # Storefront components
-  src/react/               # Admin, auth, and account client components
-  src/stores/              # Zustand stores
-  src/styles/              # Tailwind v4 and global styles
-  src/lib/                 # API and catalog helpers
-  .env.example             # Frontend environment template
-
-hono/                      # Hono Node/MySQL backend
-scripts/                   # Database and seed utilities
-MIGRATION_BASELINE.md      # Astro-to-Next migration record and validation log
+src/
+  app/                     Routes, metadata, and API route handlers
+  components/              Storefront components
+  react/                   Admin, auth, and account client components
+  stores/                  Zustand stores
+  lib/                     Pure client/shared helpers
+  server/                  DB, API dispatcher, domain modules and server libs
+  styles/                  Tailwind v4 and global styles
+public/                    Local images and videos
+scripts/                   Image optimization helper
+docs/                      Historical audit, fix and setup records
+drizzle.config.ts          Drizzle Kit configuration
+.env.example               Environment template
 ```
 
 ## Requirements
 
 - Node.js 20 or newer
 - npm 10 or newer
-- MySQL for the backend
+- MySQL 8 (or compatible)
 
-## Setup
-
-Install dependencies in each application:
+## Local setup
 
 ```bash
-cd hono
-npm install
-
-cd ../frontend
 npm install
 ```
 
-Copy the environment templates and set local values:
+Create `.env.local` from `.env.example` and set at least:
 
-```bash
-copy .env.example hono\.env
-copy frontend\.env.example frontend\.env
+```env
+DB_HOST=
+DB_PORT=3306
+DB_USER=
+DB_PASSWORD=
+DB_NAME=
+JWT_SECRET=            # at least 32 characters in production
+APP_ORIGIN=http://localhost:3000
 ```
 
-The frontend API URL is configured with `NEXT_PUBLIC_API_URL`, normally
-`http://localhost:4000/api` for local development.
+Apply the database schema:
+
+```bash
+npm run db:migrate
+```
+
+For an existing database created before the buyer/guest changes, the
+idempotent scripts are also available:
+
+```bash
+npm run db:migrate:buyer
+npm run db:migrate:guest
+npm run db:migrate:products
+```
+
+Create an administrator explicitly (no default account is seeded). Set
+`ADMIN_EMAIL`, `ADMIN_NAME`, and `ADMIN_PASSWORD` in the environment first:
+
+```bash
+npm run admin:create
+```
 
 ## Development
 
-Run the backend and frontend in separate terminals:
-
 ```bash
-# Terminal 1
-cd hono
-npm run dev
-
-# Terminal 2
-cd frontend
 npm run dev
 ```
 
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:4000
+Open http://localhost:3000. The API is served by the same Next.js process at
+`/api/*`; do not start a second server.
 
-## Production validation
+## Verification
 
 ```bash
-cd frontend
 npm run typecheck
+npm test
 npm run build
 npm run start
 ```
 
-Run backend tests with:
+The suite currently contains 140 tests. Production builds do not query the
+database: catalog pages are explicitly dynamic, so migrations and data are not
+needed at build time.
 
-```bash
-cd hono
-npm test
-```
+## Configuration
 
-## Current frontend stack
+| Variable | Purpose |
+| --- | --- |
+| `DB_*` | MySQL connection (`DB_CONN_LIMIT` defaults to 5) |
+| `JWT_SECRET` | HS256 session signing; required in production |
+| `APP_ORIGIN` | Public site origin used for origin checks and recovery links |
+| `COD_ENABLED` | Set to `false` to disable cash-on-delivery checkout |
+| `SHIPPING_FEE_INR` | Home delivery fee in rupees |
+| `SMTP_*` | Password recovery email; unset means recovery returns 503 |
+| `GOOGLE_CLIENT_ID` | Enables Google sign-in; unset hides the provider |
+| `BLOB_READ_WRITE_TOKEN` | Vercel Blob uploads; unset means admin uploads return 503 |
+| `UPSTASH_REDIS_REST_URL` / `_TOKEN` | Shared rate limiting; unset uses the per-instance fallback |
 
-- Next.js `16.3.5`
-- React / React DOM `19.3.0`
-- Tailwind CSS `4.3.3`
-- Zustand `5.0.15`
-- TypeScript `5.9.3`
+Admin uploads accept up to 6 images per selection, JPG/PNG/WebP, 8 MB each.
+Uploads go directly from the browser to Vercel Blob.
 
-The frontend is fully migrated from Astro. The migration record, route
-coverage, compatibility notes, and validation results are documented in
-[`MIGRATION_BASELINE.md`](./MIGRATION_BASELINE.md).
+No SMTP, Google, Blob, Upstash, or payment-gateway credentials are required to
+run the storefront locally; only the features that depend on them are disabled.
 
-Deployment commands, rollback reference, and final acceptance checks are also
-listed in [`MIGRATION_HANDOFF.md`](./MIGRATION_HANDOFF.md).
+## Deployment
+
+The app is deployment-ready for Vercel but **has not been deployed**. Intended
+setup:
+
+1. Create a Vercel project with the repository root as its root directory.
+2. Add the environment variables above as Preview/Production values. Use a
+   staging database for previews; do not attach a public preview to live data.
+3. Connect a Vercel Blob store if admin uploads are needed.
+4. Run migrations from a trusted machine or CI, not from the Vercel build.
+5. Ensure the MySQL host accepts connections from Vercel and choose a function
+   region close to the database.
+6. Set `APP_ORIGIN` to the public origin and enable Deployment Protection for
+   previews where appropriate.
+
+See `MIGRATION_HANDOFF.md` for the migration background and current status.

@@ -2,6 +2,10 @@
 
 Date: 17 October 2026 (Asia/Kolkata)
 
+> Historical audit. Source paths under `hono/` now live under `src/server/`; the
+> separate Hono service was removed on 2026-10-22. The findings below describe
+> the original audited state.
+
 Follow-up: implementation changes and current verification are recorded in [Buyer fixes and COD checkout](buyer-fixes-2026-10-17.md). The findings below describe the original audited state.
 
 ## Result
@@ -22,7 +26,7 @@ The audit covers the current working tree, including the recent uncommitted prod
 | Customer / buyer | `/login`, `/register`, `/account/*` | Own profile, measurements, addresses, wishlist, appointments and order history | Main account APIs require a bearer token; ownership defect exists in appointment update |
 | Admin | `/admin` and `/api/admin/*` | Administrative operations | Customer token rejected with 403 in isolated role-gate check; full admin review pending |
 
-Sources: `hono/src/db/schema/index.ts:10`, `hono/src/middleware/auth.ts:7`, `hono/src/modules/admin/index.ts:14`, `frontend/src/react/user/components/UserPortalLayout.tsx:11`.
+Sources: `hono/src/db/schema/index.ts:10`, `hono/src/middleware/auth.ts:7`, `hono/src/modules/admin/index.ts:14`, `src/react/user/components/UserPortalLayout.tsx:11`.
 
 ## Buyer workflow
 
@@ -119,7 +123,7 @@ Evidence labels: **UI** = observed in the running browser; **HTTP** = safe live 
 ### B06 — High, blocking feature gap: Buyer checkout cannot place an order
 
 - **Dependency:** cart → address/fulfilment → inventory/pricing → orders → payments.
-- **Evidence:** source and isolated POST 404; `frontend/src/components/CartPage.tsx:145`, `hono/src/modules/checkout/index.ts:5`, `hono/src/modules/cart/index.ts:5`.
+- **Evidence:** source and isolated POST 404; `src/components/CartPage.tsx:145`, `hono/src/modules/checkout/index.ts:5`, `hono/src/modules/cart/index.ts:5`.
 - **Reproduction:** Proceed to checkout only calls a browser alert. Checkout API implements only a placeholder GET. Orders API implements list/detail reads, with no buyer order creation.
 - **Impact:** the user can build a bag but cannot complete a purchase. Buy Now also ends at this same bag. Saved addresses, measurements, shipping choice, payments and order history are not connected into a purchase transaction.
 - **Fix:** implement the server-authoritative checkout transaction, address/order snapshots, stock reservation, payment initiation/confirmation, error/retry handling and confirmation view. Do not treat the placeholder GET's 200 as a functioning checkout.
@@ -127,7 +131,7 @@ Evidence labels: **UI** = observed in the running browser; **HTTP** = safe live 
 ### B07 — High: Wishlist heart does not save to the account
 
 - **Dependency:** product listing → wishlist UI → authenticated wishlist API.
-- **Evidence:** browser refresh test and source; `frontend/src/components/ShopListingView.tsx:82` and `:461`.
+- **Evidence:** browser refresh test and source; `src/components/ShopListingView.tsx:82` and `:461`.
 - **Reproduction:** click a product's heart. It becomes pressed. Refresh: it returns to unpressed. The action only changes local component state and never calls the wishlist API.
 - **Impact:** the user sees a saved state but the product does not appear in `/account/wishlist`. No authenticated add-to-wishlist caller was found in the storefront.
 - **Fix:** use the saved wishlist API/state when signed in; define guest persistence and login migration if guest saving is intended; handle failed saves visibly.
@@ -135,7 +139,7 @@ Evidence labels: **UI** = observed in the running browser; **HTTP** = safe live 
 ### B08 — High: Different sizes/colours collapse into one cart line
 
 - **Dependency:** product selection → cart line identity → eventual fulfilment.
-- **Evidence:** actual cart-store isolated test; `frontend/src/stores/cartStore.ts:22`, `frontend/src/components/ProductDetailView.tsx:116`, `frontend/src/types/index.ts` CartItemDto.
+- **Evidence:** actual cart-store isolated test; `src/stores/cartStore.ts:22`, `src/components/ProductDetailView.tsx:116`, `src/types/index.ts` CartItemDto.
 - **Reproduction:** add size 38 and size 40 of the same product. Only one line remains, titled size 38, quantity 2. The first line's price also wins. Colour and size are stored in display text, not structured variant fields.
 - **Impact:** quantities can represent the wrong sizes/colours; removing or adjusting one variant affects the merged line.
 - **Fix:** add explicit variant/colour/size fields and a variant-aware line key; use that key consistently for add/update/remove and order item snapshots.
@@ -143,7 +147,7 @@ Evidence labels: **UI** = observed in the running browser; **HTTP** = safe live 
 ### B09 — High: Quick add and detail page charge different prices
 
 - **Dependency:** catalogue → listing/search → cart totals.
-- **Evidence:** live API/UI plus source; `frontend/src/components/ShopListingView.tsx:196` and `:525`, `frontend/src/components/ProductDetailView.tsx:73`.
+- **Evidence:** live API/UI plus source; `src/components/ShopListingView.tsx:196` and `:525`, `src/components/ProductDetailView.tsx:73`.
 - **Reproduction:** product 8, Embrace Embroidered Velvet Bandhgala, has base ₹1,45,000 and sale ₹1,35,000. Product detail uses ₹1,35,000; listing and quick add use ₹1,45,000. Header search also displays the base price.
 - **Impact:** the bag total depends on how the product was added. Price filtering/sorting likewise uses base price rather than effective sale price.
 - **Fix:** share a single effective-price rule across listing/search/detail/cart; revalidate the actual payable amount server-side at checkout.
@@ -151,7 +155,7 @@ Evidence labels: **UI** = observed in the running browser; **HTTP** = safe live 
 ### B10 — High: Stock and cart quantity are not enforced
 
 - **Dependency:** products/inventory → product availability → bag.
-- **Evidence:** isolated normalizer/store tests and source; `frontend/src/lib/catalog.ts:15`, `frontend/src/components/ProductDetailView.tsx:75`, `frontend/src/stores/cartStore.ts:39`.
+- **Evidence:** isolated normalizer/store tests and source; `src/lib/catalog.ts:15`, `src/components/ProductDetailView.tsx:75`, `src/stores/cartStore.ts:39`.
 - **Reproduction:** normalize a product with total stock 0 and a nonempty inStockSizes list. The stock field is discarded and the detail purchase condition only checks size membership/price. Cart quantity can be set to 100000 without validation.
 - **Impact:** zero-stock or over-stock quantities can be added. Missing stock-size data is also replaced by invented default availability. The placeholder checkout provides no server correction.
 - **Fix:** model actual aggregate/variant stock, avoid availability defaults, validate positive integer quantity with stock limits, and re-check/reserve inventory server-side.
@@ -159,7 +163,7 @@ Evidence labels: **UI** = observed in the running browser; **HTTP** = safe live 
 ### B11 — High: Local fallback is published alongside the healthy database catalogue
 
 - **Dependency:** catalogue loader → products, IDs, wishlist and future orders.
-- **Evidence:** HTTP/UI count comparison and isolated empty-catalog check; `frontend/src/lib/catalog.ts:59`–`:81`, `hono/src/modules/products/index.ts:54`.
+- **Evidence:** HTTP/UI count comparison and isolated empty-catalog check; `src/lib/catalog.ts:59`–`:81`, `hono/src/modules/products/index.ts:54`.
 - **Reproduction:** backend returns 24 active products; storefront shows 33. IDs 117–125 are local-only; backend `/api/products/117` returns 404. Even a successful empty backend catalogue still publishes local products. Database errors are also converted into success/empty data by the products list API.
 - **Impact:** users can add products to a local bag that the backend cannot find. A future saved wishlist call for such IDs would fail. Removing/deactivating a product that also exists in local data can leave it visible.
 - **Fix:** use a consistent authoritative catalogue/ID source. Make demo/offline fallback explicit and limited to the intended environment; return real service errors instead of concealing them as an empty success.
@@ -167,7 +171,7 @@ Evidence labels: **UI** = observed in the running browser; **HTTP** = safe live 
 ### B12 — High: Published catalogue changes and new product URLs require rebuilding
 
 - **Dependency:** catalogue cache → server-rendered shop/search/product routes → catalogue maintenance.
-- **Evidence:** source; `frontend/src/lib/catalog.ts:62`, `frontend/src/app/products/[id]/page.tsx:8` and `:14`.
+- **Evidence:** source; `src/lib/catalog.ts:62`, `src/app/products/[id]/page.tsx:8` and `:14`.
 - **Reproduction condition:** after a production build, add a product or change price/availability. Fetch uses `force-cache` with no revalidation or invalidation path found. Product routes set `dynamicParams = false`, allowing only IDs collected at build time.
 - **Impact:** current changes can remain stale; newly created product URLs can return 404 until a rebuild. This is a source-confirmed production configuration issue, not a production deployment experiment.
 - **Fix:** establish on-demand or timed revalidation and allow runtime product resolution as required. Invalidate shop/search/detail content when catalogue data changes.
@@ -215,7 +219,7 @@ Evidence labels: **UI** = observed in the running browser; **HTTP** = safe live 
 ### B18 — Medium: Existing product category link leads to 404
 
 - **Dependency:** database category name → product breadcrumb → collection route.
-- **Evidence:** UI + HTTP; product 29 breadcrumb points to `/collections/bottoms`, which returns 404; `frontend/src/components/ProductDetailView.tsx:82`, `frontend/src/app/collections/[category]/page.tsx:8`.
+- **Evidence:** UI + HTTP; product 29 breadcrumb points to `/collections/bottoms`, which returns 404; `src/components/ProductDetailView.tsx:82`, `src/app/collections/[category]/page.tsx:8`.
 - **Reproduction:** open Hand-loomed Mulberry Silk Churidar and click Bottoms in its breadcrumb. Database category is Bottoms; frontend route map does not support it.
 - **Impact:** navigation breaks and the Trousers collection does not include every relevant bottom garment under the current names.
 - **Fix:** use stable category slugs from the authoritative catalogue and align existing Bottoms/Trousers taxonomy. Resolve categories dynamically or maintain validated shared definitions.
@@ -223,7 +227,7 @@ Evidence labels: **UI** = observed in the running browser; **HTTP** = safe live 
 ### B19 — Medium: Authentication inputs lack associated accessible labels
 
 - **Dependency:** sign in/register/recovery form controls → keyboard/assistive technology.
-- **Evidence:** browser DOM on login and auth-page source; login input labels count is 0, with no ID/aria-label; `frontend/src/react/auth/pages/LoginPage.tsx:56` and the corresponding Register/ForgotPassword/ResetPassword forms.
+- **Evidence:** browser DOM on login and auth-page source; login input labels count is 0, with no ID/aria-label; `src/react/auth/pages/LoginPage.tsx:56` and the corresponding Register/ForgotPassword/ResetPassword forms.
 - **Reproduction:** inspect the email/password input's accessible name. The visible label is a sibling without htmlFor and the input has no corresponding ID.
 - **Impact:** screen-reader users cannot reliably identify the fields; clicking the visible label does not focus its input.
 - **Fix:** associate labels with stable IDs or wrap inputs; add appropriate autocomplete names and connect validation feedback to each field.
@@ -231,7 +235,7 @@ Evidence labels: **UI** = observed in the running browser; **HTTP** = safe live 
 ### B20 — Medium: Full-footer support and policy navigation is placeholder content
 
 - **Dependency:** customer care → full Footer → policies/help/navigation.
-- **Evidence:** source and visible full footer on login; `frontend/src/components/Footer.tsx:90`–`:129`.
+- **Evidence:** source and visible full footer on login; `src/components/Footer.tsx:90`–`:129`.
 - **Reproduction:** click Returns & Exchange, FAQs, gift-card balance or policy links in the full footer. They point to `#`. Some category/contact/gallery anchors are page-relative and have no destination on login/cart/collection pages.
 - **Impact:** buyers cannot reach the promised purchase/returns/help information. Compact footer on the landing/shop/account is a different branch and does not contain these controls.
 - **Fix:** provide real destinations or remove unsupported actions; use the current `/runway`, `/weddings`, category routes and explicit home anchors where appropriate.
@@ -239,7 +243,7 @@ Evidence labels: **UI** = observed in the running browser; **HTTP** = safe live 
 ### B21 — Medium: Newsletter subscribe form does not subscribe
 
 - **Dependency:** full Footer form → missing subscription service.
-- **Evidence:** source; `frontend/src/components/Footer.tsx:60`.
+- **Evidence:** source; `src/components/Footer.tsx:60`.
 - **Reproduction:** enter an email into the full-footer form and submit. It has no handler/action integration; input also has no name. Native form submission reloads/navigates the current page rather than saving a subscription.
 - **Impact:** a user believes they can subscribe, but their email is not registered. No message/service path exists.
 - **Fix:** connect a real subscription endpoint/provider with validation, consent/status feedback and duplicate handling, or remove the inactive form until supported.
@@ -255,7 +259,7 @@ Evidence labels: **UI** = observed in the running browser; **HTTP** = safe live 
 ### B23 — Medium: Manual reset-token input disappears after the first character
 
 - **Dependency:** direct reset-page visit → manual recovery token entry.
-- **Evidence:** browser reproduction and source; `frontend/src/react/auth/pages/ResetPasswordPage.tsx:60`–`:63`.
+- **Evidence:** browser reproduction and source; `src/react/auth/pages/ResetPasswordPage.tsx:60`–`:63`.
 - **Reproduction:** visit `/reset-password` without a query-string token. The Reset Token input appears. Type one character: the input is removed because its visibility depends on `!token`, and its own onChange immediately sets token to a nonempty value.
 - **Impact:** a user typing a token manually cannot finish or correct it. The normal link with a complete token query parameter follows a different path. No real token/password was entered or changed during this check.
 - **Fix:** distinguish a token supplied by the URL from a manually edited token; keep the manual field visible throughout entry and validation.

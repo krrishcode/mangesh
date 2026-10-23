@@ -1,5 +1,9 @@
 # Buyer fixes and COD checkout
 
+> Historical record. The backend paths in this document (`hono/...`) were moved
+> into `src/server/...` and the separate Hono service was removed on 2026-10-22.
+> Run all commands from the repository root and use `.env.local`.
+
 Date: 17 October 2026 (Asia/Kolkata)
 
 ## Current behavior
@@ -66,10 +70,10 @@ No real customer order, payment, password, booking or address was changed for te
 
 ## Configuration and remaining external actions
 
-1. **SMTP:** set `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM` and the correct `APP_ORIGIN` in `hono/.env`, then verify delivery with an authorized test recipient. The example file documents these keys. Missing SMTP configuration deliberately leaves email recovery unavailable.
+1. **SMTP:** set `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM` and the correct `APP_ORIGIN` in `.env.local`, then verify delivery with an authorized test recipient. The example file documents these keys. Missing SMTP configuration deliberately leaves email recovery unavailable.
 2. **Credential rotation:** database credentials previously embedded in tracked utility scripts have been removed from current source. They may remain in Git history; the account owner should rotate those credentials with the database host and update the local/deployment environment. Existing admin credentials should also be rotated if any previously published demo account remains in the database. No account was silently deleted or changed.
 3. **PhonePe:** COD is the only checkout payment option for now. PhonePe initiation, authenticated callbacks, provider-side verification, reconciliation and refunds need their own integration and sandbox verification when gateway credentials are available.
 
-COD defaults to enabled and the previous zero delivery charge is preserved as configurable `SHIPPING_FEE_INR=0`. Configure the intended delivery charge before launch. New installations should run migrations; existing installations can use `npm run db:migrate:buyer` from `hono` for these additive tables.
+COD defaults to enabled and the previous zero delivery charge is preserved as configurable `SHIPPING_FEE_INR=0`. Configure the intended delivery charge before launch. New installations should run migrations; existing installations can use `npm run db:migrate:buyer` from the repository root for these additive tables.
 
 The original audit remains a historical record. Its temporary scratch diagnostics reproduced the old defects; the project regression tests now assert the corrected behavior. Changes are local and have not been pushed in this task.

@@ -1,0 +1,57 @@
+{
+  "name": "@ecommerce/frontend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --port 3000",
+    "build": "next build",
+    "start": "next start --port 3000",
+    "typegen": "next typegen",
+    "typecheck": "next typegen && tsc --noEmit",
+    "images:optimize": "node scripts/optimize-images.mjs",
+    "test": "vitest run",
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
+    "db:migrate": "drizzle-kit migrate",
+    "db:migrate:buyer": "tsx src/server/db/scripts/migrate_checkout.ts",
+    "db:migrate:guest": "tsx src/server/db/scripts/migrate_guest.ts",
+    "db:migrate:products": "tsx src/server/db/scripts/migrate_product_fields.ts",
+    "admin:create": "tsx src/server/db/scripts/create_admin.ts"
+  },
+  "dependencies": {
+    "@upstash/ratelimit": "^2.2.0",
+    "@upstash/redis": "^1.39.0",
+    "@vercel/blob": "^2.8.2",
+    "dotenv": "^18.0.8",
+    "drizzle-orm": "^0.45.4",
+    "google-auth-library": "^11.3.1",
+    "jose": "^6.2.13",
+    "mysql2": "^3.24.6",
+    "next": "^16.4.2",
+    "nodemailer": "^10.2.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "zod": "^3.25.76",
+    "zustand": "^5.0.15"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/node": "26.6.2",
+    "@types/nodemailer": "^8.0.2",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "drizzle-kit": "^0.31.11",
+    "postcss": "8.5.28",
+    "sharp": "^0.35.5",
+    "tailwindcss": "4.3.3",
+    "tsx": "^4.23.15",
+    "typescript": "5.9.3",
+    "vitest": "^5.0.5"
+  },
+  "overrides": {
+    "@esbuild-kit/core-utils": {
+      "esbuild": "^0.28.2"
+    }
+  }
+}

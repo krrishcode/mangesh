@@ -2,7 +2,7 @@ node_modules/
 .pnpm-store/
 dist/
 .next/
-.astro/
+.vercel/
 *.tsbuildinfo
 .env
 .env.local
@@ -19,5 +19,6 @@ pnpm-debug.log*
 **/.env
 **/.env.*
 !**/.env.example
-hono/uploads/*
-!hono/uploads/.gitkeep
+
+# Local project backup
+/mangesh mahadev.zip
