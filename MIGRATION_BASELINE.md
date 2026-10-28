@@ -1,5 +1,10 @@
 # Astro to Next.js Migration Baseline
 
+> Historical record. This documents the original Astro-to-Next.js migration at
+> a time when a separate Hono backend existed. The backend was consolidated
+> into Next.js and `hono/` was removed on 2026-10-22. See `README.md` and
+> `MIGRATION_HANDOFF.md` for the current architecture.
+
 Captured: 2026-09-22
 
 ## Scope
