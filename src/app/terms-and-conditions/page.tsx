@@ -1,3 +1,4 @@
+import { SUPPORT_PHONE, SUPPORT_PHONE_HREF } from '@/lib/contact';
 import { SupportEmailLink } from '@/components/SupportEmailLink';
 import Link from 'next/link';
 import { LegalPage } from '@/components/LegalPage';
@@ -14,6 +15,6 @@ export default function TermsPage() {
     { title: 'Cancellations, returns and order help', content: <p>Available cancellation actions appear with your order. If cancellation is no longer available, contact customer care with the order reference. For a return, exchange, damaged item or incorrect delivery, contact us with the relevant details. Any product-specific return or customisation conditions disclosed before purchase apply alongside your rights under applicable law. These terms do not remove statutory remedies.</p> },
     { title: 'Respectful and authorised use', content: <p>Use the website for legitimate shopping and account activity. Do not impersonate another customer, access another person’s orders, interfere with checkout, or submit harmful content. Brand names, product photographs, design materials and software belong to their respective rights holders. Request permission before republishing or commercially using these materials.</p> },
     { title: 'Service changes and your rights', content: <p>Features may be updated or temporarily unavailable during maintenance. We may restrict misuse while keeping customer support available for existing orders. Material changes to these terms will be published here with an updated date. Nothing here excludes obligations or customer protections that cannot lawfully be excluded under applicable Indian law.</p> },
-    { title: 'Contact customer care', content: <p>For account, product or order questions, email <SupportEmailLink /> or call <a href="tel:+919999313366">+91 99993 13366</a>. Include your order reference where relevant, but never send a verification code or password.</p> },
+    { title: 'Contact customer care', content: <p>For account, product or order questions, email <SupportEmailLink /> or call <a href={SUPPORT_PHONE_HREF}>{SUPPORT_PHONE}</a>. Include your order reference where relevant, but never send a verification code or password.</p> },
   ]} />;
 }

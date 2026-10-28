@@ -1,3 +1,5 @@
+import { supportWhatsApp } from '../lib/contact';
+
 export default function ScheduleAppointmentBanner() {
   return (
     <>
@@ -27,7 +29,7 @@ export default function ScheduleAppointmentBanner() {
                 appointment.
               </p>
               <a
-                href="https://api.whatsapp.com/send?phone=919999313366&text=Hello%2C%20I%20would%20like%20to%20request%20a%20styling%20appointment."
+                href={supportWhatsApp('Hello, I would like to request a styling appointment.')}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="home-action home-action-on-image"

@@ -7,6 +7,7 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import type { MensProduct } from '../data/mensCollection';
 import { effectivePrice, productVariants } from '../lib/product';
 import { useCartStore } from '../stores';
+import { SUPPORT_PHONE, SUPPORT_PHONE_HREF, supportWhatsApp } from '../lib/contact';
 import '../styles/product-detail.css';
 
 interface ProductDetailProps {
@@ -185,9 +186,9 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailPro
                 <div className="product-accordion-content">
                   <p>For sizing, fit or product questions, speak to our team.</p>
                   <div className="product-contact-links">
-                    <a className="product-text-link" href="tel:+919999313366">+91 99993 13366</a>
+                    <a className="product-text-link" href={SUPPORT_PHONE_HREF}>{SUPPORT_PHONE}</a>
                     <SupportEmailLink className="product-text-link">Email us</SupportEmailLink>
-                    <a className="product-text-link" href={`https://wa.me/919999313366?text=${encodeURIComponent(`Hello, I have a question about ${product.title}.`)}`} target="_blank" rel="noreferrer">WhatsApp</a>
+                    <a className="product-text-link" href={supportWhatsApp(`Hello, I have a question about ${product.title}.`)} target="_blank" rel="noreferrer">WhatsApp</a>
                   </div>
                 </div>
               </details>

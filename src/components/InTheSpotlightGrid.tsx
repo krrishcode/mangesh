@@ -1,6 +1,4 @@
-const WHATSAPP_NUMBER = '919999313366';
-const whatsappHref = (message: string) =>
-  `https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=${encodeURIComponent(message)}`;
+import { supportWhatsApp } from '../lib/contact';
 const SERVICES = [
   {
     title: 'Wedding styling',
@@ -46,7 +44,7 @@ export default function InTheSpotlightGrid() {
                   <h3 className="text-base font-normal">{service.title}</h3>
                   <p className="home-copy mt-2 max-w-md">{service.body}</p>
                   <a
-                    href={whatsappHref(service.message)}
+                    href={supportWhatsApp(service.message)}
                     target="_blank"
                     rel="noreferrer"
                     className="home-action mt-4"

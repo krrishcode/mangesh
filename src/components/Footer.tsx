@@ -1,5 +1,6 @@
 import { SupportEmailLink } from './SupportEmailLink';
 import Link from 'next/link';
+import { SUPPORT_PHONE, SUPPORT_PHONE_HREF } from '../lib/contact';
 
 import { FooterCategories } from './FooterCategories';
 
@@ -67,8 +68,8 @@ export default function Footer() {
 
             <nav aria-label="Contact" className="mt-9 space-y-2.5 text-[13px]">
               <SupportEmailLink className={`block w-fit ${linkClass}`} />
-              <a href="tel:+919999313366" className={`block w-fit ${linkClass}`}>
-                +91 99993 13366
+              <a href={SUPPORT_PHONE_HREF} className={`block w-fit ${linkClass}`}>
+                {SUPPORT_PHONE}
               </a>
             </nav>
 
