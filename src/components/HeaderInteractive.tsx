@@ -7,19 +7,21 @@ import type { MensProduct } from '../data/mensCollection';
 import type { CatalogCategory } from '../lib/catalog';
 import { effectivePrice } from '../lib/product';
 import { useCartStore } from '../stores';
+import { HeaderAccountMenu } from './HeaderAccountMenu';
 import '../styles/header.css';
 
 const EXPLORE_LINKS = [
   { name: 'Weddings', href: '/weddings' },
   { name: 'Runway', href: '/runway' },
   { name: 'Celebrity looks', href: '/celebrities' },
-  { name: 'Personal styling', href: '/#get-styled' },
+  { name: 'Contact Us', href: '/#contact-us' },
 ];
 const ICON_PATHS = {
   menu: 'M4 6h16M4 12h16M4 18h16',
   search: 'm21 21-5-5M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0',
   user: 'M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0M5 21v-2a7 7 0 0 1 14 0v2',
   bag: 'M8 9V7a4 4 0 0 1 8 0v2M5 9h14l1 12H4L5 9Z',
+  heart: 'M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z',
   close: 'm6 6 12 12M6 18 18 6',
   arrow: 'M4 12h16m-6-6 6 6-6 6',
   chevron: 'm7 10 5 5 5-5',
@@ -92,6 +94,7 @@ export function HeaderInteractive() {
     .map((category) => ({ name: category.name, href: '/collections/' + category.slug }));
   const shopLinks = [{ name: 'Shop all', href: '/shop' }, ...collectionLinks];
   const [collectionsOpen, setCollectionsOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
   const collectionsRef = useRef<HTMLDivElement>(null);
   const collectionsTriggerRef = useRef<HTMLButtonElement>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -104,6 +107,11 @@ export function HeaderInteractive() {
   useEffect(() => {
     setHasMounted(true);
   }, []);
+
+  useEffect(() => {
+    setAccountOpen(false);
+    setCollectionsOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     if (!collectionsOpen) return;
@@ -204,6 +212,7 @@ export function HeaderInteractive() {
   }, [catalog, query]);
   const openPanel = (panel: 'menu' | 'search', trigger: HTMLElement) => {
     setCollectionsOpen(false);
+    setAccountOpen(false);
     openerRef.current = trigger;
     setActivePanel(panel);
   };
@@ -260,13 +269,12 @@ export function HeaderInteractive() {
               >
                 <Icon name="search" />
               </button>
-              <Link
-                href="/account"
-                className="site-header-account site-header-action"
-                aria-label="My account"
-              >
-                <Icon name="user" />
-                <span>Account</span>
+              <HeaderAccountMenu open={accountOpen} hydrated={hasMounted} onOpenChange={(open) => {
+                setAccountOpen(open);
+                if (open) setCollectionsOpen(false);
+              }} />
+              <Link href="/account/wishlist" className="site-icon-button site-header-wishlist" aria-label="Wishlist">
+                <Icon name="heart" />
               </Link>
               <Link
                 href="/cart"
@@ -305,7 +313,7 @@ export function HeaderInteractive() {
                   aria-expanded={collectionsOpen}
                   aria-controls="site-collections"
                   data-current={pathname.startsWith('/collections/') || undefined}
-                  onClick={() => setCollectionsOpen((open) => !open)}
+                  onClick={() => { setAccountOpen(false); setCollectionsOpen((open) => !open); }}
                 >
                   Collections <Icon name="chevron" />
                 </button>
@@ -335,7 +343,7 @@ export function HeaderInteractive() {
                 <Link key={link.href} href={link.href} aria-current={isCurrentPage(link.href) ? 'page' : undefined}>{link.name}</Link>
               ))}
             </nav>
-            <Link className="site-appointment-link" href="/#bespoke-appointment">Book an appointment <Icon name="arrow" /></Link>
+            <Link className="site-appointment-link" href="/#bespoke-appointment">Personal Styling <Icon name="arrow" /></Link>
           </div>
         </div>
       </header>
@@ -422,7 +430,7 @@ export function HeaderInteractive() {
                   </nav>
                 </div>
                 <div className="site-menu-footer">
-                  <Link className="site-appointment-link" href="/#bespoke-appointment" onClick={closePanel}>Book an appointment <Icon name="arrow" /></Link>
+                  <Link className="site-appointment-link" href="/#bespoke-appointment" onClick={closePanel}>Personal Styling <Icon name="arrow" /></Link>
                   <div className="site-menu-account">
                     <Link
                       href="/account"

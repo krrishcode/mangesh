@@ -6,6 +6,7 @@
   --header-muted: #68655f;
   --header-line: #ded9d1;
   --header-accent: #416886;
+  --header-accent-hover: #2f506a;
   color: var(--header-ink);
   font-family: 'Franklin Gothic', 'Helvetica Neue', sans-serif;
   -webkit-tap-highlight-color: transparent;
@@ -20,6 +21,8 @@
   background: var(--header-surface);
 }
 .site-header-inner {
+  display: grid;
+  grid-template-rows: 54px 45px;
   position: relative;
   height: 100%;
   max-width: 1440px;
@@ -28,9 +31,9 @@
 }
 .site-header-row {
   display: grid;
-  grid-template-columns: minmax(44px, 1fr) auto minmax(88px, 1fr);
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
   align-items: center;
-  height: 100%;
+  height: 54px;
 }
 .site-header-start,
 .site-header-end {
@@ -39,7 +42,17 @@
   min-width: 0;
 }
 .site-header-end {
+  position: absolute;
+  right: 16px;
+  bottom: 0;
+  height: 45px;
+  gap: 4px;
   justify-content: flex-end;
+}
+.site-mobile-search {
+  position: absolute;
+  right: 0;
+  bottom: 50px;
 }
 .site-wordmark {
   display: flex;
@@ -88,10 +101,77 @@
   flex-shrink: 0;
 }
 .site-header-search,
-.site-header-account,
 .site-bag-label,
-.site-navigation-row {
+.site-desktop-nav {
   display: none;
+}
+.site-header-account {
+  display: inline-flex;
+}
+.site-navigation-row {
+  display: flex;
+  align-items: center;
+  height: 45px;
+  border-top: 1px solid var(--header-line);
+}
+.site-navigation-row > .site-appointment-link {
+  gap: 12px;
+  padding: 8px 12px;
+}
+.site-account-menu {
+  position: relative;
+  flex-shrink: 0;
+}
+.site-account-dropdown {
+  z-index: 50;
+  width: 248px;
+  max-height: min(500px, calc(100dvh - 120px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 12px;
+  border: 1px solid var(--header-line);
+  background: var(--header-surface);
+  box-shadow: 0 12px 32px rgb(25 29 30 / 0.1);
+  color: var(--header-ink);
+  font-size: 14px;
+  line-height: 1.5;
+  transform-origin: var(--radix-dropdown-menu-content-transform-origin);
+}
+.site-account-dropdown-arrow {
+  fill: var(--header-surface);
+}
+.site-account-greeting {
+  padding: 6px 10px 12px;
+  overflow-wrap: anywhere;
+  color: var(--header-muted);
+  font-size: 13px;
+}
+.site-account-item,
+.site-account-signin {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 8px 10px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.site-account-signin {
+  justify-content: center;
+  margin-bottom: 8px;
+  border: 1px solid var(--header-ink);
+  letter-spacing: 0.04em;
+}
+.site-account-dropdown [data-highlighted] {
+  background: var(--header-soft);
+  color: var(--header-accent-hover);
+}
+.site-account-divider {
+  height: 1px;
+  margin: 8px 10px;
+  background: var(--header-line);
+}
+.site-account-logout {
+  color: var(--header-muted);
 }
 .site-menu-trigger {
   margin-left: -8px;
@@ -123,7 +203,7 @@
   gap: 24px;
   min-height: 44px;
   padding: 11px 18px;
-  background: var(--header-ink);
+  background: var(--header-accent);
   color: var(--header-surface);
   font-size: 12px;
   line-height: 1.5;
@@ -466,7 +546,7 @@
     color: var(--header-accent);
   }
   .site-appointment-link:hover {
-    background: var(--header-accent);
+    background: var(--header-accent-hover);
     color: var(--header-surface);
   }
 }
@@ -493,6 +573,7 @@
   }
   .site-header-end {
     gap: 4px;
+    right: 24px;
   }
   .site-search-overlay {
     padding: 64px 24px;
@@ -551,12 +632,13 @@
     width: 18px;
     height: 18px;
   }
-  .site-header-account span,
   .site-bag-label {
     display: inline;
   }
   .site-header-end {
-    gap: 20px;
+    position: static;
+    height: auto;
+    gap: 12px;
   }
   .site-bag-count {
     position: static;
