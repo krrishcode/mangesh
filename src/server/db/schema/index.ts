@@ -1,5 +1,22 @@
 // PostgreSQL schema used by the storefront and admin API.
-import { pgTable, integer, varchar, text, numeric, boolean, timestamp, index, primaryKey } from 'drizzle-orm/pg-core';
+import { pgTable, integer, varchar, text, numeric, boolean, timestamp, index, primaryKey, jsonb } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
+
+export const emailOutbox = pgTable('email_outbox', {
+  id: varchar('id', { length: 64 }).primaryKey().default(sql`gen_random_uuid()::text`),
+  eventKey: varchar('event_key', { length: 255 }).notNull().unique(),
+  kind: varchar('kind', { length: 64, enum: ['welcome', 'order_placed', 'appointment_booked', 'appointment_rescheduled', 'appointment_cancelled'] }).notNull(),
+  recipient: varchar('recipient', { length: 255 }).notNull(),
+  payload: jsonb('payload').notNull(),
+  status: varchar('status', { length: 16, enum: ['pending', 'sending', 'sent', 'failed'] }).default('pending').notNull(),
+  attempts: integer('attempts').default(0).notNull(),
+  nextAttemptAt: timestamp('next_attempt_at', { withTimezone: true }).defaultNow().notNull(),
+  lockedAt: timestamp('locked_at', { withTimezone: true }),
+  lockToken: varchar('lock_token', { length: 64 }),
+  lastError: varchar('last_error', { length: 255 }),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  sentAt: timestamp('sent_at', { withTimezone: true }),
+}, table => [index('email_outbox_pending_idx').on(table.status, table.nextAttemptAt)]);
 
 export const adminRecordArchives = pgTable('admin_record_archives', {
   entityType: varchar('entity_type', { length: 64 }).notNull(),

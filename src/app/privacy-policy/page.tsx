@@ -1,3 +1,4 @@
+import { SupportEmailLink } from '@/components/SupportEmailLink';
 import Link from 'next/link';
 import { LegalPage } from '@/components/LegalPage';
 
@@ -14,6 +15,6 @@ export default function PrivacyPage() {
     { title: 'Retention and account requests', content: <p>Account information is kept to support your account and purchases. Order, tax and security records may need to be retained after an account is closed for operational or legal requirements. To request access, correction or deletion, write from your registered email address and explain the request. We may ask for information needed to confirm ownership before disclosing or changing personal data.</p> },
     { title: 'Protecting your account', content: <p>Keep access to your mailbox secure, do not share verification codes, and sign out on shared devices. We use access controls and verification checks to limit unauthorised access, but no internet service can guarantee absolute security. Let customer care know promptly if you believe your account information has been misused.</p> },
     { title: 'Other sites and policy updates', content: <p>External services and websites have their own privacy practices. Review those practices before sharing information there. Changes to this store’s data practices will be reflected on this page with an updated date.</p> },
-    { title: 'Privacy contact', content: <p>Send privacy questions and requests to <a href="mailto:care@shrutimangesh.com">care@shrutimangesh.com</a>, or call <a href="tel:+919999313366">+91 99993 13366</a>. Please do not include passwords, verification codes or payment credentials in a request.</p> },
+    { title: 'Privacy contact', content: <p>Send privacy questions and requests to <SupportEmailLink />, or call <a href="tel:+919999313366">+91 99993 13366</a>. Please do not include passwords, verification codes or payment credentials in a request.</p> },
   ]} />;
 }

@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { db } from '../db';
 import { adminSettings } from '../db/schema';
 import { AppError } from './errors';
+import { SUPPORT_EMAIL } from '../../lib/contact';
 
 const amount = z.string().refine(value => value === '' || (/^\d+(\.\d{1,2})?$/.test(value) && Number(value) <= 99999999), 'Enter a non-negative amount with up to two decimal places.');
 export const settingValidators = {
@@ -22,7 +23,7 @@ export function resolveStoreSettings(rows: { settingKey: string; value: string |
   const settings: StoreSettings = {
     store_name: values.store_name ?? process.env.STORE_NAME ?? '',
     brand_tagline: values.brand_tagline ?? process.env.STORE_TAGLINE ?? '',
-    support_email: values.support_email ?? process.env.SUPPORT_EMAIL ?? '',
+    support_email: values.support_email || process.env.SUPPORT_EMAIL || SUPPORT_EMAIL,
     support_phone: values.support_phone ?? process.env.SUPPORT_PHONE ?? '',
     shipping_flat_rate: values.shipping_flat_rate ?? process.env.SHIPPING_FEE_INR ?? '0',
     free_shipping_threshold: values.free_shipping_threshold ?? process.env.FREE_SHIPPING_THRESHOLD_INR ?? '',

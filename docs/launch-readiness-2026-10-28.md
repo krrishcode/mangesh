@@ -2,6 +2,8 @@
 
 Status: not ready for a public launch with the currently configured environment.
 
+Update: Hostinger SMTP has since been configured and verified, including real inbox delivery and a persistent notification worker. See [transactional email setup](email-setup-2026-10-28.md). The SMTP finding below records the state at the original check; the other launch findings still need review.
+
 ## Verified
 
 - A fresh production build succeeds after replacing the obsolete MySQL external-package entry with `pg` in Next.js configuration.

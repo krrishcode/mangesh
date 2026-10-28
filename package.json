@@ -16,7 +16,10 @@
     "db:push": "node scripts/require-postgres-baseline.mjs",
     "db:migrate": "node scripts/require-postgres-baseline.mjs",
     "admin:create": "tsx src/server/db/scripts/create_admin.ts",
-    "test:admin-otp": "tsx scripts/verify-postgres-admin-otp.ts"
+    "test:admin-otp": "tsx scripts/verify-postgres-admin-otp.ts",
+    "mail:build": "esbuild scripts/email-worker.ts --bundle --platform=node --target=node20 --format=esm --packages=external --outfile=dist/email-worker.mjs",
+    "mail:worker": "node dist/email-worker.mjs",
+    "test:email-notifications": "tsx scripts/verify-email-notifications.ts"
   },
   "dependencies": {
     "@fullcalendar/react": "^7.1.3",
@@ -47,6 +50,7 @@
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "drizzle-kit": "^0.31.11",
+    "esbuild": "^0.28.2",
     "postcss": "8.5.28",
     "sharp": "^0.35.5",
     "tailwindcss": "4.3.3",
@@ -58,5 +62,8 @@
     "@esbuild-kit/core-utils": {
       "esbuild": "^0.28.2"
     }
+  },
+  "engines": {
+    "node": "22.x"
   }
 }

@@ -1,4 +1,5 @@
 'use client';
+import { SupportEmailLink } from './SupportEmailLink';
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -161,7 +162,7 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailPro
               <button type="button" className="product-action product-action-primary" disabled={!canPurchase}
                 onClick={() => { if (addSelectedProduct()) router.push('/checkout'); else setMessage('All available stock is already in your bag.'); }}>Buy Now</button>
             </div>
-            {currentPrice <= 0 && <p className="product-pricing-note"><a href="mailto:care@shrutimangesh.com" className="product-text-link">Contact us for pricing</a></p>}
+            {currentPrice <= 0 && <p className="product-pricing-note"><SupportEmailLink className="product-text-link">Contact us for pricing</SupportEmailLink></p>}
             {(canHome || canPickup) && <p className="product-fulfilment">
               {canHome && canPickup ? 'Home delivery and store pickup available.' : canHome ? 'Home delivery available.' : 'Store pickup available.'}
             </p>}
@@ -176,7 +177,7 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailPro
                 <summary>Delivery &amp; returns<span aria-hidden="true" /></summary>
                 <div className="product-accordion-content">
                   <p>{product.returnsPolicy || 'Contact our team to confirm delivery dates and return eligibility before ordering.'}</p>
-                  <p>For delivery enquiries, <a href="mailto:care@shrutimangesh.com" className="product-text-link">email us</a>.</p>
+                  <p>For delivery enquiries, <SupportEmailLink className="product-text-link">email us</SupportEmailLink>.</p>
                 </div>
               </details>
               <details className="product-accordion">
@@ -185,7 +186,7 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailPro
                   <p>For sizing, fit or product questions, speak to our team.</p>
                   <div className="product-contact-links">
                     <a className="product-text-link" href="tel:+919999313366">+91 99993 13366</a>
-                    <a className="product-text-link" href="mailto:care@shrutimangesh.com">Email us</a>
+                    <SupportEmailLink className="product-text-link">Email us</SupportEmailLink>
                     <a className="product-text-link" href={`https://wa.me/919999313366?text=${encodeURIComponent(`Hello, I have a question about ${product.title}.`)}`} target="_blank" rel="noreferrer">WhatsApp</a>
                   </div>
                 </div>
@@ -229,7 +230,7 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailPro
               <div><dt>Sizes</dt><dd>{activeVariant.sizes.join(', ') || 'Contact us for availability'}</dd></div>
               {product.measurements && <div><dt>Measurements</dt><dd>{product.measurements}</dd></div>}
             </dl>
-            <p>For help choosing a size or arranging a fitting, <a className="product-text-link" href="mailto:care@shrutimangesh.com">contact our team</a>.</p>
+            <p>For help choosing a size or arranging a fitting, <SupportEmailLink className="product-text-link">contact our team</SupportEmailLink>.</p>
           </div>}
         </div>
       </dialog>}

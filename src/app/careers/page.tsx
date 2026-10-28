@@ -1,3 +1,4 @@
+import { SUPPORT_EMAIL } from '@/lib/contact';
 import type { Metadata } from 'next';
 import { HeaderInteractive } from '@/components/HeaderInteractive';
 import Footer from '@/components/Footer';
@@ -8,7 +9,7 @@ export const metadata: Metadata = {
     'Join the House of Mangesh Mahadev. Open roles across the bespoke atelier, hand-embroidery workshop, pattern room and digital studio in Mumbai, New Delhi, London and New York.',
 };
 
-const CARE_EMAIL = 'care@shrutimangesh.com';
+const CARE_EMAIL = SUPPORT_EMAIL;
 
 interface Opening {
   id: string;

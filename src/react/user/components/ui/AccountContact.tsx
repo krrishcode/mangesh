@@ -2,11 +2,12 @@
 import Link from 'next/link';
 import { createContext, useContext, type ReactNode } from 'react';
 import { useAccountData } from '../../useAccountData';
+import { SUPPORT_EMAIL } from '../../../../lib/contact';
 
 const ContactContext = createContext<{ email: string; phone: string } | null>(null);
 export function AccountContactProvider({ children }: { children: ReactNode }) {
   const { data } = useAccountData<{ email: string; phone: string }>('/store/contact');
-  return <ContactContext.Provider value={data}>{children}</ContactContext.Provider>;
+  return <ContactContext.Provider value={data ?? { email: SUPPORT_EMAIL, phone: '' }}>{children}</ContactContext.Provider>;
 }
 export function AccountContactLink({ children = 'Contact customer care', subject }: { children?: ReactNode; subject?: string }) {
   const contact = useContext(ContactContext);

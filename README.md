@@ -141,3 +141,7 @@ See `MIGRATION_HANDOFF.md` for the migration background and current status.
 ### Customer email OTP
 
 Checkout uses an email-first Login or Signup dialog; customer login/register pages share the same flow. See [email OTP setup and QA](docs/email-otp-checkout.md) for SMTP and the local-only development code override. Terms and Privacy pages are included at `/terms-and-conditions` and `/privacy-policy`.
+
+### Transactional notifications
+
+Hostinger SMTP and the persistent welcome/order/appointment notification worker are configured. See [transactional email setup](docs/email-setup-2026-10-28.md) for the exact enabled scope, worker commands and verification. Run `npm run test:email-notifications` against the isolated QA schema to verify queue behavior without sending real messages.

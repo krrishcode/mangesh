@@ -1,3 +1,4 @@
+import { SupportEmailLink } from './SupportEmailLink';
 import Link from 'next/link';
 
 import { FooterCategories } from './FooterCategories';
@@ -65,9 +66,7 @@ export default function Footer() {
             </Link>
 
             <nav aria-label="Contact" className="mt-9 space-y-2.5 text-[13px]">
-              <a href="mailto:care@shrutimangesh.com" className={`block w-fit ${linkClass}`}>
-                care@shrutimangesh.com
-              </a>
+              <SupportEmailLink className={`block w-fit ${linkClass}`} />
               <a href="tel:+919999313366" className={`block w-fit ${linkClass}`}>
                 +91 99993 13366
               </a>

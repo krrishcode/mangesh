@@ -10,6 +10,8 @@ const globalForDb = globalThis as unknown as { __mmPostgresPool?: Pool };
 export const connectionPool = globalForDb.__mmPostgresPool ?? new Pool({
   connectionString: url,
   max: Math.max(1, Number(process.env.DB_CONN_LIMIT) || 5),
+  connectionTimeoutMillis: 10000,
+  idleTimeoutMillis: 30000,
   ssl: caPath ? { ca: readFileSync(caPath, 'utf8'), rejectUnauthorized: true } : { rejectUnauthorized: true },
   options: process.env.POSTGRES_SCHEMA === 'mangesh_qa' ? '-c search_path=mangesh_qa' : undefined,
 });
