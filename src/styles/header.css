@@ -8,7 +8,7 @@
   --header-accent: #416886;
   --header-accent-hover: #2f506a;
   color: var(--header-ink);
-  font-family: 'Franklin Gothic', 'Helvetica Neue', sans-serif;
+  font-family: var(--font-body);
   -webkit-tap-highlight-color: transparent;
 }
 .site-header {
@@ -64,7 +64,7 @@
   color: var(--header-ink);
 }
 .site-wordmark-name {
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: var(--font-heading);
   font-size: clamp(13px, 3.9vw, 20px);
   font-weight: 400;
   line-height: 1.1;
@@ -115,8 +115,23 @@
   border-top: 1px solid var(--header-line);
 }
 .site-navigation-row > .site-appointment-link {
-  gap: 12px;
-  padding: 8px 12px;
+  position: relative;
+  isolation: isolate;
+  gap: 8px;
+  padding: 8px 10px;
+  background: transparent;
+  font-size: 11px;
+}
+.site-navigation-row > .site-appointment-link::before {
+  position: absolute;
+  z-index: -1;
+  inset: 5px 0;
+  background: var(--header-accent);
+  content: '';
+}
+@media (hover: hover) and (max-width: 1023px) {
+  .site-navigation-row > .site-appointment-link:hover { background: transparent; }
+  .site-navigation-row > .site-appointment-link:hover::before { background: var(--header-accent-hover); }
 }
 .site-account-menu {
   position: relative;
@@ -237,7 +252,7 @@
   margin-bottom: 20px;
 }
 .site-collections-intro h2 {
-  font: 24px/1.3 Georgia, 'Times New Roman', serif;
+  font: 24px/1.3 var(--font-body);
 }
 .site-collections-intro a {
   display: inline-flex;
@@ -323,7 +338,7 @@
   border-bottom: 1px solid var(--header-line);
 }
 .site-panel-heading h2 {
-  font: 25px/1.25 Georgia, 'Times New Roman', serif;
+  font: 25px/1.25 var(--font-body);
 }
 .site-menu-panel .site-panel-heading h2 {
   max-width: 220px;
@@ -495,7 +510,7 @@
   padding-block: 24px;
 }
 .site-search-empty h3 {
-  font: 24px/1.3 Georgia, 'Times New Roman', serif;
+  font: 24px/1.3 var(--font-body);
 }
 .site-search-empty p {
   margin-top: 10px;
@@ -690,7 +705,10 @@
     min-height: 36px;
     padding: 8px 16px;
     gap: 18px;
+    background: var(--header-accent);
+    font-size: 12px;
   }
+  .site-navigation-row > .site-appointment-link::before { display: none; }
 }
 @media (min-width: 1280px) {
   .site-header-inner {

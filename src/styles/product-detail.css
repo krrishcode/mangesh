@@ -1,7 +1,7 @@
 .product-page {
   background: #ffffff;
   color: #292b2e;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   font-size: 14px;
   line-height: 1.6;
   padding: 24px 0 80px;

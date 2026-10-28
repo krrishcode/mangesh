@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import "@fontsource-variable/inter";
+import "@fontsource-variable/cormorant-garamond";
 import "../styles/global.css";
 import "../styles/admin.css";
 import "../styles/admin-ecommerce.css";
@@ -24,7 +26,6 @@ export default function RootLayout({
     >
       <body
         className="bg-white text-[#333333] antialiased selection:bg-primary selection:text-primary-foreground"
-        style={{ fontFamily: "'Franklin Gothic', sans-serif" }}
       >
         {children}
       </body>
