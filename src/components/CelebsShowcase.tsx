@@ -69,7 +69,7 @@ export function CelebsShowcase() {
               </div>
               <figcaption>
                 <h3 className="home-label">{celeb.celebName}</h3>
-                <p className="mt-1 text-sm text-[#706B65]">{celeb.occasion}</p>
+                <p className="mt-1 text-xs text-[#706B65]">{celeb.occasion}</p>
               </figcaption>
             </figure>
           ))}

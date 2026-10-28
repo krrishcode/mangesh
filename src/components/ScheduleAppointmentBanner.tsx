@@ -18,13 +18,13 @@ export default function ScheduleAppointmentBanner() {
 
           <div className="absolute inset-0 flex items-center justify-center text-center p-6">
             <div className="max-w-xl text-white">
-              <span className="font-sans-clean text-sm sm:text-sm tracking-[0.28em] uppercase text-secondary block mb-3 font-medium">
+              <span className="font-sans-clean text-[10px] sm:text-[11px] tracking-[0.28em] uppercase text-secondary block mb-3 font-medium">
                 BESPOKE GROOM ATELIER
               </span>
-              <h2 className="font-serif-luxury text-3xl sm:text-5xl lg:text-6xl tracking-[0.10em] uppercase font-normal text-white mb-5">
+              <h2 className="font-serif-luxury text-3xl sm:text-5xl lg:text-6xl tracking-[0.10em] uppercase font-light text-white mb-5">
                 SCHEDULE AN APPOINTMENT
               </h2>
-              <p className="font-serif-luxury text-sm sm:text-base text-gray-200 mb-6 font-normal leading-relaxed">
+              <p className="font-serif-luxury text-sm sm:text-base text-gray-200 mb-6 font-light leading-relaxed">
                 Private styling consultations at our Pune atelier, by
                 appointment.
               </p>
