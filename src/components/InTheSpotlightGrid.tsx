@@ -21,7 +21,7 @@ export default function InTheSpotlightGrid() {
     >
       <span id="spotlight" />
       <div className="home-container">
-        <div className="grid items-center gap-8 bg-white p-5 sm:p-8 md:grid-cols-2 lg:gap-16 lg:p-12">
+        <div className="grid items-center gap-8 bg-white py-5 sm:py-8 md:grid-cols-2 lg:gap-16 lg:py-12">
           <div className="aspect-[4/5] overflow-hidden bg-[#ECE8E1]">
             <img
               src="https://cdn.mangeshmahadev.com/images/get-styled.png"
