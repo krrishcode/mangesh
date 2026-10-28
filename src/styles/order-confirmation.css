@@ -7,7 +7,7 @@
   background: var(--receipt-paper);
   color: var(--receipt-ink);
   min-height: 75svh;
-  font-family: var(--font-body);
+  font-family: 'Franklin Gothic', 'Helvetica Neue', Arial, sans-serif;
   font-size: 14px;
   line-height: 1.6;
 }
@@ -27,7 +27,7 @@
 .confirmation-intro-main { display: flex; align-items: center; gap: 22px; min-width: 0; }
 .confirmation-seal { display: grid; place-items: center; width: 60px; height: 60px; flex-shrink: 0; border: 1px solid #c4d0c0; border-radius: 50%; color: var(--receipt-success); background: #eef1e9; }
 .confirmation-seal .confirmation-icon { width: 28px; height: 28px; stroke-width: 1.4; }
-.confirmation-intro h1 { font-family: var(--font-body); font-size: 36px; font-weight: 400; letter-spacing: -.035em; line-height: 1.2; text-wrap: balance; }
+.confirmation-intro h1 { font-family: Georgia, 'Times New Roman', serif; font-size: 36px; font-weight: 400; letter-spacing: -.035em; line-height: 1.2; text-wrap: balance; }
 .confirmation-intro-main p { max-width: 53ch; margin-top: 12px; color: var(--receipt-muted); font-size: 14px; }
 .confirmation-reference { position: relative; flex-shrink: 0; text-align: right; }
 .confirmation-order-number { display: flex; align-items: center; justify-content: flex-end; gap: 5px; font-size: 17px; letter-spacing: .03em; font-variant-numeric: tabular-nums; }
@@ -50,7 +50,7 @@
 .confirmation-layout { display: grid; grid-template-columns: minmax(0,1fr) 330px; gap: 44px; align-items: start; }
 .confirmation-main { min-width: 0; }
 .confirmation-section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
-.confirmation-section-heading h2, .confirmation-summary > h2 { font-family: var(--font-body); font-size: 23px; font-weight: 400; letter-spacing: -.025em; }
+.confirmation-section-heading h2, .confirmation-summary > h2 { font-family: Georgia, 'Times New Roman', serif; font-size: 23px; font-weight: 400; letter-spacing: -.025em; }
 .confirmation-section-heading > span { color: var(--receipt-muted); font-size: 12px; }
 .confirmation-item-list { display: grid; }
 .confirmation-item { display: grid; grid-template-columns: 88px minmax(0,1fr) auto; gap: 20px; padding: 22px 0; border-top: 1px solid var(--receipt-line); align-items: center; }
@@ -59,7 +59,7 @@
 .confirmation-item-image > span { display: flex; flex-direction: column; gap: 8px; align-items: center; justify-content: center; height: 100%; color: var(--receipt-muted); }
 .confirmation-item-image small { font-size: 9px; }
 .confirmation-item-info { min-width: 0; }
-.confirmation-item-info h3 { font-family: var(--font-body); font-size: 17px; line-height: 1.45; font-weight: 400; }
+.confirmation-item-info h3 { font-family: Georgia, 'Times New Roman', serif; font-size: 17px; line-height: 1.45; font-weight: 400; }
 .confirmation-item-info h3 a:hover { text-decoration: underline; text-underline-offset: 4px; }
 .confirmation-item-info p { font-size: 12px; color: var(--receipt-muted); margin-top: 8px; }
 .confirmation-item-info > span { display: block; margin-top: 5px; font-size: 11px; color: var(--receipt-muted); }
@@ -106,7 +106,7 @@
 .confirmation-shipments p { color: var(--receipt-muted); text-transform: capitalize; }
 .confirmation-guest { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; padding-top: 26px; margin-top: 32px; border-top: 1px solid var(--receipt-line); }
 .confirmation-guest > div { flex: 1; min-width: 220px; }
-.confirmation-guest h2 { font-family: var(--font-body); font-size: 22px; font-weight: 400; line-height: 1.3; }
+.confirmation-guest h2 { font-family: Georgia, 'Times New Roman', serif; font-size: 22px; font-weight: 400; line-height: 1.3; }
 .confirmation-guest p { color: var(--receipt-muted); font-size: 12px; margin-top: 10px; max-width: 48ch; }
 .confirmation-guest .confirmation-guest-note { flex-basis: 100%; max-width: none; font-size: 11px; margin-top: 0; }
 .confirmation-text-link { display: inline-flex; align-items: center; min-height: 44px; gap: 8px; font-size: 12px; text-decoration: underline; text-underline-offset: 4px; }
@@ -125,7 +125,7 @@
 .confirmation-loading > p { font-size: 12px; color: var(--receipt-muted); margin-top: 20px; }
 .confirmation-error { max-width: 600px; margin: auto; min-height: 65svh; padding: 90px 24px; text-align: center; }
 .confirmation-error > .confirmation-icon { width: 40px; height: 40px; margin: 0 auto 25px; color: var(--receipt-muted); }
-.confirmation-error h1 { font-family: var(--font-body); font-size: 32px; font-weight: 400; line-height: 1.25; }
+.confirmation-error h1 { font-family: Georgia, 'Times New Roman', serif; font-size: 32px; font-weight: 400; line-height: 1.25; }
 .confirmation-error p { color: var(--receipt-muted); margin-top: 15px; }
 .confirmation-error .confirmation-actions { justify-content: center; }
 @media (max-width: 1050px) {
