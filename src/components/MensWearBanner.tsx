@@ -7,7 +7,7 @@ export default function MensWearBanner() {
       title="Denim collection"
       action="View the collection"
       href="/shop"
-      image="/images/denim/denim-campaign-v1.webp"
+      image="https://cdn.mangeshmahadev.com/images/denim/denim-campaign-v1.webp"
       imageAspectRatio={1672 / 941}
       imageAlt="Denim collection: blue embroidered kurta and denim waistcoat in a warm cream interior"
     />

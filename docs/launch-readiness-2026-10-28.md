@@ -1,8 +1,15 @@
 # Launch readiness — 28 October 2026
 
-Status: not ready for a public launch with the currently configured environment.
+Historical snapshot from 28 October 2026; see subsequent deployment updates below.
 
 Update: Hostinger SMTP has since been configured and verified, including real inbox delivery and a persistent notification worker. See [transactional email setup](email-setup-2026-10-28.md). The SMTP finding below records the state at the original check; the other launch findings still need review.
+
+29 October update: production is deployed with CI/CD on Vercel and the HTTPS
+origin is `https://mangeshmahadev.com`. R2 replaces Vercel Blob for uploads and
+CDN delivery, with a durable cleanup worker; see [storage operations](r2-storage.md).
+Removing the unused Blob dependency reduced the current production npm audit
+to the existing Zod advisory. The weak admin password, shared rate limiting,
+verified database restore and imported Drizzle baseline remain open items.
 
 ## Verified
 

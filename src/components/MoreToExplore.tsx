@@ -4,13 +4,13 @@ const EXPLORE_ITEMS = [
   {
     title: 'Celebrity looks',
     image:
-      '/images/celebrities/abel-biju.jpg',
+      'https://cdn.mangeshmahadev.com/images/celebrities/abel-biju.jpg',
     href: '/celebrities',
   },
   {
     title: 'Fabrics & styling',
     image:
-      '/products/maroon-bandhgala-set/maroon-bandhgala-02.webp',
+      'https://cdn.mangeshmahadev.com/products/maroon-bandhgala-set/maroon-bandhgala-02.webp',
     href: '#get-styled',
   },
 ];

@@ -26,7 +26,7 @@ export default function InTheSpotlightGrid() {
         <div className="grid items-center gap-8 bg-white p-5 sm:p-8 md:grid-cols-2 lg:gap-16 lg:p-12">
           <div className="aspect-[4/5] overflow-hidden bg-[#ECE8E1]">
             <img
-              src="/images/get-styled.png"
+              src="https://cdn.mangeshmahadev.com/images/get-styled.png"
               alt="Embroidered coat worn over a black kurta"
               loading="lazy"
               className="h-full w-full object-cover object-top"

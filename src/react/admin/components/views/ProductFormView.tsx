@@ -1,4 +1,3 @@
-import { upload } from "@vercel/blob/client";
 import {
   useEffect,
   useRef,
@@ -12,7 +11,6 @@ import {
   ALLOWED_UPLOAD_TYPES,
   MAX_UPLOAD_BYTES,
   MAX_UPLOAD_FILES,
-  extensionForType,
 } from "../../../../lib/upload";
 import { startAdminRead } from "../../adminRead";
 import { AdminError, useAdminData } from "../../useAdminData";
@@ -247,17 +245,21 @@ export function ProductFormView({
       if (!token) throw new Error("Please sign in again.");
       const urls: string[] = [];
       for (const file of files) {
-        const blob = await upload(
-          "products/" + crypto.randomUUID() + "." + extensionForType(file.type),
-          file,
-          {
-            access: "public",
-            handleUploadUrl: "/api/account/media/upload",
-            headers: { Authorization: "Bearer " + token },
-            contentType: file.type,
-          },
-        );
-        urls.push(blob.url);
+        const signed = await fetchApi<{ key: string; uploadUrl: string }>("/media/upload", {
+          method: "POST",
+          body: JSON.stringify({ action: "prepare", contentType: file.type, size: file.size }),
+          headers: { Authorization: "Bearer " + token },
+        });
+        const response = await fetch(signed.uploadUrl, {
+          method: "PUT", body: file,
+          headers: { "Content-Type": file.type, "Cache-Control": "public, max-age=86400" },
+        });
+        if (!response.ok) throw new Error("Image upload failed. Please try again.");
+        const completed = await fetchApi<{ url: string }>("/media/upload", {
+          method: "POST", body: JSON.stringify({ action: "complete", key: signed.key }),
+          headers: { Authorization: "Bearer " + token },
+        });
+        urls.push(completed.url);
       }
       setForm((current) => ({
         ...current,

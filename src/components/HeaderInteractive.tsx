@@ -326,7 +326,7 @@ export function HeaderInteractive() {
                     )}
                   </div>
                   <Link className="site-collections-feature" href="/weddings" onClick={() => setCollectionsOpen(false)}>
-                    <img src="/images/hero/sunlit-courtyard.webp" alt="" />
+                    <img src="https://cdn.mangeshmahadev.com/images/hero/sunlit-courtyard.webp" alt="" />
                     <span>The wedding edit <Icon name="arrow" /></span>
                   </Link>
                 </div>

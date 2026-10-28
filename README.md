@@ -13,7 +13,7 @@ separate backend process.
 - PostgreSQL + Drizzle ORM
 - JWT bearer sessions, scrypt password hashing, guest order cookies
 - Cash-on-delivery checkout with server-side stock locking
-- Vercel Blob direct uploads for admin product images
+- Cloudflare R2 direct uploads, CDN delivery and durable image cleanup
 - Optional Upstash rate limiting, SMTP password recovery, Google sign-in
 
 ## Structure
@@ -27,9 +27,9 @@ src/
   lib/                     Pure client/shared helpers
   server/                  DB, API dispatcher, domain modules and server libs
   styles/                  Tailwind v4 and global styles
-public/                    Local images and videos
-scripts/                   Image optimization helper
-docs/                      Historical audit, fix and setup records
+public/                    Reserved for application-owned static files
+scripts/                   Verification, additive schema and worker operations
+docs/                      Deployment, storage and operational setup
 drizzle.config.ts          Drizzle Kit configuration
 .env.example               Environment template
 ```
@@ -112,28 +112,33 @@ They do not replace browser testing.
 | `SHIPPING_FEE_INR` | Home delivery fee in rupees |
 | `SMTP_*` | Password recovery email; unset means recovery returns 503 |
 | `GOOGLE_CLIENT_ID` | Enables Google sign-in; unset hides the provider |
-| `BLOB_READ_WRITE_TOKEN` | Vercel Blob uploads; unset means admin uploads return 503 |
+| `R2_ACCOUNT_ID`, `R2_BUCKET`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_PUBLIC_URL` | Private upload credentials and public CDN origin |
 | `UPSTASH_REDIS_REST_URL` / `_TOKEN` | Shared rate limiting; unset uses the per-instance fallback |
 
 Admin uploads accept up to 6 images per selection, JPG/PNG/WebP, 8 MB each.
-Uploads go directly from the browser to Vercel Blob.
+Uploads go directly from the browser to R2 using five-minute signed URLs, then
+the server verifies file size, content type and image signature before saving.
+The VPS media worker removes unused product images and purges the CDN cache.
+See [R2 storage and cleanup](docs/r2-storage.md).
 
-No SMTP, Google, Blob, Upstash, or payment-gateway credentials are required to
+No SMTP, Google, R2, Upstash, or payment-gateway credentials are required to
 run the storefront locally; only the features that depend on them are disabled.
 
 ## Deployment
 
-Production is deployed at [mangesh-mahadev.vercel.app](https://mangesh-mahadev.vercel.app).
+Production is deployed at [mangeshmahadev.com](https://mangeshmahadev.com).
+The `www` host redirects to the apex domain; images use
+[cdn.mangeshmahadev.com](https://cdn.mangeshmahadev.com).
 
 Pushes to GitHub `main` run TypeScript and automated tests, then deploy to the
 `mangesh-mahadev` Vercel project through GitHub Actions. Native Vercel Git
 linking is unavailable without a GitHub Login Connection in the supplied
 account; the Actions workflow owns automatic production deployment.
 
-Production database, JWT and SMTP settings are encrypted Vercel environment
+Production database, JWT, SMTP and R2 settings are encrypted Vercel environment
 variables. No production credentials are assigned to preview deployments.
-The persistent email worker runs separately on the VPS and uses the same
-public application origin. Database migrations do not run during builds.
+The persistent email and media-cleanup workers run separately on the VPS.
+Email links use the public application origin. Database migrations do not run during builds.
 
 See [Vercel deployment and CI/CD](docs/vercel-deployment.md) for configuration,
 [transactional email setup](docs/email-setup-2026-10-28.md) for worker operations,

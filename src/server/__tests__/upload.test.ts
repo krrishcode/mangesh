@@ -17,7 +17,7 @@ vi.mock('../http/auth', async () => {
   };
 });
 
-import { blobConfigured, authorizeUpload, validateUploadPath } from '../lib/upload';
+import { storageConfigured, authorizeUpload, validateUploadPath } from '../lib/upload';
 import { ALLOWED_UPLOAD_TYPES, MAX_UPLOAD_BYTES, extensionForType } from '../../lib/upload';
 
 function request(token = '') {
@@ -47,7 +47,6 @@ describe('admin image upload authorization', () => {
     await expect(authorizeUpload(request('admin'))).resolves.toEqual({
       allowedContentTypes: [...ALLOWED_UPLOAD_TYPES],
       maximumSizeInBytes: MAX_UPLOAD_BYTES,
-      addRandomSuffix: true,
     });
   });
 
@@ -76,10 +75,10 @@ describe('admin image upload authorization', () => {
     expect(extensionForType('application/octet-stream')).toBe('jpg');
   });
 
-  it('reports whether a Blob store is configured', () => {
-    vi.stubEnv('BLOB_READ_WRITE_TOKEN', '');
-    expect(blobConfigured()).toBe(false);
-    vi.stubEnv('BLOB_READ_WRITE_TOKEN', 'vercel_blob_rw_fixture');
-    expect(blobConfigured()).toBe(true);
+  it('requires every server-side R2 setting', () => {
+    for (const key of ['R2_ACCOUNT_ID','R2_BUCKET','R2_ACCESS_KEY_ID','R2_SECRET_ACCESS_KEY','R2_PUBLIC_URL']) vi.stubEnv(key,'');
+    expect(storageConfigured()).toBe(false);
+    for (const key of ['R2_ACCOUNT_ID','R2_BUCKET','R2_ACCESS_KEY_ID','R2_SECRET_ACCESS_KEY','R2_PUBLIC_URL']) vi.stubEnv(key,'fixture');
+    expect(storageConfigured()).toBe(true);
   });
 });

@@ -45,12 +45,12 @@ export interface HeroSlide {
 export const HERO_SLIDES: HeroSlide[] = [
   {
     id: 'slide-1',
-    image: '/images/hero/luxury-sofa.webp',
+    image: 'https://cdn.mangeshmahadev.com/images/hero/luxury-sofa.webp',
     alt: 'Man wearing an embroidered kurta seated on a tufted leather sofa',
   },
   {
     id: 'slide-2',
-    image: '/images/hero/sunlit-courtyard.webp',
+    image: 'https://cdn.mangeshmahadev.com/images/hero/sunlit-courtyard.webp',
     alt: 'Three men wearing relaxed menswear in a sunlit courtyard',
   },
 ];

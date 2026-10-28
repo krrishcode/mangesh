@@ -3,12 +3,12 @@ import Link from 'next/link';
 const LOOKS = [
   {
     name: 'Kurtas',
-    image: '/products/blue-deer-kurta/blue-deer-kurta-01.webp',
+    image: 'https://cdn.mangeshmahadev.com/products/blue-deer-kurta/blue-deer-kurta-01.webp',
     href: '/collections/kurtas',
   },
   {
     name: 'Shackets',
-    image: '/products/black-ivory-shacket/black-ivory-shacket-01.webp',
+    image: 'https://cdn.mangeshmahadev.com/products/black-ivory-shacket/black-ivory-shacket-01.webp',
     href: '/collections/shackets',
   },
 ];

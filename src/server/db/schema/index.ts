@@ -1,6 +1,24 @@
 // PostgreSQL schema used by the storefront and admin API.
-import { pgTable, integer, varchar, text, numeric, boolean, timestamp, index, primaryKey, jsonb } from 'drizzle-orm/pg-core';
+import { pgTable, integer, bigint, varchar, text, numeric, boolean, timestamp, index, primaryKey, jsonb } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
+
+export const mediaAssets = pgTable('media_assets', {
+  objectKey: text('object_key').primaryKey(),
+  url: text('url').notNull().unique(),
+  contentType: text('content_type').notNull(),
+  byteSize: bigint('byte_size', { mode: 'number' }).notNull(),
+  state: text('state').notNull().default('pending'),
+  protected: boolean('protected').notNull().default(false),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  deletedAt: timestamp('deleted_at', { withTimezone: true }),
+});
+export const mediaCleanupJobs = pgTable('media_cleanup_jobs', {
+  url: text('url').primaryKey(),
+  attempts: integer('attempts').notNull().default(0),
+  nextAttemptAt: timestamp('next_attempt_at', { withTimezone: true }).notNull().defaultNow(),
+  lastError: text('last_error'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
 
 export const emailOutbox = pgTable('email_outbox', {
   id: varchar('id', { length: 64 }).primaryKey().default(sql`gen_random_uuid()::text`),

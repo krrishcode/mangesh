@@ -7,7 +7,7 @@ export default function TwoColEditorial() {
       title="Wedding collection"
       action="Explore weddings"
       href="/weddings"
-      image="/images/weddings/full/wedding-01.webp"
+      image="https://cdn.mangeshmahadev.com/images/weddings/full/wedding-01.webp"
       imagePosition="center 65%"
     />
   );

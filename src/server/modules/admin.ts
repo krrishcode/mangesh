@@ -53,6 +53,8 @@ async function adminWrite<T>(write: () => PromiseLike<T>): Promise<T> {
     return await write();
   } catch (error) {
     const reason = error as { code?: string; cause?: { code?: string } };
+    if (reason?.code === '23514' || reason?.cause?.code === '23514')
+      throw new AppError(409, 'A selected product image is unavailable or its upload is incomplete. Upload it again.');
     if (
       reason?.code === "23505" ||
       reason?.cause?.code === "23505"

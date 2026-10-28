@@ -1,7 +1,7 @@
 import { useAuthStore } from '../stores/authStore';
 import { useAdminAuthStore } from '../stores/adminAuthStore';
 export async function fetchApi<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const session = endpoint.startsWith('/admin/') || endpoint === '/admin' ? useAdminAuthStore : useAuthStore;
+  const session = endpoint.startsWith('/admin/') || endpoint === '/admin' || endpoint.startsWith('/media/') ? useAdminAuthStore : useAuthStore;
   const token = session.getState().token;
   const headers = new Headers(options.headers);
   if (!headers.has('Content-Type')) headers.set('Content-Type', 'application/json');

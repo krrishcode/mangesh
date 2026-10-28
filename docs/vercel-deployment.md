@@ -2,7 +2,8 @@
 
 Project: `mangesh-mahadev`, in the **Mangesh Mahadev** Vercel team.
 
-Production URL: **https://mangesh-mahadev.vercel.app**.
+Production URL: **https://mangeshmahadev.com**. The `www` host redirects to
+the apex. The original Vercel hostname remains available.
 
 The initial GitHub-triggered deployment completed successfully in [Actions run 40745380394](https://github.com/krrishcode/mangesh/actions/runs/40745380394). Live checks passed for ten public pages, 49 product/page assets, PostgreSQL catalogue reads, a COD checkout quote, all ten authenticated admin modules and real email-OTP delivery with secure cookies. No customer order or account was created during production verification. Evidence is stored in ignored `artifacts/vercel-deployment/`.
 
@@ -18,7 +19,8 @@ GitHub repository configuration:
 
 Vercel uses the repository root, Next.js, `npm ci`, `npm run build` and the Frankfurt function region. `POSTGRES_URL`, `JWT_SECRET`, SMTP settings, support contact and HTTPS application origins are configured per deployment. Development OTP bypass is disabled. Database schema changes do not run during website builds; the additive email schema was applied separately.
 
-The persistent email worker stays on the VPS. When the public site origin changes, update that worker with:
+The persistent email and media-cleanup workers stay on the VPS. See
+[R2 storage operations](r2-storage.md). When the public site origin changes, update the email worker with:
 
 ```bash
 npm run mail:build

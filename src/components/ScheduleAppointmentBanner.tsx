@@ -7,7 +7,7 @@ export default function ScheduleAppointmentBanner() {
       >
         <div className="relative w-full h-[60vh] min-h-[420px] max-h-[640px]">
           <img
-            src="/images/weddings/full/wedding-06.webp"
+            src="https://cdn.mangeshmahadev.com/images/weddings/full/wedding-06.webp"
             alt="Wedding party in ceremonial Indian menswear"
             loading="lazy"
             className="w-full h-full object-cover object-top filter brightness-95"

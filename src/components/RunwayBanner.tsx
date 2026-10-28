@@ -9,7 +9,7 @@ export default function RunwayBanner() {
     >
       <div className="relative h-[780px] overflow-hidden bg-[#1A1A1A]">
         <video
-          src="/videos/runway.mp4"
+          src="https://cdn.mangeshmahadev.com/videos/runway.mp4"
           autoPlay
           muted
           loop
