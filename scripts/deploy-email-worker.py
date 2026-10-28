@@ -6,6 +6,7 @@ environment and transferred through SSH; the SSH password is not stored.
 import getpass
 import argparse
 import json
+import time
 from pathlib import Path
 from urllib.parse import urlsplit
 import paramiko
@@ -64,6 +65,14 @@ try:
         run('docker stop --time 90 mangesh-email-worker')
         run('docker rm mangesh-email-worker')
     run('docker run -d --name mangesh-email-worker --label com.mangesh.role=email-worker --restart unless-stopped --env-file /data/mangesh-email-worker/.env --read-only --tmpfs /tmp --security-opt no-new-privileges:true --cap-drop ALL --memory 128m --log-opt max-size=10m --log-opt max-file=2 mangesh-email-worker:20261028')
+    for attempt in range(10):
+        logs = run('docker logs --tail 20 mangesh-email-worker 2>&1')
+        if 'Email worker ready: schema=public; SMTP verified.' in logs:
+            break
+        time.sleep(2)
+    else:
+        raise RuntimeError('Email worker startup checks did not pass; inspect server logs')
     print(run("docker inspect -f 'Worker state: {{.State.Status}}; restart policy: {{.HostConfig.RestartPolicy.Name}}' mangesh-email-worker"))
+    print('Worker database/SMTP startup checks passed; email origin: ' + email_origin)
 finally:
     client.close()

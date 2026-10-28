@@ -2,6 +2,10 @@
 
 Project: `mangesh-mahadev`, in the **Mangesh Mahadev** Vercel team.
 
+Production URL: **https://mangesh-mahadev.vercel.app**.
+
+The initial GitHub-triggered deployment completed successfully in [Actions run 40745380394](https://github.com/krrishcode/mangesh/actions/runs/40745380394). Live checks passed for ten public pages, 49 product/page assets, PostgreSQL catalogue reads, a COD checkout quote, all ten authenticated admin modules and real email-OTP delivery with secure cookies. No customer order or account was created during production verification. Evidence is stored in ignored `artifacts/vercel-deployment/`.
+
 The repository uses `.github/workflows/deploy.yml`: pushes to `main` and manual workflow dispatch run dependency installation, TypeScript and automated tests before deploying to Vercel production. Deployments are serialized. Node.js 22 and Vercel CLI 65.5.0 are pinned for consistent builds.
 
 The supplied Vercel account does not have a GitHub Login Connection, so native Vercel Git integration cannot link the repository. GitHub Actions provides the automatic Git-to-Vercel deployment instead; do not enable both paths without deciding which should own production releases.

@@ -36,7 +36,7 @@ drizzle.config.ts          Drizzle Kit configuration
 
 ## Requirements
 
-- Node.js 20 or newer
+- Node.js 22 (production and CI use 22.x)
 - npm 10 or newer
 - PostgreSQL
 
@@ -123,20 +123,22 @@ run the storefront locally; only the features that depend on them are disabled.
 
 ## Deployment
 
-The app is deployment-ready for Vercel but **has not been deployed**. Intended
-setup:
+Production is deployed at [mangesh-mahadev.vercel.app](https://mangesh-mahadev.vercel.app).
 
-1. Create a Vercel project with the repository root as its root directory.
-2. Add the environment variables above as Preview/Production values. Use a
-   staging database for previews; do not attach a public preview to live data.
-3. Connect a Vercel Blob store if admin uploads are needed.
-4. Reconcile the PostgreSQL migration baseline before using schema migration commands; run any future migrations from a trusted machine or CI, not from the Vercel build.
-5. Ensure the PostgreSQL host accepts secure connections from Vercel and choose a function
-   region close to the database.
-6. Set `APP_ORIGIN` to the public origin and enable Deployment Protection for
-   previews where appropriate.
+Pushes to GitHub `main` run TypeScript and automated tests, then deploy to the
+`mangesh-mahadev` Vercel project through GitHub Actions. Native Vercel Git
+linking is unavailable without a GitHub Login Connection in the supplied
+account; the Actions workflow owns automatic production deployment.
 
-See `MIGRATION_HANDOFF.md` for the migration background and current status.
+Production database, JWT and SMTP settings are encrypted Vercel environment
+variables. No production credentials are assigned to preview deployments.
+The persistent email worker runs separately on the VPS and uses the same
+public application origin. Database migrations do not run during builds.
+
+See [Vercel deployment and CI/CD](docs/vercel-deployment.md) for configuration,
+[transactional email setup](docs/email-setup-2026-10-28.md) for worker operations,
+and the [readiness report](docs/launch-readiness-2026-10-28.md) for outstanding
+security, storage and schema-management findings.
 
 ### Customer email OTP
 
