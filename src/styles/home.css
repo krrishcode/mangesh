@@ -40,7 +40,7 @@
 }
 
 .home-copy {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 400;
   line-height: 1.7;
   letter-spacing: normal;
@@ -48,7 +48,7 @@
 }
 
 .home-label {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 400;
   line-height: 1.6;
   letter-spacing: normal;
@@ -63,7 +63,7 @@
   border: 1px solid var(--color-primary);
   background: transparent;
   color: var(--color-primary-foreground);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 400;
   line-height: 18px;
   letter-spacing: 0.02em;
@@ -96,7 +96,7 @@
 }
 
 .home-text-link {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 400;
   letter-spacing: normal;
   text-decoration: underline;

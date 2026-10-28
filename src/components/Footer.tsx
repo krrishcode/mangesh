@@ -28,13 +28,13 @@ const linkClass = `text-white/75 transition-colors hover:text-white hover:underl
 
 const smallLinkClass = `text-white/55 transition-colors hover:text-white hover:underline hover:underline-offset-4 hover:decoration-white/40 ${focusRing}`;
 
-const columnHeadingClass = 'text-[10px] font-medium uppercase tracking-[0.24em] text-white/60';
+const columnHeadingClass = 'text-sm font-medium uppercase tracking-[0.24em] text-white/60';
 
 function LinkColumn({ label, links }: { label: string; links: Array<[string, string]> }) {
   return (
     <nav aria-label={label}>
       <h2 className={columnHeadingClass}>{label}</h2>
-      <ul className="mt-5 space-y-3 text-[13px]">
+      <ul className="mt-5 space-y-3 text-sm">
         {links.map(([text, href]) => (
           <li key={href}>
             <Link href={href} className={linkClass}>
@@ -61,12 +61,12 @@ export default function Footer() {
               <span className="font-serif text-[22px] leading-none tracking-[0.08em]">
                 MANGESH MAHADEV
               </span>
-              <span className="text-[9px] uppercase tracking-[0.3em] text-white/55">
+              <span className="text-sm uppercase tracking-[0.3em] text-white/55">
                 Couture &amp; Bespoke
               </span>
             </Link>
 
-            <nav aria-label="Contact" className="mt-9 space-y-2.5 text-[13px]">
+            <nav aria-label="Contact" className="mt-9 space-y-2.5 text-sm">
               <SupportEmailLink className={`block w-fit ${linkClass}`} />
               <a href={SUPPORT_PHONE_HREF} className={`block w-fit ${linkClass}`}>
                 {SUPPORT_PHONE}
@@ -75,13 +75,13 @@ export default function Footer() {
 
             <Link
               href="/#bespoke-appointment"
-              className={`mt-9 inline-flex items-center gap-3 border-b border-[#C5A880] pb-1.5 text-[11px] uppercase tracking-[0.22em] text-[#C5A880] transition-colors hover:border-white hover:text-white ${focusRing}`}
+              className={`mt-9 inline-flex items-center gap-3 border-b border-[#C5A880] pb-1.5 text-sm uppercase tracking-[0.22em] text-[#C5A880] transition-colors hover:border-white hover:text-white ${focusRing}`}
             >
               Book an appointment
               <span aria-hidden="true">&rarr;</span>
             </Link>
 
-            <p className="mt-9 text-[10px] uppercase tracking-[0.18em] text-white/55">
+            <p className="mt-9 text-sm uppercase tracking-[0.18em] text-white/55">
               Cash on delivery &middot; Pune, India
             </p>
           </div>
@@ -99,7 +99,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-16 flex flex-col gap-3 border-t border-white/10 pt-6 text-[11px] text-white/55 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-16 flex flex-col gap-3 border-t border-white/10 pt-6 text-sm text-white/55 sm:flex-row sm:items-center sm:justify-between">
           <p>
             &copy; {new Date().getFullYear()} House of Mangesh Mahadev Private Limited. All rights
             reserved.

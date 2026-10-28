@@ -287,7 +287,7 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-12">{wishlist.error && <p role="alert" className="pt-4 text-sm">{wishlist.error} <button className="underline" onClick={wishlist.reload}>Try again</button></p>}
         <nav
           aria-label="Breadcrumb"
-          className="flex items-center gap-2 pt-6 text-xs font-normal text-[#706B65]"
+          className="flex items-center gap-2 pt-6 text-sm font-normal text-[#706B65]"
         >
           <Link href="/" className={`hover:text-primary-foreground ${focusStyle}`}>
             Home
@@ -303,7 +303,7 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({
           </h1>
           <span
             aria-live="polite"
-            className="shrink-0 text-xs font-normal text-[#706B65]"
+            className="shrink-0 text-sm font-normal text-[#706B65]"
           >
             {productCount}
           </span>
@@ -315,7 +315,7 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({
               onClick={() => setIsFilterDrawerOpen(true)}
               aria-haspopup="dialog"
               aria-expanded={isFilterDrawerOpen}
-              className={`inline-flex min-h-10 items-center gap-2 text-[13px] font-medium hover:text-primary-foreground ${focusStyle}`}
+              className={`inline-flex min-h-10 items-center gap-2 text-sm font-medium hover:text-primary-foreground ${focusStyle}`}
             >
               <svg
                 className="h-4 w-4"
@@ -329,7 +329,7 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({
               </svg>
               Filters{activeFilters.length > 0 && ` (${activeFilters.length})`}
             </button>
-            <label className="hidden cursor-pointer items-center gap-2.5 text-xs font-normal sm:flex">
+            <label className="hidden cursor-pointer items-center gap-2.5 text-sm font-normal sm:flex">
               <input
                 type="checkbox"
                 checked={onlyReadyToShip}
@@ -374,13 +374,13 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({
                 </button>
               ))}
             </div>
-            <label className="flex items-center gap-2 text-xs font-normal">
+            <label className="flex items-center gap-2 text-sm font-normal">
               <span className="hidden text-[#706B65] sm:inline">Sort by</span>
               <select
                 aria-label="Sort products"
                 value={sortBy}
                 onChange={(event) => setSortBy(event.target.value)}
-                className={`min-h-10 max-w-[160px] cursor-pointer border-0 bg-transparent py-2 pr-1 text-xs text-[#333333] ${focusStyle}`}
+                className={`min-h-10 max-w-[160px] cursor-pointer border-0 bg-transparent py-2 pr-1 text-sm text-[#333333] ${focusStyle}`}
               >
                 <option value="featured">Featured</option>
                 <option value="price-low">Price: low to high</option>
@@ -397,7 +397,7 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({
                 key={filter.label}
                 onClick={filter.remove}
                 aria-label={`Remove filter: ${filter.label}`}
-                className={`inline-flex items-center gap-2 border border-[#DED8D0] px-3 py-2 text-xs font-normal hover:border-primary ${focusStyle}`}
+                className={`inline-flex items-center gap-2 border border-[#DED8D0] px-3 py-2 text-sm font-normal hover:border-primary ${focusStyle}`}
               >
                 {filter.label}
                 <CloseIcon className="h-3 w-3" />
@@ -405,7 +405,7 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({
             ))}
             <button
               onClick={clearAllFilters}
-              className={`px-2 py-2 text-xs font-normal underline underline-offset-4 ${focusStyle}`}
+              className={`px-2 py-2 text-sm font-normal underline underline-offset-4 ${focusStyle}`}
             >
               Clear all
             </button>
@@ -419,7 +419,7 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({
             </p>
             <button
               onClick={clearAllFilters}
-              className={`border border-primary px-6 py-3 text-xs text-primary-foreground hover:bg-primary-dark hover:text-white ${focusStyle}`}
+              className={`border border-primary px-6 py-3 text-sm text-primary-foreground hover:bg-primary-dark hover:text-white ${focusStyle}`}
             >
               Clear filters
             </button>
@@ -487,7 +487,7 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({
                         className="absolute inset-x-0 bottom-0 border-t border-[#DED8D0] bg-white p-3"
                       >
                         <div className="mb-3 flex items-center justify-between gap-2">
-                          <span className="text-xs font-normal">
+                          <span className="text-sm font-normal">
                             Select size
                           </span>
                           <button
@@ -505,7 +505,7 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({
                               data-size={size}
                               onClick={() => handleQuickAdd(product, size)}
                               aria-label={`Add ${product.title}, size ${size}, to bag`}
-                              className={`min-h-9 min-w-9 border border-[#CFC7BD] px-2 text-xs hover:border-primary hover:bg-primary-dark hover:text-white ${focusStyle}`}
+                              className={`min-h-9 min-w-9 border border-[#CFC7BD] px-2 text-sm hover:border-primary hover:bg-primary-dark hover:text-white ${focusStyle}`}
                             >
                               {size}
                             </button>
@@ -514,7 +514,7 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({
                       </div>
                     )}
                   </div>
-                  <h2 className="min-h-[42px] text-[13px] font-normal leading-[21px] sm:text-sm">
+                  <h2 className="min-h-[42px] text-sm font-normal leading-[21px] sm:text-sm">
                     <Link
                       href={`/products/${product.id}`}
                       className={`hover:text-primary-foreground ${focusStyle}`}
@@ -523,7 +523,7 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({
                     </Link>
                   </h2>
                   <div className="mt-2 flex flex-wrap items-baseline justify-between gap-x-2 gap-y-1">
-                    <span className="text-[13px] font-medium sm:text-sm">
+                    <span className="text-sm font-medium sm:text-sm">
                       {effectivePrice(product) > 0
                         ? formatPrice(effectivePrice(product))
                         : 'Price on request'}
@@ -538,7 +538,7 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({
                         aria-expanded={quickAddId === product.id}
                         id={`quick-add-trigger-${product.id}`}
                         aria-controls={`quick-add-${product.id}`}
-                        className={`py-1 text-[11px] font-normal text-[#625D57] underline underline-offset-4 hover:text-primary-foreground ${focusStyle}`}
+                        className={`py-1 text-sm font-normal text-[#625D57] underline underline-offset-4 hover:text-primary-foreground ${focusStyle}`}
                       >
                         Quick add
                         <span className="sr-only"> {product.title}</span>
@@ -546,7 +546,7 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({
                     )}
                   </div>
                   {product.readyToShip && (
-                    <p className="mt-1 text-[11px] font-normal text-[#706B65]">
+                    <p className="mt-1 text-sm font-normal text-[#706B65]">
                       Ready to ship
                     </p>
                   )}
@@ -588,7 +588,7 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({
                   {categories.map((category) => (
                     <label
                       key={category}
-                      className="flex cursor-pointer items-center justify-between gap-4 text-[13px] font-normal"
+                      className="flex cursor-pointer items-center justify-between gap-4 text-sm font-normal"
                     >
                       {category === 'All' ? 'All clothing' : category}
                       <input
@@ -605,7 +605,7 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({
               <FilterSection title="Price">
                 <label
                   htmlFor="shop-price-limit"
-                  className="mb-4 flex justify-between text-xs font-normal text-[#706B65]"
+                  className="mb-4 flex justify-between text-sm font-normal text-[#706B65]"
                 >
                   <span>Maximum price</span>
                   <span>{formatPrice(priceLimit)}</span>
@@ -628,7 +628,7 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({
                   {colors.map(([color, hex]) => (
                     <label
                       key={color}
-                      className="flex cursor-pointer items-center gap-2 text-xs font-normal"
+                      className="flex cursor-pointer items-center gap-2 text-sm font-normal"
                     >
                       <input
                         type="checkbox"
@@ -657,7 +657,7 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({
                       key={size}
                       aria-pressed={selectedSizes.includes(size)}
                       onClick={() => toggleSelection(size, setSelectedSizes)}
-                      className={`min-h-10 min-w-10 border px-2 text-xs ${focusStyle} ${selectedSizes.includes(size) ? 'border-primary bg-primary text-white' : 'border-[#DED8D0] hover:border-primary'}`}
+                      className={`min-h-10 min-w-10 border px-2 text-sm ${focusStyle} ${selectedSizes.includes(size) ? 'border-primary bg-primary text-white' : 'border-[#DED8D0] hover:border-primary'}`}
                     >
                       {size}
                     </button>
@@ -669,7 +669,7 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({
                   {crafts.map((craft) => (
                     <label
                       key={craft}
-                      className="flex cursor-pointer items-start justify-between gap-4 text-xs font-normal leading-5"
+                      className="flex cursor-pointer items-start justify-between gap-4 text-sm font-normal leading-5"
                     >
                       {craft}
                       <input
@@ -684,7 +684,7 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({
                   ))}
                 </div>
               </FilterSection>
-              <label className="flex cursor-pointer items-center justify-between gap-4 py-6 text-[13px] font-normal">
+              <label className="flex cursor-pointer items-center justify-between gap-4 py-6 text-sm font-normal">
                 Ready to ship
                 <input
                   type="checkbox"
@@ -697,13 +697,13 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({
             <div className="flex items-center gap-5 border-t border-[#DED8D0] p-6">
               <button
                 onClick={clearAllFilters}
-                className={`shrink-0 text-xs font-normal underline underline-offset-4 ${focusStyle}`}
+                className={`shrink-0 text-sm font-normal underline underline-offset-4 ${focusStyle}`}
               >
                 Clear all
               </button>
               <button
                 onClick={() => setIsFilterDrawerOpen(false)}
-                className={`min-h-12 flex-1 bg-primary px-3 py-3 text-xs font-medium text-white hover:bg-primary-dark hover:text-white ${focusStyle}`}
+                className={`min-h-12 flex-1 bg-primary px-3 py-3 text-sm font-medium text-white hover:bg-primary-dark hover:text-white ${focusStyle}`}
               >
                 Show {productCount}
               </button>
@@ -713,7 +713,7 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({
       )}
       <div role="status" aria-live="polite">
         {toastMessage && (
-          <div className="fixed bottom-5 right-4 z-50 flex items-center gap-6 border border-[#DED8D0] bg-white px-5 py-4 text-xs sm:right-6">
+          <div className="fixed bottom-5 right-4 z-50 flex items-center gap-6 border border-[#DED8D0] bg-white px-5 py-4 text-sm sm:right-6">
             <span>{toastMessage}</span>
             <Link
               href="/cart"

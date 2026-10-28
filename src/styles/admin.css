@@ -19,7 +19,7 @@
   color: var(--admin-text);
   background: var(--admin-bg);
   min-height: 100svh;
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.5;
   font-weight: 400;
   letter-spacing: normal;
@@ -292,7 +292,7 @@
   background: var(--admin-soft);
   padding: 0 4px;
   font: inherit;
-  font-size: 12px;
+  font-size: 14px;
 }
 .admin-header-section {
   display: none;

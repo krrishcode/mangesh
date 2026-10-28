@@ -19,13 +19,13 @@ export default function CelebritiesPage() {
         <section className="pt-20 pb-24 sm:pt-28 sm:pb-32 lg:pt-36 lg:pb-40">
           <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
             <header className="max-w-3xl mx-auto text-center">
-              <p className="font-sans-clean text-[10px] sm:text-[11px] tracking-[0.24em] text-primary-foreground uppercase">
+              <p className="font-sans-clean text-sm sm:text-sm tracking-[0.24em] text-primary-foreground uppercase">
                 CELEBRITY ARCHIVE
               </p>
-              <h1 className="font-serif-luxury text-3xl sm:text-5xl lg:text-[64px] tracking-[0.14em] text-[#333333] font-light uppercase mt-5">
+              <h1 className="font-serif-luxury text-3xl sm:text-5xl lg:text-[64px] tracking-[0.14em] text-[#333333] font-normal uppercase mt-5">
                 CELEBS IN MANGESH MAHADEV
               </h1>
-              <p className="font-sans-clean text-[11px] sm:text-xs text-[#555555] tracking-[0.08em] mt-6 font-light leading-loose max-w-2xl mx-auto normal-case">
+              <p className="font-sans-clean text-sm sm:text-sm text-[#555555] tracking-[0.08em] mt-6 font-normal leading-loose max-w-2xl mx-auto normal-case">
                 A closer look at eleven looks from the Mangesh Mahadev archive.
               </p>
             </header>
@@ -57,19 +57,19 @@ export default function CelebritiesPage() {
                       }`}
                     >
                       <div className="flex items-center gap-4 mb-6">
-                        <span className="font-sans-clean text-[10px] tracking-[0.18em] text-primary-foreground">
+                        <span className="font-sans-clean text-sm tracking-[0.18em] text-primary-foreground">
                           {String(index + 1).padStart(2, '0')}
                         </span>
                         <span className="h-px w-12 bg-[#C5A880]" />
-                        <span className="font-sans-clean text-[10px] tracking-[0.18em] text-[#777777] uppercase">
+                        <span className="font-sans-clean text-sm tracking-[0.18em] text-[#777777] uppercase">
                           LOOK {String(index + 1).padStart(2, '0')}
                         </span>
                       </div>
 
-                      <h2 className="font-serif-luxury text-2xl sm:text-3xl lg:text-4xl tracking-[0.12em] text-[#333333] font-light uppercase">
+                      <h2 className="font-serif-luxury text-2xl sm:text-3xl lg:text-4xl tracking-[0.12em] text-[#333333] font-normal uppercase">
                         {celeb.celebName}
                       </h2>
-                      <p className="font-sans-clean text-[10px] sm:text-[11px] tracking-[0.16em] text-primary-foreground uppercase mt-4">
+                      <p className="font-sans-clean text-sm sm:text-sm tracking-[0.16em] text-primary-foreground uppercase mt-4">
                         {celeb.occasion}
                       </p>
                       <p className="font-serif-story text-sm sm:text-base text-[#555555] mt-8 leading-relaxed">
@@ -78,7 +78,7 @@ export default function CelebritiesPage() {
 
                       <a
                         href="#bespoke-appointment"
-                        className="inline-flex items-center gap-3 mt-10 text-[11px] font-medium tracking-[0.18em] text-[#333333] uppercase hover:text-primary-foreground transition-colors"
+                        className="inline-flex items-center gap-3 mt-10 text-sm font-medium tracking-[0.18em] text-[#333333] uppercase hover:text-primary-foreground transition-colors"
                       >
                         BOOK A BESPOKE FITTING
                         <span aria-hidden="true" className="text-base leading-none">→</span>
@@ -93,18 +93,18 @@ export default function CelebritiesPage() {
 
         <section id="bespoke-appointment" className="border-t border-[#EAE3DB] bg-primary text-primary-foreground py-20 sm:py-24">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
-            <p className="font-sans-clean text-[10px] tracking-[0.22em] text-primary-foreground uppercase">
+            <p className="font-sans-clean text-sm tracking-[0.22em] text-primary-foreground uppercase">
               THE ATELIER
             </p>
-            <h2 className="font-serif-luxury text-2xl sm:text-4xl tracking-[0.14em] font-light uppercase mt-5">
+            <h2 className="font-serif-luxury text-2xl sm:text-4xl tracking-[0.14em] font-normal uppercase mt-5">
               MADE FOR YOUR OCCASION
             </h2>
-            <p className="font-sans-clean text-[11px] sm:text-xs tracking-[0.08em] text-primary-foreground leading-loose mt-5 font-light normal-case">
+            <p className="font-sans-clean text-sm sm:text-sm tracking-[0.08em] text-primary-foreground leading-loose mt-5 font-normal normal-case">
               Personal fittings, custom embroidery, and made-to-measure styling by appointment.
             </p>
             <Link
               href="/#bespoke-appointment"
-              className="inline-block mt-9 px-10 py-3.5 border border-white text-white hover:bg-primary-dark hover:text-white transition-all text-[11px] font-medium tracking-[0.18em] uppercase"
+              className="inline-block mt-9 px-10 py-3.5 border border-white text-white hover:bg-primary-dark hover:text-white transition-all text-sm font-medium tracking-[0.18em] uppercase"
             >
               BOOK AN ATELIER CONSULTATION
             </Link>

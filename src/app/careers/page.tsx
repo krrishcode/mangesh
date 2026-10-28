@@ -98,13 +98,13 @@ export default function CareersPage() {
         <section className="pt-20 pb-14 bg-white">
           <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
             <div className="text-center max-w-3xl mx-auto">
-              <p className="font-sans-clean text-[10px] tracking-[0.24em] text-[#997950] uppercase mb-5">
+              <p className="font-sans-clean text-sm tracking-[0.24em] text-[#997950] uppercase mb-5">
                 House of Mangesh Mahadev
               </p>
-              <h1 className="font-serif-luxury text-3xl sm:text-4xl lg:text-[44px] tracking-[0.14em] text-[#333333] font-light uppercase leading-tight">
+              <h1 className="font-serif-luxury text-3xl sm:text-4xl lg:text-[44px] tracking-[0.14em] text-[#333333] font-normal uppercase leading-tight">
                 Careers at the Atelier
               </h1>
-              <p className="font-sans-clean text-[11px] sm:text-xs text-[#333333] leading-relaxed font-light mt-6">
+              <p className="font-sans-clean text-sm sm:text-sm text-[#333333] leading-relaxed font-normal mt-6">
                 We make heirloom menswear by hand — sherwanis, bandhgalas and silks for
                 lifetime celebrations. Our teams work between the cutting table, the
                 embroidery adda and a small digital studio. If you practise a craft with
@@ -118,7 +118,7 @@ export default function CareersPage() {
         <section className="py-20 bg-white border-t border-[#E0D7CD]">
           <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
             <div className="text-center max-w-2xl mx-auto mb-14">
-              <h2 className="font-serif-luxury text-3xl sm:text-4xl lg:text-[40px] tracking-[0.14em] text-[#333333] font-light uppercase">
+              <h2 className="font-serif-luxury text-3xl sm:text-4xl lg:text-[40px] tracking-[0.14em] text-[#333333] font-normal uppercase">
                 Current Openings
               </h2>
             </div>
@@ -130,19 +130,19 @@ export default function CareersPage() {
                   className="py-8 grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 items-start"
                 >
                   <div className="md:col-span-5">
-                    <h3 className="font-sans-clean text-xs sm:text-[13px] tracking-[0.14em] text-[#333333] uppercase font-medium leading-relaxed">
+                    <h3 className="font-sans-clean text-sm sm:text-sm tracking-[0.14em] text-[#333333] uppercase font-medium leading-relaxed">
                       {role.title}
                     </h3>
-                    <p className="font-sans-clean text-[10px] tracking-[0.18em] text-[#997950] uppercase mt-2">
+                    <p className="font-sans-clean text-sm tracking-[0.18em] text-[#997950] uppercase mt-2">
                       {role.department}
                     </p>
                   </div>
 
                   <div className="md:col-span-4 space-y-1">
-                    <p className="font-sans-clean text-[11px] font-light tracking-[0.06em] text-[#333333]">
+                    <p className="font-sans-clean text-sm font-normal tracking-[0.06em] text-[#333333]">
                       {role.location}
                     </p>
-                    <p className="font-sans-clean text-[11px] font-light tracking-[0.06em] text-[#78716C]">
+                    <p className="font-sans-clean text-sm font-normal tracking-[0.06em] text-[#78716C]">
                       {role.type}
                     </p>
                   </div>
@@ -150,7 +150,7 @@ export default function CareersPage() {
                   <div className="md:col-span-3 md:text-right">
                     <a
                       href={applyHref(`Application — ${role.title}`)}
-                      className="inline-flex items-center gap-2 text-[11px] font-medium tracking-[0.20em] text-[#333333] hover:text-primary-foreground transition border-b border-[#1A1A1A] hover:border-primary pb-1 uppercase"
+                      className="inline-flex items-center gap-2 text-sm font-medium tracking-[0.20em] text-[#333333] hover:text-primary-foreground transition border-b border-[#1A1A1A] hover:border-primary pb-1 uppercase"
                     >
                       <span>Send your CV</span>
                       <span aria-hidden="true">&rarr;</span>
@@ -160,14 +160,14 @@ export default function CareersPage() {
               ))}
             </ul>
 
-            <p className="text-center font-sans-clean text-[11px] font-light tracking-[0.06em] text-[#333333] mt-12">
+            <p className="text-center font-sans-clean text-sm font-normal tracking-[0.06em] text-[#333333] mt-12">
               Do not see your discipline listed? Write to us — we keep the workshop roster
               open for exceptional craft.
             </p>
             <div className="text-center mt-5">
               <a
                 href={applyHref('General Application — House of Mangesh Mahadev')}
-                className="inline-flex items-center gap-2 text-[11px] font-medium tracking-[0.20em] text-primary-foreground hover:text-primary-foreground transition border-b border-primary pb-1 uppercase"
+                className="inline-flex items-center gap-2 text-sm font-medium tracking-[0.20em] text-primary-foreground hover:text-primary-foreground transition border-b border-primary pb-1 uppercase"
               >
                 <span>Apply to the house</span>
                 <span aria-hidden="true">&rarr;</span>
@@ -180,7 +180,7 @@ export default function CareersPage() {
         <section className="py-20 bg-white">
           <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
             <div className="text-center max-w-2xl mx-auto mb-14">
-              <h2 className="font-serif-luxury text-3xl sm:text-4xl lg:text-[40px] tracking-[0.14em] text-[#333333] font-light uppercase">
+              <h2 className="font-serif-luxury text-3xl sm:text-4xl lg:text-[40px] tracking-[0.14em] text-[#333333] font-normal uppercase">
                 How We Hire
               </h2>
             </div>
@@ -188,13 +188,13 @@ export default function CareersPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-14 max-w-5xl mx-auto">
               {HIRE_STEPS.map((item) => (
                 <div key={item.step} className="text-center md:text-left">
-                  <p className="font-serif-luxury text-[13px] tracking-[0.20em] text-[#997950] mb-4">
+                  <p className="font-serif-luxury text-sm tracking-[0.20em] text-[#997950] mb-4">
                     {item.step}
                   </p>
-                  <h3 className="font-sans-clean text-[11px] sm:text-xs tracking-[0.20em] text-[#333333] uppercase font-medium mb-4">
+                  <h3 className="font-sans-clean text-sm sm:text-sm tracking-[0.20em] text-[#333333] uppercase font-medium mb-4">
                     {item.title}
                   </h3>
-                  <p className="font-sans-clean text-[11px] font-light tracking-[0.04em] text-[#333333] leading-relaxed">
+                  <p className="font-sans-clean text-sm font-normal tracking-[0.04em] text-[#333333] leading-relaxed">
                     {item.body}
                   </p>
                 </div>
@@ -207,16 +207,16 @@ export default function CareersPage() {
         <section className="py-20 bg-white border-t border-[#E0D7CD]">
           <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
             <div className="max-w-3xl mx-auto text-center">
-              <h2 className="font-serif-luxury text-2xl sm:text-3xl tracking-[0.12em] text-[#333333] font-light uppercase leading-tight mb-6">
+              <h2 className="font-serif-luxury text-2xl sm:text-3xl tracking-[0.12em] text-[#333333] font-normal uppercase leading-tight mb-6">
                 Before You Apply
               </h2>
-              <p className="font-sans-clean text-[11px] sm:text-xs font-light tracking-[0.04em] text-[#333333] leading-relaxed">
+              <p className="font-sans-clean text-sm sm:text-sm font-normal tracking-[0.04em] text-[#333333] leading-relaxed">
                 Applications reach the studio by email. Attach your CV as a PDF and include
                 links or photographs of work you have personally made — for workshop roles,
                 close-up detail of finish and handwork matters far more than where you have
                 worked. Please send one application per role.
               </p>
-              <p className="font-sans-clean text-[11px] sm:text-xs font-light tracking-[0.04em] text-[#333333] leading-relaxed mt-5">
+              <p className="font-sans-clean text-sm sm:text-sm font-normal tracking-[0.04em] text-[#333333] leading-relaxed mt-5">
                 We reply to every applicant within three working weeks.
               </p>
             </div>
