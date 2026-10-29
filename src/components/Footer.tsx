@@ -49,7 +49,7 @@ function LinkColumn({ label, links }: { label: string; links: Array<[string, str
 
 export default function Footer() {
   return (
-    <footer id="contact-us" className="bg-[#1A1A1A] text-white scroll-mt-[100px]">
+    <footer id="contact-us" className="bg-[#365572] text-white scroll-mt-[100px]">
       <div className="mx-auto max-w-[1440px] px-4 pb-10 pt-16 sm:px-6 lg:px-12">
         <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-12">
           <div className="sm:col-span-2 lg:col-span-4">
