@@ -5,8 +5,8 @@
   --header-ink: #252a2b;
   --header-muted: #68655f;
   --header-line: #ded9d1;
-  --header-accent: #1f3548;
-  --header-accent-hover: #253f58;
+  --header-accent: #2b4864;
+  --header-accent-hover: #365572;
   color: var(--header-ink);
   font-family: 'Franklin Gothic', 'Helvetica Neue', sans-serif;
   -webkit-tap-highlight-color: transparent;
