@@ -87,6 +87,7 @@ export function CustomersView() {
             />
           </AdminFilters>
           <DataTable
+            bulk={{ kind: "customers", reload }}
             columns={columns}
             data={rows}
             loading={loading}

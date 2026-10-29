@@ -117,6 +117,7 @@ export function CategoriesView() {
             />
           </AdminFilters>
           <DataTable
+            bulk={{ kind: "categories", reload }}
             columns={columns}
             data={rows}
             loading={loading}

@@ -293,6 +293,7 @@ export function PaymentsView({
             </select>
           </AdminFilters>
           <DataTable
+            bulk={{ kind: "payments", reload }}
             columns={columns}
             data={rows}
             loading={loading}

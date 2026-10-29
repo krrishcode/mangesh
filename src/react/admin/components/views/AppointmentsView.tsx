@@ -298,6 +298,7 @@ export function AppointmentsView() {
             </div>
           ) : (
             <DataTable
+              bulk={{ kind: "appointments", reload }}
               columns={columns}
               data={rows}
               loading={loading}

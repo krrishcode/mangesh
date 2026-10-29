@@ -134,6 +134,7 @@ export function ReviewsView() {
             </select>
           </AdminFilters>
           <DataTable
+            bulk={{ kind: "reviews", reload }}
             columns={columns}
             data={rows}
             loading={loading}

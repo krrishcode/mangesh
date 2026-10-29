@@ -193,6 +193,7 @@ export function ProductsView({
             )}
           </AdminFilters>
           <DataTable
+            bulk={{ kind: "products", reload }}
             columns={columns}
             data={rows}
             loading={loading}

@@ -174,6 +174,7 @@ export function OrdersView({
             </select>
           </AdminFilters>
           <DataTable
+            bulk={{ kind: "orders", reload }}
             columns={columns}
             data={rows}
             loading={loading}

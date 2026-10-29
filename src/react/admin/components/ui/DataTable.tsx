@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { AdminActionMenu } from "./AdminActionMenu";
 import { AdminIcon, type AdminIconName } from "./AdminIcon";
+import { BulkActions } from "./BulkActions";
+import type { AdminRecordKind } from "../../../../lib/admin-records";
 const columnIcons: Record<string, AdminIconName> = {
   title: "products",
   name: "customers",
@@ -38,6 +40,7 @@ interface Props<T> {
   loading?: boolean;
   pagination?: boolean;
   onRowClick?: (item: T) => void;
+  bulk?: { kind: AdminRecordKind; reload: () => void };
 }
 export function compareValues(a: unknown, b: unknown): number {
   if (a == null && b == null) return 0;
@@ -62,7 +65,9 @@ export function DataTable<T extends Record<string, any>>({
   loading = false,
   pagination = true,
   onRowClick,
+  bulk,
 }: Props<T>) {
+  const [selected, setSelected] = useState<Set<number>>(new Set());
   const [page, setPage] = useState(1);
   const [pageLimit, setPageLimit] = useState(pageSize);
   useEffect(() => setPageLimit(pageSize), [pageSize]);
@@ -74,6 +79,10 @@ export function DataTable<T extends Record<string, any>>({
     .map((item, index) => String(item.id ?? index))
     .join(",");
   useEffect(() => setPage(1), [datasetKey, pageLimit]);
+  useEffect(() => {
+    const available = new Set(data.map((item) => item.id));
+    setSelected((previous) => new Set([...previous].filter((id) => available.has(id))));
+  }, [datasetKey]);
   const sorted = useMemo(
     () =>
       !sort
@@ -98,6 +107,11 @@ export function DataTable<T extends Record<string, any>>({
           {actions}
         </div>
       )}
+      {bulk && (
+        <BulkActions kind={bulk.kind} rows={data.filter((item) => selected.has(item.id)).map((item) => ({ id: item.id }))}
+          onFinished={(succeeded) => { setSelected((previous) => new Set([...previous].filter((id) => !succeeded.includes(id)))); bulk.reload(); }}
+          onClear={() => setSelected(new Set())} />
+      )}
       {loading ? (
         <div
           className="admin-list-loading"
@@ -118,6 +132,7 @@ export function DataTable<T extends Record<string, any>>({
             <table className="admin-table" aria-label={title || "Records"}>
               <thead>
                 <tr>
+                  {bulk && <th className="admin-selection-cell"><input type="checkbox" aria-label="Select all records on this page" ref={(input) => { if (input) input.indeterminate = records.some((item) => selected.has(item.id)) && !records.every((item) => selected.has(item.id)); }} checked={records.length > 0 && records.every((item) => selected.has(item.id))} onChange={(event) => setSelected((previous) => { const next = new Set(previous); records.forEach((item) => event.target.checked ? next.add(item.id) : next.delete(item.id)); return next; })} /></th>}
                   {columns.map((column) => (
                     <th
                       key={column.key}
@@ -199,6 +214,7 @@ export function DataTable<T extends Record<string, any>>({
                         : undefined
                     }
                   >
+                    {bulk && <td className="admin-selection-cell" onClick={(event) => event.stopPropagation()} onKeyDown={(event) => event.stopPropagation()}><input type="checkbox" aria-label={`Select record ${item.id}`} checked={selected.has(item.id)} onChange={(event) => setSelected((previous) => { const next = new Set(previous); event.target.checked ? next.add(item.id) : next.delete(item.id); return next; })} /></td>}
                     {columns.map((column) => (
                       <td
                         key={column.key}
