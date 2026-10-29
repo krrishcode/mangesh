@@ -3,7 +3,7 @@ import Link from 'next/link';
 const LOOKS = [
   {
     name: 'Kurtas',
-    image: 'https://cdn.mangeshmahadev.com/products/blue-deer-kurta/blue-deer-kurta-01.webp',
+    image: 'https://cdn.mangeshmahadev.com/products/dusty-rose-diamond-lattice-silk-kurta-set/dusty-rose-diamond-lattice-silk-kurta-set-02.webp',
     href: '/collections/kurtas',
   },
   {
