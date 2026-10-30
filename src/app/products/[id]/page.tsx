@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import { HeaderInteractive } from '@/components/HeaderInteractive';
 import { ProductDetailView } from '@/components/ProductDetailView';
 import Footer from '@/components/Footer';
@@ -22,6 +22,7 @@ export async function generateMetadata({ params }: ProductRouteProps): Promise<M
       ? `${product.title} | Mangesh Mahadev Haute Couture`
       : 'Product | Mangesh Mahadev Haute Couture',
     description: product?.description,
+    alternates: product ? { canonical: `/products/${product.slug}` } : undefined,
   };
 }
 
@@ -33,6 +34,7 @@ export default async function ProductDetailRoute({ params }: ProductRouteProps) 
   ]);
 
   if (!product) notFound();
+  if (product.slug !== id) permanentRedirect(`/products/${product.slug}`);
 
   return (
     <>

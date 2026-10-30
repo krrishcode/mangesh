@@ -1,5 +1,6 @@
 export interface MensProduct {
   id: string;
+  slug: string;
   stock: number;
   categorySlug: string;
   title: string;

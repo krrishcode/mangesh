@@ -439,7 +439,7 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({
                 <article key={product.id}>
                   <div className="relative mb-3 aspect-[2/3] overflow-hidden bg-[#ECE8E1]">
                     <Link
-                      href={`/products/${product.id}`}
+                      href={`/products/${product.slug}`}
                       aria-label={`View ${product.title}`}
                       className={`group block h-full w-full ${focusStyle}`}
                     >
@@ -516,7 +516,7 @@ export const ShopListingView: React.FC<ShopListingViewProps> = ({
                   </div>
                   <h2 className="min-h-[42px] text-[13px] font-normal leading-[21px] sm:text-sm">
                     <Link
-                      href={`/products/${product.id}`}
+                      href={`/products/${product.slug}`}
                       className={`hover:text-primary-foreground ${focusStyle}`}
                     >
                       {product.title}

@@ -13,6 +13,7 @@ export function normalizeProduct(raw: Record<string, any>): MensProduct {
   return {
     ...raw,
     id: String(raw.id),
+    slug: String(raw.slug || ''),
     title: String(raw.title || ''),
     category: raw.categoryName || '',
     categorySlug: raw.categorySlug || '',

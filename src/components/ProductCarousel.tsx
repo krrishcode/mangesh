@@ -62,7 +62,7 @@ export function ProductCarousel({ products }: { products: MensProduct[] }) {
           {products.map((product) => (
             <article key={product.id} className="min-w-0 snap-start">
               <Link
-                href={`/products/${product.id}`}
+                href={`/products/${product.slug}`}
                 aria-label={`View ${product.title}`}
                 className="group relative mb-3 block aspect-[2/3] overflow-hidden bg-[#ECE8E1]"
               >
@@ -83,7 +83,7 @@ export function ProductCarousel({ products }: { products: MensProduct[] }) {
               </Link>
               <h3 className="home-label min-h-[42px]">
                 <Link
-                  href={`/products/${product.id}`}
+                  href={`/products/${product.slug}`}
                   className="hover:text-primary-foreground"
                 >
                   {product.title}

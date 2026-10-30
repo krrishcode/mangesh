@@ -199,7 +199,7 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailPro
         {suggestions.length > 0 && <section className="product-related" aria-labelledby="related-products-title">
           <div className="product-related-heading"><h2 id="related-products-title">You may also like</h2><Link href="/shop" className="product-text-link">View all</Link></div>
           <div className="product-related-grid">
-            {suggestions.map((item) => <Link key={item.id} href={`/products/${item.id}`} className="product-related-card">
+            {suggestions.map((item) => <Link key={item.id} href={`/products/${item.slug}`} className="product-related-card">
               <div className="product-related-image"><img src={item.imageFront} alt={item.title} loading="lazy" /></div>
               <h3>{item.title}</h3><p>{formatPrice(item.salePrice && item.salePrice < item.price ? item.salePrice : item.price)}</p>
             </Link>)}

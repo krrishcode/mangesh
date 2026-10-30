@@ -491,7 +491,7 @@ export function HeaderInteractive() {
                         {results.map((product) => (
                           <li key={product.id}>
                             <Link
-                              href={`/products/${product.id}`}
+                              href={`/products/${product.slug}`}
                               onClick={closePanel}
                             >
                               <img

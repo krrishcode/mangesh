@@ -39,7 +39,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.8,
       })),
       ...products.map((product) => ({
-        url: `${siteUrl}/products/${product.id}`,
+        url: `${siteUrl}/products/${product.slug}`,
         changeFrequency: 'weekly' as const,
         priority: 0.8,
       })),

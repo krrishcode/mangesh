@@ -335,7 +335,6 @@ export async function adminCreateProduct(c: ApiContext) {
   const body = parsed.data;
   const {
     title,
-    slug,
     description,
     price,
     salePrice,
@@ -368,12 +367,21 @@ export async function adminCreateProduct(c: ApiContext) {
     gallery,
   } = body;
 
-  if (!title || !slug || !price || !sku) {
+  if (!title || !price || !sku) {
     return json(
       c,
-      { success: false, error: "title, slug, price, and sku are required" },
+      { success: false, error: "title, price, and sku are required" },
       400,
     );
+  }
+  const slug =
+    body.slug ||
+    title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+  if (!slug) {
+    return json(c, { success: false, error: "Could not derive a slug from the title." }, 400);
   }
 
   const [header] = await adminWrite(() =>
